@@ -1,0 +1,76 @@
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.sublist-major {
+	margin-left:20px;
+	margin-top:20px;	
+}
+
+.contag {
+	color: black;
+	border-radius: 0px;
+    padding: 1px;
+    text-align: center;
+}
+
+/* 
+    Contact Type Tags
+*/
+.contag.tag {
+    border-radius: 7px;
+    min-width: 165px
+}
+
+.contag.bubble {
+    border-radius: 15px;
+
+    width: 30px;
+
+    display: table-cell;
+
+    float: left;
+    margin-right: 5px;
+}
+
+/* Donor Tag */
+.contag.do { background-color: #FF8C19; } 
+
+/* Prospect Tag */
+.contag.pr { background-color: #008FBF; }
+
+/* Volunteer Tag */
+.contag.vo { background-color: #4C9926; }
+
+/* Corporation / Foundation Tag */
+.contag._f { background-color: #BFBFBF; }
+
+/* Prospect Tag */
+.contag._g { background-color: #85A6A6; }
+
+/* 
+    Contact Assoc Type Tags
+*/
+.conassoc {
+	color: white;
+    border-radius: 7px;
+    padding: 1px;
+    padding-right: 5px;
+    padding-left: 5px;
+    text-align: center;
+
+    background-color: #85A6A6;
+}
+/* Assigned Tag */                          /* Scheme 1   Scheme 2    Scheme 3*/
+
+.conassoc.cr { background-color: #2C594F; } /* #002D40                        */
+
+.conassoc.as { background-color: #E54661; } /* #2C594F    #9AC49F     #FC4349 */
+
+/* Target Tag */
+.conassoc.ta { background-color: #FFA644; } /* #E54661    #A6658F     #6DBCDB */
+
+/* Non-Specified or Non-Aligned Tag */
+.conassoc.na { background-color: #002D40; } /* #FFA644    #1D797D     #2C3E50 */

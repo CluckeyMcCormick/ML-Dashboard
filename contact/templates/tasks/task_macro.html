@@ -1,0 +1,91 @@
+{% load macros %}
+
+<!--
+
+MACRO: Display the header (title/status) of a task...
+
+-->
+{% macro display_task_header task as_title=False%}
+  
+  {% if as_title %}
+    <h1>
+  {% else %}
+    <h4>
+  {% endif %}
+
+    {% if as_title %}
+      <strong>Task: </strong>{{task.brief}}
+    {% else %}
+      <a href="{{ task.get_absolute_url }}">{{ task.brief }}</a>
+    {% endif %}
+
+    {% if task.complete %}
+      - <strong class="text-success"> Complete!</strong>
+    {% endif %}
+
+  {% if as_title %}
+    </h1>
+  {% else %}
+    </h4>
+  {% endif %}
+
+{% endmacro %}
+
+<!--
+
+MACRO: Display the body of a task...
+
+-->
+{% macro display_task_body task assoc=None show_project=True show_contact=True %}
+
+  {% if assoc %}
+    <p><strong class="conassoc {{assoc.tag_type}}">{{assoc.get_tag_type_display}}</strong></p>
+  {% endif %}
+
+  {% if task.deadline %}
+    <p><strong>Complete By: </strong> {{ task.deadline }}</p>
+  {% endif %}
+
+  {% if show_project %}
+    {% if task.proj %}
+      <p><strong>Project: </strong> <a href="{{ task.proj.get_absolute_url }}">{{ task.proj.title }}</a></p>
+    {% endif %}
+  {% endif %}
+
+  <!-- Notes for this task -->
+  <p><strong>Notes: </strong>{{ task.notes }}</p>  
+  <!-- Listing the contacts assigned to this task -->
+  {% if show_contact %}
+    {% for creator in task.get_creator %}
+      <p><strong class="conassoc cr">Creator:</strong> {{ creator.name }}</p>
+    {% endfor %}
+
+    {% if task.get_assigned %}
+      <div class="col-sm-4">
+        <strong class="conassoc as">Assigned To: </strong>
+        {% for con in task.get_assigned %}
+          <p><a href="{{ con.get_absolute_url }}">{{ con }}</a></p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <!-- Listing the contacts targeted by this task -->
+    {% if task.get_targeted %}
+      <div class="col-sm-4">
+        <strong class="conassoc ta">Target Contacts: </strong>
+        {% for con in task.get_targeted %}
+          <p><a href="{{ con.get_absolute_url }}">{{ con }}</a></p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <!-- Listing the nonaligned contacts associated with this task -->
+    {% if task.get_nonalign %}
+      <div class="col-sm-4">
+        <strong class="conassoc na">Also Associated: </strong>
+        {% for con in task.get_nonalign  %}
+          <p><a href="{{ con.get_absolute_url }}">{{ con }}</a></p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+{% endmacro %}

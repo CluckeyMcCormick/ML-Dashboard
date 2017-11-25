@@ -1,0 +1,60 @@
+{% extends "base_generic.html" %}
+
+{% load macros %}
+{% loadmacros "tasks/task_macro.html" %}
+
+{% block content %}
+
+  <h1><strong>Contact: </strong>{{ contact.name }}</h1>
+
+  <div class="col-sm-12">
+    {% for contype in contact.contacttypetag_set.all %}
+      <div class="col-sm-2">
+        <p class="contag tag {{ contype.tag_type }}">{{ contype.get_tag_type_display }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="col-sm-3">
+  	<p><strong>E-Mail:</strong> {{ contact.email }} </p>
+  	<p><strong>Phone:</strong> {{ contact.phone }} </p>
+    <p><strong>Organization:</strong> {{ contact.org }} </p>
+  </div>
+  <div class="col-sm-9">
+    <p><strong>Notes:</strong> {{ contact.notes }} </p>
+  </div>
+
+  <div class="col-sm-12 sublist-major">
+    <!--                           -->
+    <!-- Block 2 - Project Listing -->
+    <!--                           -->
+    <h3>Associated Projects</h3>
+
+    {% if contact.project_set.all %}
+      {% for proj in contact.project_set.all %}
+        <hr>
+        <a href="{{ proj.get_absolute_url }}">{{ proj.title }}</a>
+
+      {% endfor %}
+    {% else %}
+      <p>No associated projects!</p>
+    {% endif %}
+
+    <!--                        -->
+    <!-- Block 3 - Task Listing -->
+    <!--                        -->
+    <h3>Tasks</h3>
+    {% if contact.taskcontactassoc_set.all %}
+      {% for assoc in contact.taskcontactassoc_set.all %}
+        <div class="col-sm-12">
+          <hr>
+          {% with assoc.task as task%}
+            {% use_macro display_task_header task %}
+            {% use_macro display_task_body task assoc=assoc show_contact=False %}
+          {% endwith %} 
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No associated tasks!</p>
+    {% endif %}
+  </div>
+{% endblock %}

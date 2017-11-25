@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Project List</h1>
+
+    {% if project_list %}
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Associated Contacts</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for proj in project_list %}
+              <tr>
+                <td>
+                  <a href="{{ proj.get_absolute_url }}">{{ proj.title }}</a>
+                </td>
+                <td>
+                  <p>{{ proj.associated.all.count }}</p>
+                </td>
+                <td>
+                  <p>{{ proj.notes }}</p>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div> 
+    {% else %}
+      <p>You have no contacts!</p>
+    {% endif %}       
+{% endblock %}

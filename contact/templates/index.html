@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Home</h1>
+<p>Welcome to <em>Dashboard</em>, the prototype for the Million Little Dashboard App.</p>
+
+<h2>Fun Facts!</h2>
+  <ul>
+    <li><strong>Contacts:</strong> {{ num_contacts }}</li>
+    <li><strong>Volunteers:</strong> {{ num_volunteers }}</li>
+    <li><strong>Organizations:</strong> {{ num_orgs }}</li>
+    <li><strong>Projects:</strong> {{ num_projects }}</li>
+  </ul>
+
+{% endblock %}

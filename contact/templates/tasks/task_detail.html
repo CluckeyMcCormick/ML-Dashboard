@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+
+{% load macros %}
+{% loadmacros "tasks/task_macro.html" %}
+
+{% block content %}
+
+  {% use_macro display_task_header task  as_title=True       %}
+  {% use_macro display_task_body   task  %}
+      
+{% endblock %}
