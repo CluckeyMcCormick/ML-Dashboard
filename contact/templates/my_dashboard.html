@@ -33,7 +33,7 @@
     <!--                        -->
     <!-- Block 3 - Task Listing -->
     <!--                        -->
-    <h3>Tasks</h3>
+    <h3>Your Upcoming Tasks</h3>
     {% if user_task.all %}
       {% for assoc in user_task.all %}
         <div class="col-sm-12">
@@ -45,7 +45,7 @@
         </div>
       {% endfor %}
     {% else %}
-      <p>You have no tasks!</p>
+      <p>You have no upcoming tasks!</p>
     {% endif %}
   </div>
 {% endblock %}

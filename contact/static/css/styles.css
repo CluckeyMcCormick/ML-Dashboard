@@ -74,3 +74,29 @@
 
 /* Non-Specified or Non-Aligned Tag */
 .conassoc.na { background-color: #002D40; } /* #FFA644    #1D797D     #2C3E50 */
+
+/* 
+    Task Status Tags
+*/
+.task-status {
+    color: white;
+    border-radius: 7px;
+    padding: 1px;
+    padding-right: 5px;
+    padding-left: 5px;
+    text-align: center;
+
+    background-color: #85A6A6;
+}
+
+.task-status.incomplete {
+    background-color: #000000;
+}
+
+.task-status.overdue {
+    background-color: #e23131;
+}
+
+.task-status.complete {
+    background-color: #56cc4b;
+}

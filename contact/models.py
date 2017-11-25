@@ -153,7 +153,7 @@ class Task(models.Model):
     notes = models.TextField(max_length=555, help_text="Any extra notes for this project.", blank=True)
 
     class Meta: 
-        ordering = ['complete', 'deadline',]
+        ordering = ['deadline','complete',]
 
     def __str__(self):
         """

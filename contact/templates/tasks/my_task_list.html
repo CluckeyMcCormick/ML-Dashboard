@@ -15,25 +15,25 @@
             </tr>
           </thead>
           <tbody>
-            {% for task in task_list %}
+            {% for assoc in task_list %}
               <tr>
                 <td>
-                  <a href="{{ task.get_absolute_url }}">{{ task.brief }}</a>
+                  <a href="{{ task.get_absolute_url }}">{{ assoc.task.brief }}</a>
                 </td>
                 <td>
-                  <p>{{ task.deadline }}</p>
+                  <p>{{ assoc.task.deadline }}</p>
                 </td>
                 <td>
-                  {% if task.complete %}
+                  {% if assoc.task.complete %}
                     <p class="text-success">Yes</p>
-                  {% elif task.overdue %}
+                  {% elif assoc.task.overdue %}
                     <p class="text-warning">No</p>
                   {% else %}
                     <p>No</p>
                   {% endif %}
                 </td>
                 <td>
-                  <a href="{{ task.proj.get_absolute_url }}">{{ task.proj.title }}</a>
+                  <a href="{{ task.proj.get_absolute_url }}">{{ assoc.task.proj.title }}</a>
                 </td>
               </tr>
             {% endfor %}

@@ -25,7 +25,8 @@
             <li><a href="{% url 'index' %}">Home</a></li>
             {% if user.is_authenticated %}
               <hr>
-              <li><a href="{% url 'my_dashboard' %}">My Dashboard</a></li>
+              <li><a href="{% url 'my-dashboard' %}">My Dashboard</a></li>
+              <li><a href="{% url 'my-assocs' %}">My Tasks</a></li>
             {% endif %}
             <hr>
             <li><a href="{% url 'contacts' %}">View all Contacts</a></li>

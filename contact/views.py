@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.views import generic
 
-from .models import Organization, Contact, Project, ContactTypeTag, Task
+from .models import Organization, Contact, Project
+from .models import ContactTypeTag, Task, TaskContactAssoc
 # Create your views here.
 
 def index(request):
@@ -106,3 +107,25 @@ class TaskListView(generic.ListView):
 class TaskDetailView(generic.DetailView):
     model = Task
     template_name = 'tasks/task_detail.html'
+
+# TASKS CONTACT ASSOCIATIONS, MIJO! ~~~~~~~~~~~~~
+class MyTaskView(generic.ListView):
+    model = TaskContactAssoc
+    context_object_name = 'assoc_list'
+    template_name = 'con_task_assoc/my_assoc.html'
+    
+    def get_queryset(self):
+        user_con = self.request.user.contact
+        return user_con.taskcontactassoc_set.exclude(tag_type__exact='ta')
+    """
+    def get_context_data(self, **kwargs):
+        context = super(AllTaskView, self).get_context_data(**kwargs)
+        
+        #Get the associated contact for our user
+        user_con = self.request.user.contact
+
+        #Get the tasks associated with the user
+        context['user_con'] = user_con 
+
+        return context
+    """
