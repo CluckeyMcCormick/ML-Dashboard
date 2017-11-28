@@ -36,7 +36,7 @@
     <h3>Your Upcoming Tasks</h3>
     {% if user_task.all %}
       {% for assoc in user_task.all %}
-        <div class="col-sm-12">
+        <div class="col-sm-12" style="padding-left: 0px;">
           <hr>
           {% with assoc.task as task%}
             {% use_macro display_task_header task %}

@@ -24,11 +24,14 @@ urlpatterns = [
 	#redirect to admin site
     url(r'^admin/', admin.site.urls),
     #redirect all contact requests to the contact app
-    url(r'^contact/', include('contact.urls')),
+    url(r'^contact_app/', include('contact.urls')),
     #Actually, let's just redirect all unspecified traffic to the contact app
-    url(r'^$', RedirectView.as_view(url='/contact/', permanent=True)),
+    url(r'^$', RedirectView.as_view(url='/contact_app/', permanent=True)),
     #For some reason, my browser keeps routing to catalog
     #A fix, perhaps?
-    url(r'^catalog/', RedirectView.as_view(url='/contact/', permanent=True)),
+    url(r'^catalog/', RedirectView.as_view(url='/contact_app/', permanent=True)),
+    url(r'^contact/', RedirectView.as_view(url='/contact_app/', permanent=True)),
+    #Authentication fun
+    url(r'^accounts/', include('django.contrib.auth.urls')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

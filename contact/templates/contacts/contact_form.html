@@ -1,0 +1,40 @@
+{% extends "base_generic.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+{% if is_create %}
+  <h1>Create Contact</h1>
+{% else %}
+  <h1>Edit Contact:</h1>
+  <h2>{{ contact.name }}</h2>
+{% endif %}
+
+<form action="" method="post">
+  {% csrf_token %}
+
+  <div class="col-sm-4">
+    {% bootstrap_field form.name %}
+
+    {% bootstrap_field form.email %}
+  </div>
+
+  <div class="col-sm-4">
+    {% bootstrap_field form.org %}
+    {% bootstrap_field form.phone %}
+  </div>
+
+  <div class="col-sm-4">
+    {% bootstrap_field form.con_type %}
+  </div>
+
+  <div class="col-sm-12">
+    {% bootstrap_field form.notes %}
+  </div>
+  {% buttons %}
+    <button type="submit" class="btn btn-default">Submit</button>
+  {% endbuttons %}
+
+</form>
+{% endblock %}

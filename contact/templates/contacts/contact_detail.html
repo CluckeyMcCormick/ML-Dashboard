@@ -1,7 +1,10 @@
 {% extends "base_generic.html" %}
 
+{% load bootstrap3 %}
 {% load macros %}
+
 {% loadmacros "tasks/task_macro.html" %}
+
 
 {% block content %}
 
@@ -10,17 +13,28 @@
   <div class="col-sm-12">
     {% for contype in contact.contacttypetag_set.all %}
       <div class="col-sm-2">
-        <p class="contag tag {{ contype.tag_type }}">{{ contype.get_tag_type_display }}</p>
+        <p class="contag tag {{ contype.tag_type }}">
+          <strong>{{ contype.get_tag_type_display }}</strong>
+        </p>
       </div>
     {% endfor %}
   </div>
-  <div class="col-sm-3">
-  	<p><strong>E-Mail:</strong> {{ contact.email }} </p>
-  	<p><strong>Phone:</strong> {{ contact.phone }} </p>
-    <p><strong>Organization:</strong> {{ contact.org }} </p>
+  <div class="col-sm-12">
+    <div class="col-sm-3">
+    	<p><strong>E-Mail:</strong> {{ contact.email }} </p>
+    	<p><strong>Phone:</strong> {{ contact.phone }} </p>
+      <p><strong>Organization:</strong> {{ contact.org }} </p>
+    </div>
+    <div class="col-sm-9">
+      <p><strong>Notes:</strong> {{ contact.notes }} </p>
+    </div>
   </div>
-  <div class="col-sm-9">
-    <p><strong>Notes:</strong> {{ contact.notes }} </p>
+
+  <div class="col-sm-1">
+    {% bootstrap_button content='Edit' button_type='link' href=contact_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+  </div>
+  <div class="col-sm-1">
+    {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
   </div>
 
   <div class="col-sm-12 sublist-major">

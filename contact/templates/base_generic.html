@@ -1,14 +1,17 @@
+{# Load the tag library #}
+{% load bootstrap3 %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
+
   {% block title %}<title>Million Little Dashboard</title>{% endblock %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  
+  {# Load CSS and JavaScript #}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery=1 %}
+
   <!-- Add additional CSS in static file -->
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -22,19 +25,28 @@
       <div class="col-sm-2">
         {% block sidebar %}
           <ul class="sidebar-nav">
-            <li><a href="{% url 'index' %}">Home</a></li>
             {% if user.is_authenticated %}
+              <li>Logged in as:</li>
+              <li><strong>{{user.contact.name}}</strong></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
               <hr>
               <li><a href="{% url 'my-dashboard' %}">My Dashboard</a></li>
               <li><a href="{% url 'my-assocs' %}">My Tasks</a></li>
+              <hr>
+              <li><a href="{% url 'contacts' %}">View all Contacts</a></li>
+              <li><a href="{% url 'projects' %}">View all Projects</a></li>
+              <hr>
+              <li><a href="{% url 'contact-create' %}">Create new Contact</a></li>
+              <li><a href="{% url 'projects' %}">Create new Project</a></li>
+            {% else %}
+              <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}
-            <hr>
-            <li><a href="{% url 'contacts' %}">View all Contacts</a></li>
-            <li><a href="{% url 'projects' %}">View all Projects</a></li>
           </ul>
         {% endblock %}
       </div>
       <div class="col-sm-10 ">
+        {# Display django.contrib.messages as Bootstrap alerts #}
+        {% bootstrap_messages %}
       {% block content %}{% endblock %}
       </div>
     </div>

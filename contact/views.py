@@ -1,10 +1,19 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.contrib.auth.decorators import login_required
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.views import generic
 
-from .models import Organization, Contact, Project
 from .models import ContactTypeTag, Task, TaskContactAssoc
+from .models import Organization, Contact, Project
+
+from .forms import MyTaskSearchForm, ContactForm
 # Create your views here.
 
+@login_required
 def index(request):
     """
     View function for home page of site.
@@ -28,6 +37,7 @@ def index(request):
         },
     )
 
+@login_required
 def my_dashboard(request):
     """
     View function for the current user's dashboard
@@ -52,6 +62,7 @@ def my_dashboard(request):
         },
     )
 
+@login_required
 def my_dashboard_complete(request):
     """
     View function for the current user's dashboard, showing completed tasks
@@ -77,55 +88,119 @@ def my_dashboard_complete(request):
     )
 
 # CONTACTS, BRUH! ~~~~~~~~~~~~~~~~~~~~~~
-class ContactListView(generic.ListView):
+class ContactListView(LoginRequiredMixin, generic.ListView):
     model = Contact
     context_object_name = 'contact_list' 
     template_name = 'contacts/contact_list.html'
 
-class ContactDetailView(generic.DetailView):
+class ContactDetailView(LoginRequiredMixin, generic.DetailView):
     model = Contact
     template_name = 'contacts/contact_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ContactDetailView, self).get_context_data(**kwargs)
+
+        context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
+        context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
+
+        return context
+
+class ContactCreate(CreateView):
+    template_name = 'contacts/contact_form.html'
+    form_class = ContactForm
+    model = Contact
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactCreate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = True
+
+        return context
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        new_contact = form.save()
+        form.handle_contact_tags(new_contact)
+        
+        return HttpResponseRedirect(reverse_lazy('contact-detail', args=(new_contact.pk,)))
+
+class ContactUpdate(UpdateView):
+    template_name = 'contacts/contact_form.html'
+    form_class = ContactForm
+    model = Contact
+
+    def get_initial(self):
+        initial = super(ContactUpdate, self).get_initial()
+
+        initial['con_type'] = []
+
+        tag_coll = ContactTypeTag.objects.filter(contact__exact=self.object.pk)
+        
+        for tag in tag_coll:
+            initial['con_type'].append(tag.tag_type)
+
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactUpdate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = False
+
+        return context
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        updated_contact = form.save()
+        form.handle_contact_tags(updated_contact)
+        
+        return HttpResponseRedirect(reverse_lazy('contact-detail', args=(updated_contact.pk,)))
+
+class ContactDelete(DeleteView):
+    template_name = 'contacts/contact_confirm_delete.html'
+    success_url = reverse_lazy('contacts')
+    model = Contact
 
 # PROJECTS, MAH BOI! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class ProjectListView(generic.ListView):
+class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     context_object_name = 'project_list'
     template_name = 'projects/project_list.html'
 
-class ProjectDetailView(generic.DetailView):
+class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
     template_name = 'projects/project_detail.html'
 
 
 # TASKS, MOUH MAHN! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class TaskListView(generic.ListView):
+class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     context_object_name = 'task_list'
     template_name = 'tasks/task_list.html'
 
-class TaskDetailView(generic.DetailView):
+class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
     template_name = 'tasks/task_detail.html'
 
 # TASKS CONTACT ASSOCIATIONS, MIJO! ~~~~~~~~~~~~~
-class MyTaskView(generic.ListView):
+class MyTaskView(LoginRequiredMixin, generic.ListView):
     model = TaskContactAssoc
     context_object_name = 'assoc_list'
-    template_name = 'con_task_assoc/my_assoc.html'
+    template_name = 'con_task_assocs/my_assoc.html'
     
     def get_queryset(self):
         user_con = self.request.user.contact
         return user_con.taskcontactassoc_set.exclude(tag_type__exact='ta')
-    """
+
     def get_context_data(self, **kwargs):
-        context = super(AllTaskView, self).get_context_data(**kwargs)
+        context = super(MyTaskView, self).get_context_data(**kwargs)
         
-        #Get the associated contact for our user
-        user_con = self.request.user.contact
+        form = MyTaskSearchForm(self.request.GET)
 
         #Get the tasks associated with the user
-        context['user_con'] = user_con 
+        context['form'] = form
 
         return context
-    """

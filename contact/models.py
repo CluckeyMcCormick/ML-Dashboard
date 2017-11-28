@@ -76,7 +76,7 @@ class ContactTypeTag(models.Model):
         ('do', 'Donor'),
         ('pr', 'Prospect'),
         ('vo', 'Volunteer'),
-        ('_f', 'Corporation/Foundation'),
+        ('_f', 'Corporate/Foundation'),
         ('_g', 'Grant Resource'),
     )
 
@@ -90,7 +90,7 @@ class ContactTypeTag(models.Model):
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
 
-    tag_type = models.CharField(max_length=2, choices=CONTACT_TYPE_LIST, default='i')
+    tag_type = models.CharField(max_length=2, choices=CONTACT_TYPE_LIST, default='pr')
 
     class Meta: 
         unique_together = ( 'contact', 'tag_type',)
@@ -183,7 +183,7 @@ class Task(models.Model):
         if tag is None:
             return self.associated.all()
         else:
-            return Contact.objects.filter(taskcontactassoc__task=self, taskcontactassoc__tag_type__exact=tag) 
+            return self.associated.filter(taskcontactassoc__tag_type__exact=tag) 
 
     @property
     def overdue(self):
@@ -222,5 +222,3 @@ class TaskContactAssoc(models.Model):
         String for representing the Model object (in Admin site etc.)
         """
         return self.task.brief[:25] + '(' + self.con.name[:25] + ')'
-
-

@@ -24,7 +24,9 @@
               </td>
               <td>
                 {% for contype in con.contacttypetag_set.all %}
-                  <div class="contag bubble {{ contype.tag_type }}">{{ contype.get_contact_abbrv }}</div>
+                  <div class="contag bubble {{ contype.tag_type }}">
+                    <strong>{{ contype.get_contact_abbrv }}</strong>
+                  </div>
                 {% endfor %}
               </td>
               <td>
