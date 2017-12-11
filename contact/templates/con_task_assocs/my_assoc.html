@@ -5,13 +5,15 @@
 {% block content %}
     <h1>My Tasks</h1>
 
+    <!--
     <form action="{% url 'my-assocs' %}" method="get" class="form">
       {% bootstrap_form form %}
       {% buttons %}
         <button type="submit" class="btn btn-default">Submit</button>
       {% endbuttons %}
      </form>
-
+    -->
+    
     {% if assoc_list %}
       <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -32,7 +34,7 @@
                   <a href="{{ assoc.task.get_absolute_url }}">{{ assoc.task.brief }}</a>
                 </td>
                 <td>
-                  <p><strong class="conassoc {{assoc.tag_type}}">{{assoc.get_tag_type_display}}</strong></p>
+                  <p><strong class="con-task-assoc {{assoc.tag_type}}">{{assoc.get_tag_type_display}}</strong></p>
                 </td>
                 <td>
                   <p>{{ assoc.task.deadline }}</p>

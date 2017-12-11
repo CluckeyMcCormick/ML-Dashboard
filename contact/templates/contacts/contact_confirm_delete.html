@@ -1,20 +1,16 @@
 {% extends "base_generic.html" %}
 
 {% load bootstrap3 %}
+{% load macros %}
+
+{% loadmacros "contacts/contact_macro.html" %}
 
 {% block content %}
 
-<h1><strong>Delete </strong>{{ contact.name }}?</h1>
+<h1><strong>Delete Contact: </strong>{{ contact.name }}</h1>
 
-<div class="col-sm-12">
-{% for contype in contact.contacttypetag_set.all %}
-  <div class="col-sm-2">
-    <p class="contag tag {{ contype.tag_type }}">
-      <strong>{{ contype.get_tag_type_display }}</strong>
-    </p>
-  </div>
-{% endfor %}
-</div>
+{% use_macro display_contact_large_tags contact %}
+
 {% if contact.notes %}
 	<span>
 		<p><strong>Notes:</strong> {{ contact.notes }} </p>
@@ -22,7 +18,7 @@
 {% endif %}
 <hr>
 <h4>
-	This contact is associated with <strong> {{ contact.task_set.count }} task(s) </strong>
+	This contact is associated with <strong> {{ contact.tasks.count }} task(s) </strong>
 	and <strong> {{ contact.project_set.count }} project(s) </strong>. Are you sure you want
 	to delete this contact?
 </h4>

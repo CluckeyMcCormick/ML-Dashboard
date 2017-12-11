@@ -35,9 +35,11 @@
               <hr>
               <li><a href="{% url 'contacts' %}">View all Contacts</a></li>
               <li><a href="{% url 'projects' %}">View all Projects</a></li>
+              <li><a href="{% url 'tasks' %}">View all Tasks</a></li>
               <hr>
               <li><a href="{% url 'contact-create' %}">Create new Contact</a></li>
-              <li><a href="{% url 'projects' %}">Create new Project</a></li>
+              <li><a href="{% url 'project-create' %}">Create new Project</a></li>
+              <li><a href="{% url 'task-unbound-create' %}">Create new Task</a></li>
             {% else %}
               <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}

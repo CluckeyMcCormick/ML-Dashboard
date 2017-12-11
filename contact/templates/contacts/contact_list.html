@@ -23,7 +23,7 @@
                 <a href="{{ con.get_absolute_url }}">{{ con.name }}</a>
               </td>
               <td>
-                {% for contype in con.contacttypetag_set.all %}
+                {% for contype in con.type_tags.all %}
                   <div class="contag bubble {{ contype.tag_type }}">
                     <strong>{{ contype.get_contact_abbrv }}</strong>
                   </div>

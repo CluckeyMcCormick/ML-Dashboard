@@ -34,7 +34,7 @@ class Contact(models.Model):
 
     phone = models.CharField(max_length=20, help_text="The phone number of your contact.", null=True, blank=True)
 
-    org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True)
+    org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name="contacts")
 
     notes = models.TextField(max_length=1000, help_text="Any extra notes for this contact.", blank=True)
 
@@ -52,21 +52,33 @@ class Contact(models.Model):
         """
         return reverse('contact-detail', args=[str(self.id)])
 
-    def get_assigned(self):
+    @property
+    def type_tags(self):
+        return ContactTypeTag.objects.filter(contact__exact=self)
+
+    @property
+    def associated_projects(self):
+        return Project.objects.filter(tasks__contacts=self).distinct()
+
+    @property
+    def assigned_tasks(self):
         return self.get_tasks('as')
 
-    def get_targeted(self):
+    @property
+    def targeted_by_tasks(self):
         return self.get_tasks('ta')
 
-    def get_nonalign(self):
+    @property
+    def nonaligned_tasks(self):
         return self.get_tasks('na')
 
-    def get_created(self):
+    @property
+    def created_tasks(self):
         return self.get_tasks('cr')       
 
     def get_tasks(self, tag=None):
         if tag is None:
-            return self.tasks_set.all()
+            return self.task_set
         else:
             return Task.objects.filter(taskcontactassoc__con=self, taskcontactassoc__tag_type__exact=tag)
 
@@ -88,7 +100,7 @@ class ContactTypeTag(models.Model):
         '_g' : "GR",
     }
 
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE, related_name="tags")
 
     tag_type = models.CharField(max_length=2, choices=CONTACT_TYPE_LIST, default='pr')
 
@@ -116,13 +128,22 @@ class Project(models.Model):
     notes = models.TextField(max_length=1000, help_text="Any extra notes for this project.", blank=True)
 
     # ManyToManyField used because many contacts can be assigned to many projects.
-    associated = models.ManyToManyField(Contact, help_text="Who is associated with this project?")
+    # associated = models.ManyToManyField(Contact, help_text="Who is associated with this project?")
 
     def __str__(self):
         """
         String for representing the Model object (in Admin site etc.)
         """
         return self.title
+
+    @property
+    def associated_contacts(self):
+        return Contact.objects.filter(tasks__proj=self).distinct()
+        #return self.task_set.contact_set
+
+    @property
+    def tasks(self):
+        return self.task_set
 
     def get_absolute_url(self):
         """
@@ -138,10 +159,10 @@ class Task(models.Model):
     brief = models.CharField(max_length=75, help_text="A brief description for quickly referring to this task. 75 character max.")
 
     #The associated project, if any
-    proj = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
+    proj = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks")
 
     #Who is this task is associated with?
-    associated = models.ManyToManyField(Contact, through='TaskContactAssoc', help_text="Who is associated with this task?")
+    contacts = models.ManyToManyField(Contact, through='TaskContactAssoc', help_text="Who is associated with this task?", related_name="tasks")
 
     #Is this task complete?
     complete = models.BooleanField(help_text="Is this task complete?")
@@ -153,7 +174,9 @@ class Task(models.Model):
     notes = models.TextField(max_length=555, help_text="Any extra notes for this project.", blank=True)
 
     class Meta: 
+        unique_together = ( 'brief', 'proj',)
         ordering = ['deadline','complete',]
+
 
     def __str__(self):
         """
@@ -167,23 +190,27 @@ class Task(models.Model):
         """
         return reverse('task-detail', args=[str(self.id)])
 
-    def get_assigned(self):
+    @property
+    def assigned_contacts(self):
         return self.get_contacts('as')
 
-    def get_targeted(self):
+    @property
+    def targeted_contacts(self):
         return self.get_contacts('ta')
 
-    def get_nonalign(self):
+    @property
+    def nonaligned_contacts(self):
         return self.get_contacts('na')
 
-    def get_creator(self):
+    @property
+    def creator_contacts(self):
         return self.get_contacts('cr')        
 
     def get_contacts(self, tag=None):
         if tag is None:
-            return self.associated.all()
+            return self.contacts.all()
         else:
-            return self.associated.filter(taskcontactassoc__tag_type__exact=tag) 
+            return self.contacts.filter(task_assocs__tag_type__exact=tag) 
 
     @property
     def overdue(self):
@@ -205,10 +232,10 @@ class TaskContactAssoc(models.Model):
     )
 
     #The contact for this task
-    con  = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    con  = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name="task_assocs")
     
     #The task for this contact
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="con_assocs")
 
     #The associated type list
     tag_type = models.CharField(max_length=2, choices=ASSOC_TYPE_LIST, default='na')

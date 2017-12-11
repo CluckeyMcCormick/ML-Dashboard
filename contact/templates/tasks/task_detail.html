@@ -1,11 +1,19 @@
 {% extends "base_generic.html" %}
 
 {% load macros %}
+{% load bootstrap3 %}
+
 {% loadmacros "tasks/task_macro.html" %}
 
 {% block content %}
 
   {% use_macro display_task_header task  as_title=True       %}
   {% use_macro display_task_body   task  %}
-      
+   
+  <!-- Buttons go here! --> 
+  <div class="col-sm-12">
+    {% bootstrap_button content='Edit' button_type='link' href=edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil" %}
+
+    {% bootstrap_button content='Delete' button_type='link' href=delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+  </div>
 {% endblock %}

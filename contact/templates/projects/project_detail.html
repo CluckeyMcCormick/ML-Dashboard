@@ -1,6 +1,8 @@
 {% extends "base_generic.html" %}
 
+{% load bootstrap3 %}
 {% load macros %}
+
 {% loadmacros "tasks/task_macro.html" %}
 
 {% block content %}
@@ -11,14 +13,14 @@
   <div class="col-sm-4" >
     <h3>Associated Contacts</h3>
 
-    {% if project.associated %}
-      {% for con in project.associated.all %}
+    {% if project.associated_contacts %}
+      {% for con in project.associated_contacts.all %}
         <div>
           <a href="{{ con.get_absolute_url }}">{{ con }}</a>
           <br>
           <div style="display: inline-block;">
-          {% for contype in con.contacttypetag_set.all %}
-            <div class="contag bubble {{ contype.tag_type }}">{{ contype.get_contact_abbrv }}</div>
+          {% for contype in con.type_tags.all %}
+            <div class="contag bubble {{ contype.tag_type }}"><strong>{{ contype.get_contact_abbrv }}</strong></div>
           {% endfor %}
           </div>
         </div>
@@ -28,19 +30,25 @@
     {% endif %}
 
   </div>
-  <div class="col-sm-7">
+  <div class="col-sm-8">
     <h3>Notes</h3>
 
     <p>{{ project.notes }}</p>
   </div>
+  
+  <h2 class="col-sm-12">
+    {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+    {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+    {% bootstrap_button content='Add New Task' button_type='link' href=new_project_task_url button_class="btn-success" icon="glyphicon glyphicon-plus"%}
+  </h2>
 
   <!--                        -->
   <!-- Block 2 - Task Listing -->
   <!--                        -->
   <div class="col-sm-12 sublist-major">
     <h3>Tasks</h3>
-    {% if project.task_set %}
-      {% for task in project.task_set.all %}
+    {% if project.tasks.all %}
+      {% for task in project.tasks.all %}
         <div class="col-sm-12">
           <hr>
           {% use_macro display_task_header task %}

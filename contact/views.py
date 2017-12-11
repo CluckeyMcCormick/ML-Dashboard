@@ -10,7 +10,7 @@ from django.views import generic
 from .models import ContactTypeTag, Task, TaskContactAssoc
 from .models import Organization, Contact, Project
 
-from .forms import MyTaskSearchForm, ContactForm
+from .forms import MyTaskSearchForm, ContactForm, ProjectForm, TaskForm
 # Create your views here.
 
 @login_required
@@ -46,10 +46,10 @@ def my_dashboard(request):
     user_con  = request.user.contact
 
     #Get the projects associated with the user
-    user_proj = user_con.project_set
+    user_proj = user_con.associated_projects
 
     #Get the tasks associated with the user
-    user_task = user_con.taskcontactassoc_set.exclude(tag_type__exact='ta').exclude(task__complete__exact=True)
+    user_task = user_con.task_assocs.exclude(tag_type__exact='ta').exclude(task__complete__exact=True)
 
     # Render the HTML template index.html with the data in the context variable
     return render(
@@ -105,7 +105,7 @@ class ContactDetailView(LoginRequiredMixin, generic.DetailView):
 
         return context
 
-class ContactCreate(CreateView):
+class ContactCreate(LoginRequiredMixin, CreateView):
     template_name = 'contacts/contact_form.html'
     form_class = ContactForm
     model = Contact
@@ -126,7 +126,7 @@ class ContactCreate(CreateView):
         
         return HttpResponseRedirect(reverse_lazy('contact-detail', args=(new_contact.pk,)))
 
-class ContactUpdate(UpdateView):
+class ContactUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'contacts/contact_form.html'
     form_class = ContactForm
     model = Contact
@@ -159,10 +159,11 @@ class ContactUpdate(UpdateView):
         
         return HttpResponseRedirect(reverse_lazy('contact-detail', args=(updated_contact.pk,)))
 
-class ContactDelete(DeleteView):
+class ContactDelete(LoginRequiredMixin, DeleteView):
     template_name = 'contacts/contact_confirm_delete.html'
     success_url = reverse_lazy('contacts')
     model = Contact
+
 
 # PROJECTS, MAH BOI! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class ProjectListView(LoginRequiredMixin, generic.ListView):
@@ -174,6 +175,44 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
     template_name = 'projects/project_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ProjectDetailView, self).get_context_data(**kwargs)
+
+        context['project_edit_url'] = reverse_lazy('project-update', args=(context['project'].pk,))
+        context['project_delete_url'] = reverse_lazy('project-delete', args=(context['project'].pk,))
+        context['new_project_task_url'] = reverse_lazy('task-project-create', args=(context['project'].pk,))
+        return context
+
+class ProjectCreate(LoginRequiredMixin, CreateView):
+    template_name = 'projects/project_form.html'
+    form_class = ProjectForm
+    model = Project
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCreate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = True
+
+        return context
+
+class ProjectUpdate(LoginRequiredMixin, UpdateView):
+    template_name = 'projects/project_form.html'
+    form_class = ProjectForm
+    model = Project
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectUpdate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = True
+
+        return context
+
+class ProjectDelete(LoginRequiredMixin, DeleteView):
+    template_name = 'projects/project_confirm_delete.html'
+    success_url = reverse_lazy('projects')
+    model = Project
 
 # TASKS, MOUH MAHN! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class TaskListView(LoginRequiredMixin, generic.ListView):
@@ -185,6 +224,109 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
     template_name = 'tasks/task_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(TaskDetailView, self).get_context_data(**kwargs)
+
+        context['edit_url'] = reverse_lazy('task-update', args=(context['task'].pk,))
+        context['delete_url'] = reverse_lazy('task-delete', args=(context['task'].pk,))
+
+        return context
+
+class TaskCreate(LoginRequiredMixin, CreateView):
+    template_name = 'tasks/task_form.html'
+    form_class = TaskForm
+    model = Task
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskCreate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = True
+
+        return context
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        new_task = form.save()
+        
+        creator_assoc = TaskContactAssoc(con=self.request.user.contact, task=new_task, tag_type='cr')
+        creator_assoc.save()
+        form.handle_task_assignments(new_task)
+
+        return HttpResponseRedirect(reverse_lazy('task-detail', args=(new_task.pk,)))
+
+class TaskUnboundCreate(TaskCreate):
+
+    def get_form(self):
+        form = super(TaskUnboundCreate, self).get_form()
+
+        form.fields['proj'].disabled = True
+
+        return form
+
+class TaskProjectCreate(TaskUnboundCreate):
+
+    def get_initial(self):
+        initial = super(TaskUnboundCreate, self).get_initial()
+        initial['proj'] = self.kwargs['pk']
+
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskProjectCreate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_bound'] = True
+
+        return context
+
+class TaskUpdate(LoginRequiredMixin, UpdateView):
+    template_name = 'tasks/task_form.html'
+    form_class = TaskForm
+    model = Task
+
+    def get_initial(self):
+        initial = super(TaskUpdate, self).get_initial()
+
+        id_query = TaskContactAssoc.objects.filter(task__exact=self.object.pk, tag_type__in=['as','ta'])
+
+        assigned_query = Contact.objects.filter(task_assocs__in=id_query.filter(tag_type__exact='as'))
+        target_query = Contact.objects.filter(task_assocs__in=id_query.filter(tag_type__exact='ta'))
+
+        initial['volunteers'] = []
+        initial['targets'] = []
+
+        for vol_val in assigned_query.values_list('id', flat=True):
+            initial['volunteers'].append(vol_val)
+
+        for tar_val in target_query.values_list('id', flat=True):
+            initial['targets'].append(tar_val)
+
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskUpdate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = False
+
+        return context
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        new_task = form.save()
+        
+        form.handle_task_assignments(new_task)
+
+        return HttpResponseRedirect(reverse_lazy('task-detail', args=(new_task.pk,)))
+
+class TaskDelete(LoginRequiredMixin, DeleteView):
+    template_name = 'tasks/task_confirm_delete.html'
+    success_url = reverse_lazy('tasks')
+    model = Task
+
 # TASKS CONTACT ASSOCIATIONS, MIJO! ~~~~~~~~~~~~~
 class MyTaskView(LoginRequiredMixin, generic.ListView):
     model = TaskContactAssoc
@@ -193,7 +335,7 @@ class MyTaskView(LoginRequiredMixin, generic.ListView):
     
     def get_queryset(self):
         user_con = self.request.user.contact
-        return user_con.taskcontactassoc_set.exclude(tag_type__exact='ta')
+        return user_con.task_assocs.exclude(tag_type__exact='ta')
 
     def get_context_data(self, **kwargs):
         context = super(MyTaskView, self).get_context_data(**kwargs)

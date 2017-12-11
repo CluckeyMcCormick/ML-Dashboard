@@ -13,6 +13,11 @@
 	margin-top:20px;	
 }
 
+.checkbox.check-list{
+    padding-right: 5px;
+    padding-left: 5px;   
+}
+
 /* 
     Contact Type Tags
 */
@@ -40,24 +45,24 @@
 }
 
 /* Donor Tag */
-.contag.do { background-color: #FF8C19; } 
+.do { background-color: #FF8C19; } 
 
 /* Prospect Tag */
-.contag.pr { background-color: #008FBF; }
+.pr { background-color: #008FBF; }
 
 /* Volunteer Tag */
-.contag.vo { background-color: #4C9926; }
+.vo { background-color: #4C9926; }
 
 /* Corporation / Foundation Tag */
-.contag._f { background-color: #9F9F9F; }
+._f { background-color: #9F9F9F; }
 
 /* Prospect Tag */
-.contag._g { background-color: #85A6A6; }
+._g { background-color: #85A6A6; }
 
 /* 
-    Contact Assoc Type Tags
+    Contact-Task Assoc Type Tags
 */
-.conassoc {
+.con-task-assoc {
 	color: white;
     border-radius: 7px;
     padding: 1px;
@@ -67,17 +72,44 @@
 
     background-color: #85A6A6;
 }
-/* Assigned Tag */                          /* Scheme 1   Scheme 2    Scheme 3*/
 
-.conassoc.cr { background-color: #2C594F; } /* #002D40                        */
+/* Creator Tag */                           /* Scheme 1   Scheme 2    Scheme 3*/
+.cr { 
+    background-color: #2C594F;
+    color: white; 
+}
 
-.conassoc.as { background-color: #E54661; } /* #2C594F    #9AC49F     #FC4349 */
+/* Assigned Tag */ 
+.as { 
+    background-color: #E54661;
+}
+
+.as.hoverable { 
+    color: white; 
+}
+
+.as.hoverable:hover { 
+    background-color: #B0364B;
+}
 
 /* Target Tag */
-.conassoc.ta { background-color: #FFA644; } /* #E54661    #A6658F     #6DBCDB */
+.ta { 
+    background-color: #FFA644;
+}
+
+.ta.hoverable { 
+    color: white; 
+}
+
+.ta.hoverable:hover { 
+    background-color: #DB8F3A;
+}
 
 /* Non-Specified or Non-Aligned Tag */
-.conassoc.na { background-color: #002D40; } /* #FFA644    #1D797D     #2C3E50 */
+.na { 
+    background-color: #002D40;
+    color: white;
+}
 
 /* 
     Task Status Tags
@@ -94,7 +126,7 @@
 }
 
 .task-status.incomplete {
-    background-color: #000000;
+    background-color: #666;
 }
 
 .task-status.overdue {

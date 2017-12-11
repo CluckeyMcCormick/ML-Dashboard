@@ -25,11 +25,11 @@
                 </td>
                 <td>
                   {% if task.complete %}
-                    <p class="text-success">Yes</p>
+                    <strong class="task-status complete">Complete</strong>
                   {% elif task.overdue %}
-                    <p class="text-warning">No</p>
+                    <strong class="task-status overdue">Overdue</strong>
                   {% else %}
-                    <p>No</p>
+                    <strong class="task-status incomplete">Incomplete</strong>
                   {% endif %}
                 </td>
                 <td>

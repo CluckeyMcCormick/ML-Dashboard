@@ -3,6 +3,7 @@
 {% load bootstrap3 %}
 {% load macros %}
 
+{% loadmacros "contacts/contact_macro.html" %}
 {% loadmacros "tasks/task_macro.html" %}
 
 
@@ -10,41 +11,29 @@
 
   <h1><strong>Contact: </strong>{{ contact.name }}</h1>
 
-  <div class="col-sm-12">
-    {% for contype in contact.contacttypetag_set.all %}
-      <div class="col-sm-2">
-        <p class="contag tag {{ contype.tag_type }}">
-          <strong>{{ contype.get_tag_type_display }}</strong>
-        </p>
-      </div>
-    {% endfor %}
-  </div>
-  <div class="col-sm-12">
-    <div class="col-sm-3">
-    	<p><strong>E-Mail:</strong> {{ contact.email }} </p>
-    	<p><strong>Phone:</strong> {{ contact.phone }} </p>
-      <p><strong>Organization:</strong> {{ contact.org }} </p>
-    </div>
-    <div class="col-sm-9">
-      <p><strong>Notes:</strong> {{ contact.notes }} </p>
-    </div>
-  </div>
+  {% use_macro display_contact_large_tags contact %}
 
-  <div class="col-sm-1">
+  {% use_macro display_contact_body contact %}
+
+  <h2 class="col-sm-12" role="toolbar">
     {% bootstrap_button content='Edit' button_type='link' href=contact_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+    {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+  </h2>
+
+<!--
+  <div class="col-sm-1">
   </div>
   <div class="col-sm-1">
-    {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
   </div>
-
+-->
   <div class="col-sm-12 sublist-major">
     <!--                           -->
     <!-- Block 2 - Project Listing -->
     <!--                           -->
     <h3>Associated Projects</h3>
 
-    {% if contact.project_set.all %}
-      {% for proj in contact.project_set.all %}
+    {% if contact.associated_projects %}
+      {% for proj in contact.associated_projects.all %}
         <hr>
         <a href="{{ proj.get_absolute_url }}">{{ proj.title }}</a>
 

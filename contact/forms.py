@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy
 from django import forms
 
 from .models import Contact, ContactTypeTag, Organization
-
+from .models import Project, Task, TaskContactAssoc
 
 class ContactForm(forms.ModelForm):
 
@@ -48,6 +48,97 @@ class ContactForm(forms.ModelForm):
                 new_tag = ContactTypeTag(contact=contact, tag_type=tag_val)
                 new_tag.save()
 
+class ProjectForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+class TaskForm(forms.ModelForm):
+
+    volunteer_query = Contact.objects.filter(tags__tag_type__exact='vo')
+    volunteer_query = volunteer_query.values_list('id', 'name')
+    volunteer_query = volunteer_query.order_by('name')
+
+    target_query = Contact.objects.filter(tags__tag_type__exact='pr')
+    target_query = target_query.exclude(tags__tag_type__in=['cr', 'vo'])
+    target_query = target_query.values_list('id', 'name')
+    target_query = target_query.order_by('name')
+
+    volunteer_choices = [(pk_id, name) for pk_id, name in volunteer_query]
+    target_choices = [(pk_id, name) for pk_id, name in target_query]
+
+    volunteers = forms.MultipleChoiceField(
+        volunteer_choices, 
+        widget= forms.CheckboxSelectMultiple,
+        label= ugettext_lazy('Assigned Volunteers'),
+        help_text= ugettext_lazy('Choose volunteers to be assigned to this task.'),
+        required=False,
+        #empty_label= None
+    )
+
+    targets = forms.MultipleChoiceField(
+        target_choices, 
+        widget= forms.CheckboxSelectMultiple,
+        label= ugettext_lazy('Assigned Volunteers'),
+        help_text= ugettext_lazy('Choose people that will need to be contacted for this task.'),
+        required=False,
+        #empty_label= None
+    )
+
+    class Meta:
+        model = Task
+        fields = ['brief', 'complete', 'deadline', 'proj', 'notes']
+        labels = {
+            'complete': ugettext_lazy('Complete?'),
+            'brief' : ugettext_lazy('Brief Description / Title'),
+            'proj'  : ugettext_lazy('Project'),
+        }
+
+        help_texts = {
+            'proj' : ugettext_lazy('The project this task is associated with.'),
+        }
+
+        widgets = {
+            'deadline': forms.SelectDateWidget(),
+            'proj': forms.Select(attrs={'disabled': True}),
+        }
+
+    def handle_task_assignments(self, task):
+        #First, get all the task_assocs for this contact
+
+        tasks_assocs = TaskContactAssoc.objects.filter(task__exact=task.pk)
+
+        #Secondly, we grab our contact choices
+        volunteer_list = self.cleaned_data['volunteers']
+        target_list = self.cleaned_data['targets']
+
+        volunteer_query = Contact.objects.filter(id__in=volunteer_list)
+        target_query = Contact.objects.filter(id__in=target_list)
+
+        delete_list = tasks_assocs.exclude(con__in=volunteer_list + target_list)
+        delete_list = delete_list.exclude(tag_type__exact='cr')
+
+        #Third, we delete all the tags that weren't selected, but exist
+        for delete_target in delete_list:
+            delete_target.delete()
+
+        #Fourth, we create all the targets that don't exist
+        for vol_con in volunteer_query:
+            #If we don't have an association for the listed contact
+            if not tasks_assocs.filter(con__exact=vol_con).exists():
+                #Create one!
+                new_assoc = TaskContactAssoc(con=vol_con, task=task, tag_type='as')
+                new_assoc.save()
+
+        #Fifth, we create all the targets that don't exist
+        for targ_con in target_query:
+            #If we don't have an association for the listed contact
+            if not tasks_assocs.filter(con__exact=targ_con).exists():
+                #Create one!
+                new_assoc = TaskContactAssoc(con=targ_con, task=task, tag_type='ta')
+                new_assoc.save()                            
+            
 class MyTaskSearchForm(forms.Form):
     brief_name = forms.CharField(min_length=0, max_length=75, strip=True)
     brief_name.label = 'Brief'

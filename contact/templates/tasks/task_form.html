@@ -1,0 +1,72 @@
+{% extends "base_generic.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+{% if is_create %}
+  {% if is_bound %}
+    <h1>Create Task for Project</h1>
+  {% else %}
+    <h1>Create Task</h1>
+  {% endif %}
+
+{% else %}
+  <h1><strong>Edit Task:</strong> {{ task.brief }}</h1>
+{% endif %}
+
+<form action="" method="post">
+  {% csrf_token %}
+
+  {% bootstrap_field form.brief %}
+
+  {% bootstrap_field form.deadline %}
+
+  {% bootstrap_field form.proj %}
+
+  {% bootstrap_field form.complete %}
+
+  <div class="dropdown col-sm-5" style="margin-bottom: 15px;">
+    <div class="help-block">{{ form.volunteers.help_text }}</div>
+    <div>{{ form.volunteers.errors }}</div>
+    <button class="btn dropdown-toggle as hoverable" type="button" data-toggle="dropdown" >
+      <strong>Assign Volunteers</strong> 
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" style="float: center;">
+      {% for vol in form.volunteers%}
+        <li class="checkbox check-list">
+          {{vol}}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="dropdown col-sm-5" style="margin-bottom: 15px;">
+    <div class="help-block">{{ form.targets.help_text }}</div>
+    <button class="btn dropdown-toggle ta hoverable" type="button" data-toggle="dropdown" >
+      <strong>Target Contacts</strong> 
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" style="float: center;">
+      {% for vol in form.targets%}
+        <li class="checkbox check-list">
+          {{vol}}
+        </li>
+      {% endfor %}
+    </ul>
+  </div> 
+ 
+  <div class="col-sm-12" style="padding-left: 0px;">
+    {% bootstrap_field form.notes %}   
+  </div>
+  
+
+  <div class="col-sm-12">
+    {% buttons %}
+      {% bootstrap_button content='Save' button_type='submit' button_class="btn-primary" icon="glyphicon glyphicon-floppy-disk"%}
+    {% endbuttons %}
+  </div>
+
+</form>
+{% endblock %}
