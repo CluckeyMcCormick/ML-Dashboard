@@ -9,7 +9,6 @@
           <thead>
             <tr>
               <th>Title</th>
-              <th>Associated Contacts</th>
               <th>Notes</th>
             </tr>
           </thead>
@@ -18,9 +17,6 @@
               <tr>
                 <td>
                   <a href="{{ proj.get_absolute_url }}">{{ proj.title }}</a>
-                </td>
-                <td>
-                  <p>{{ proj.associated.all.count }}</p>
                 </td>
                 <td>
                   <p>{{ proj.notes }}</p>

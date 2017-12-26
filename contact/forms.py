@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy
+from django.db.utils import OperationalError
 
 from django import forms
 
@@ -56,17 +57,21 @@ class ProjectForm(forms.ModelForm):
 
 class TaskForm(forms.ModelForm):
 
-    volunteer_query = Contact.objects.filter(tags__tag_type__exact='vo')
-    volunteer_query = volunteer_query.values_list('id', 'name')
-    volunteer_query = volunteer_query.order_by('name')
+    try:
+        volunteer_query = Contact.objects.filter(tags__tag_type__exact='vo')
+        volunteer_query = volunteer_query.values_list('id', 'name')
+        volunteer_query = volunteer_query.order_by('name')
 
-    target_query = Contact.objects.filter(tags__tag_type__exact='pr')
-    target_query = target_query.exclude(tags__tag_type__in=['cr', 'vo'])
-    target_query = target_query.values_list('id', 'name')
-    target_query = target_query.order_by('name')
+        target_query = Contact.objects.filter(tags__tag_type__exact='pr')
+        target_query = target_query.exclude(tags__tag_type__in=['cr', 'vo'])
+        target_query = target_query.values_list('id', 'name')
+        target_query = target_query.order_by('name')
 
-    volunteer_choices = [(pk_id, name) for pk_id, name in volunteer_query]
-    target_choices = [(pk_id, name) for pk_id, name in target_query]
+        volunteer_choices = [(pk_id, name) for pk_id, name in volunteer_query]
+        target_choices = [(pk_id, name) for pk_id, name in target_query]
+    except OperationalError:
+        volunteer_choices = [(None, "------")]
+        target_choices = [(None, "------")]
 
     volunteers = forms.MultipleChoiceField(
         volunteer_choices, 

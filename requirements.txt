@@ -1,0 +1,8 @@
+dj-database-url==0.4.2
+Django==2.0
+django-bootstrap3==9.1.0
+django-macros==0.4.0
+gunicorn==19.7.1
+whitenoise==3.3.1
+psycopg2==2.7.3.2
+django-datatable==0.3.1
