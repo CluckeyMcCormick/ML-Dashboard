@@ -43,13 +43,7 @@ MACRO: Display the body of a task...
   {% endif %}
   <p>
     <strong>Task Status: </strong>
-    {% if task.complete %}
-      <strong class="task-status complete">Complete</strong>
-    {% elif task.overdue %}
-      <strong class="task-status overdue">Overdue</strong>
-    {% else %}
-      <strong class="task-status incomplete">Incomplete</strong>
-    {% endif %}
+    <strong class="task-status {{task.status.lower}}">{{task.status}}</strong>
   </p>
 
   {% if show_project %}

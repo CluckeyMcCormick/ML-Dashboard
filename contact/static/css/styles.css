@@ -18,6 +18,10 @@
     padding-left: 5px;   
 }
 
+td.centerized {
+    text-align: center;
+}
+
 /* 
     Contact Type Tags
 */
@@ -26,6 +30,12 @@
 	border-radius: 0px;
     padding: 1px;
     text-align: center;
+}
+
+.contag.icon {
+    border-radius: 15px;
+    padding-top: 2px;
+    padding-right: 3px;
 }
 
 .contag.tag {
@@ -78,9 +88,17 @@
     background-color: #2C594F;
     color: white; 
 }
+.creator { 
+    background-color: #2C594F;
+    color: white; 
+}
 
 /* Assigned Tag */ 
 .as { 
+    background-color: #E54661;
+}
+
+.assigned { 
     background-color: #E54661;
 }
 
@@ -97,6 +115,10 @@
     background-color: #FFA644;
 }
 
+.target {
+    background-color: #FFA644;
+}
+
 .ta.hoverable { 
     color: white; 
 }
@@ -109,6 +131,11 @@
 .na { 
     background-color: #002D40;
     color: white;
+}
+
+.unspecified {
+    background-color: #002D40;
+    color: white;    
 }
 
 /* 
@@ -133,6 +160,6 @@
     background-color: #e23131;
 }
 
-.task-status.complete {
+.task-status.completed {
     background-color: #56cc4b;
 }

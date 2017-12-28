@@ -1,64 +1,9 @@
 {% extends "base_generic.html" %}
-
-{% load bootstrap3 %}
+{% load table_tags %}
 
 {% block content %}
     <h1>My Tasks</h1>
 
-    <!--
-    <form action="{% url 'my-assocs' %}" method="get" class="form">
-      {% bootstrap_form form %}
-      {% buttons %}
-        <button type="submit" class="btn btn-default">Submit</button>
-      {% endbuttons %}
-     </form>
-    -->
-    
-    {% if assoc_list %}
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Brief</th>
-              <th>Role</th>
-              <th>Deadline</th>
-              <th>Complete?</th>
-              <th>Project</th>
-            </tr>
-          </thead>
+  {% render_table my_task_table %}
 
-          <tbody>
-            {% for assoc in assoc_list %}
-              <tr>
-                <td>
-                  <a href="{{ assoc.task.get_absolute_url }}">{{ assoc.task.brief }}</a>
-                </td>
-                <td>
-                  <p><strong class="con-task-assoc {{assoc.tag_type}}">{{assoc.get_tag_type_display}}</strong></p>
-                </td>
-                <td>
-                  <p>{{ assoc.task.deadline }}</p>
-                </td>
-                <td>
-                  <strong>
-                    {% if assoc.task.complete %}
-                      <p class="task-status complete">Complete</p>
-                    {% elif assoc.task.overdue %}
-                      <p class="task-status overdue">Overdue</p>
-                    {% else %}
-                      <p class="task-status incomplete">Incomplete</p>
-                    {% endif %}
-                  </strong>
-                </td>
-                <td>
-                  <a href="{{ assoc.task.proj.get_absolute_url }}">{{ assoc.task.proj.title }}</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div> 
-    {% else %}
-      <p>There are no tasks!</p>
-    {% endif %}       
 {% endblock %}

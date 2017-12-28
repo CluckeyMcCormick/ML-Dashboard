@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 
     'macros',
     'bootstrap3',
+    'table',
 ]
 
 MIDDLEWARE = [

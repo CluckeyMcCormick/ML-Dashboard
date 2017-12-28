@@ -52,10 +52,43 @@ class Contact(models.Model):
         """
         return reverse('contact-detail', args=[str(self.id)])
 
+    # #########
+    # Type Tags
+    # #########
     @property
     def type_tags(self):
         return ContactTypeTag.objects.filter(contact__exact=self)
 
+    @property
+    def type_list_string(self):
+        out = ""
+        for tag in self.type_tags.all():
+            out += tag.get_tag_type_display() + " "
+        return out
+
+    @property
+    def is_volunteer(self):
+        return self.type_tags.filter(tag_type__exact="vo").exists()
+
+    @property
+    def is_prospect(self):
+        return self.type_tags.filter(tag_type__exact="pr").exists()
+
+    @property
+    def is_donor(self):
+        return self.type_tags.filter(tag_type__exact="do").exists()
+
+    @property
+    def is_resource(self):
+        return self.type_tags.filter(tag_type__exact="_g").exists()
+
+    @property
+    def is_foundation(self):
+        return self.type_tags.filter(tag_type__exact="_f").exists()
+
+    # ##################
+    # Tasks and Projects
+    # ##################
     @property
     def associated_projects(self):
         return Project.objects.filter(tasks__contacts=self).distinct()
@@ -219,6 +252,15 @@ class Task(models.Model):
 
         return datetime.date.today() > self.deadline 
 
+    @property
+    def status(self):
+        if self.complete:
+            return "Completed"
+        elif (self.deadline is None) or (datetime.date.today() < self.deadline):
+            return "Incomplete"
+        else:
+            return "Overdue"
+
 class TaskContactAssoc(models.Model):
     """
     Model representing an association with a task
@@ -228,7 +270,7 @@ class TaskContactAssoc(models.Model):
         ('as', 'Assigned'),
         ('cr', 'Creator'),
         ('ta', 'Target'),
-        ('na', 'Non-Specified Role')
+        ('na', 'Unspecified')
     )
 
     #The contact for this task

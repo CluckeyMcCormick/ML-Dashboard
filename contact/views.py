@@ -11,6 +11,8 @@ from .models import ContactTypeTag, Task, TaskContactAssoc
 from .models import Organization, Contact, Project
 
 from .forms import MyTaskSearchForm, ContactForm, ProjectForm, TaskForm
+
+from .tables import ContactTable, TaskTable, MyAssocTable, ProjectTable
 # Create your views here.
 
 @login_required
@@ -88,10 +90,15 @@ def my_dashboard_complete(request):
     )
 
 # CONTACTS, BRUH! ~~~~~~~~~~~~~~~~~~~~~~
-class ContactListView(LoginRequiredMixin, generic.ListView):
-    model = Contact
-    context_object_name = 'contact_list' 
+class ContactListView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'contacts/contact_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactListView, self).get_context_data(**kwargs)
+
+        context['contact_table'] = ContactTable()
+
+        return context
 
 class ContactDetailView(LoginRequiredMixin, generic.DetailView):
     model = Contact
@@ -171,6 +178,13 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'project_list'
     template_name = 'projects/project_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ProjectListView, self).get_context_data(**kwargs)
+
+        context['project_table'] = ProjectTable()
+        return context
+
+    
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
     template_name = 'projects/project_detail.html'
@@ -215,10 +229,14 @@ class ProjectDelete(LoginRequiredMixin, DeleteView):
     model = Project
 
 # TASKS, MOUH MAHN! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class TaskListView(LoginRequiredMixin, generic.ListView):
-    model = Task
-    context_object_name = 'task_list'
+class TaskListView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'tasks/task_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskListView, self).get_context_data(**kwargs)
+        context['task_table'] = TaskTable()
+
+        return context
 
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
@@ -328,14 +346,8 @@ class TaskDelete(LoginRequiredMixin, DeleteView):
     model = Task
 
 # TASKS CONTACT ASSOCIATIONS, MIJO! ~~~~~~~~~~~~~
-class MyTaskView(LoginRequiredMixin, generic.ListView):
-    model = TaskContactAssoc
-    context_object_name = 'assoc_list'
+class MyTaskView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'con_task_assocs/my_assoc.html'
-    
-    def get_queryset(self):
-        user_con = self.request.user.contact
-        return user_con.task_assocs.exclude(tag_type__exact='ta')
 
     def get_context_data(self, **kwargs):
         context = super(MyTaskView, self).get_context_data(**kwargs)
@@ -344,5 +356,8 @@ class MyTaskView(LoginRequiredMixin, generic.ListView):
 
         #Get the tasks associated with the user
         context['form'] = form
+
+        user_con = self.request.user.contact
+        context['my_task_table'] = MyAssocTable(user_con.task_assocs.exclude(tag_type__exact='ta'))
 
         return context
