@@ -16,7 +16,8 @@ from .forms import ContactForm, ProjectForm, TaskForm, OrgForm
 
 from .tables import (
     ContactTable, TaskTable, TaskConAssocTable, ProjectTable, 
-    OrgTable,
+    OrgTable, ProjCon_Project_Table, ProjCon_Contact_Table,
+    TaskNoProjectTable
 )
 # Create your views here.
 
@@ -118,8 +119,8 @@ class ContactDetailView(LoginRequiredMixin, generic.DetailView):
         context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
         context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
 
-        context['associated_projects_table'] = ProjectTable()
-        context['associated_tasks_table'] = TaskConAssocTable( TaskContactAssoc.objects.filter(con__exact=self.object) )
+        context['associated_projects_table'] = ProjCon_Project_Table( self.object.proj_assocs.get_queryset() )
+        context['associated_tasks_table'] = TaskConAssocTable( self.object.task_assocs.get_queryset() )
 
         return context
 
@@ -268,6 +269,10 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
         context['project_edit_url'] = reverse_lazy('project-update', args=(context['project'].pk,))
         context['project_delete_url'] = reverse_lazy('project-delete', args=(context['project'].pk,))
         context['new_project_task_url'] = reverse_lazy('task-project-create', args=(context['project'].pk,))
+
+        context['associated_contact_table'] = ProjCon_Contact_Table( self.object.con_assocs.get_queryset() )
+        context['associated_task_table'] = TaskNoProjectTable(self.object.tasks.get_queryset())
+
         return context
 
 class ProjectCreate(LoginRequiredMixin, CreateView):
@@ -434,7 +439,7 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(MyTaskView, self).get_context_data(**kwargs)
-        
+
         user_con = self.request.user.contact
         context['my_task_table'] = TaskConAssocTable(user_con.task_assocs.exclude(tag_type__exact='ta'))
 

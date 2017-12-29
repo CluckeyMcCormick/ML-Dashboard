@@ -2,62 +2,57 @@
 
 {% load bootstrap3 %}
 {% load macros %}
+{% load table_tags %}
 
 {% loadmacros "tasks/task_macro.html" %}
+{% loadmacros "associated_macros.html" %}
 
 {% block content %}
   <h1><strong>Project: </strong>{{ project.title }}</h1>
-  <!--                                  -->
-  <!--     Block 1 - Project Details    -->
-  <!--                                  -->
-  <div class="col-sm-4" >
-    <h3>Associated Contacts</h3>
+  <div class="progress">
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{project.complete_percent }}" 
+    aria-valuemin="0" aria-valuemax="100" 
+    style="width:{{project.complete_percent }}%">
+      <strong>{{ project.complete_percent }}%</strong>
+    </div>
+  </div> 
 
-    {% if project.associated_contacts %}
-      {% for con in project.associated_contacts.all %}
-        <div>
-          <a href="{{ con.get_absolute_url }}">{{ con }}</a>
-          <br>
-          <div style="display: inline-block;">
-          {% for contype in con.type_tags.all %}
-            <div class="contag bubble {{ contype.tag_type }}"><strong>{{ contype.get_contact_abbrv }}</strong></div>
-          {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>No associated contacts!</p>
-    {% endif %}
+  <h4><strong>Deadline:</strong> {{ project.deadline }}</h4>
 
-  </div>
-  <div class="col-sm-8">
-    <h3>Notes</h3>
+  <p><strong>Notes: </strong>{{ project.notes }}</p>
 
-    <p>{{ project.notes }}</p>
-  </div>
-  
   <h2 class="col-sm-12">
     {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
     {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
-    {% bootstrap_button content='Add New Task' button_type='link' href=new_project_task_url button_class="btn-success" icon="glyphicon glyphicon-plus"%}
   </h2>
 
-  <!--                        -->
-  <!-- Block 2 - Task Listing -->
-  <!--                        -->
-  <div class="col-sm-12 sublist-major">
-    <h3>Tasks</h3>
-    {% if project.tasks.all %}
-      {% for task in project.tasks.all %}
-        <div class="col-sm-12">
-          <hr>
-          {% use_macro display_task_header task %}
-          {% use_macro display_task_body task show_project=False %}
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>No associated tasks!</p>
-    {% endif %}
+  <div class="col-sm-12">
+    <hr>
+    
+    <h3>
+      Associated Contacts
+      <a href='#assoc_con' class="btn btn-info" data-toggle="collapse">
+        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+      </a>
+      {% bootstrap_button content='Change Contacts' button_type='link' href="" button_class="btn-warning" icon="glyphicon glyphicon-pencil"%}
+    </h3>
+    <div id='assoc_con' class="collapse">
+      {% render_table associated_contact_table %}
+    </div>
+
+    <hr>
+
+    <h3>
+      Associated Tasks
+      <a href='#assoc_task' class="btn btn-info" data-toggle="collapse">
+        <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+      </a>
+      {% bootstrap_button content='Add New Task' button_type='link' href=new_project_task_url button_class="btn-success" icon="glyphicon glyphicon-plus"%}
+    </h3>
+    <div id='assoc_task' class="collapse">
+      {% render_table associated_task_table %}
+    </div>
+
   </div>
 
 {% endblock %}

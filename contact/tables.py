@@ -6,7 +6,7 @@ from .custom_columns import *
 
 from .models import (
     ContactTypeTag, Task, TaskContactAssoc,
-    Organization, Contact, Project,
+    Organization, Contact, Project, ProjectContactAssoc
 )
         
 gen_attrs = {'class': 'centerized'}
@@ -57,12 +57,12 @@ class ContactTable(Table):
         attrs=gen_attrs,)
 
     is_resource = CheckOnlyColumn(
-        field='is_resource', header='Grant Resource', 
+        field='is_resource', header='Grant', 
         true_class='contag icon _g', 
         attrs=gen_attrs,)
 
     is_foundation = CheckOnlyColumn(
-        field='is_foundation', header='Corporation / Foundation', 
+        field='is_foundation', header='Corp / Foundation', 
         true_class='contag icon _f', 
         attrs=gen_attrs,)
 
@@ -116,8 +116,8 @@ class SelectContactTable(Table):
 #___ ____ ____ _  _ 
 # |  |__| [__  |_/  
 # |  |  | ___] | \_ 
-#                   
-class TaskTable(Table):
+#  
+class TaskNoProjectTable(Table):
     view =  LinkColumn(
         header='View', 
         links=[
@@ -140,6 +140,15 @@ class TaskTable(Table):
     brief = CustomNoneColumn(field='brief', header='Brief')
     deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format='%b %d, %Y')
     status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs={'class': 'centerized'})
+    
+    class Meta:
+        model = Task
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class TaskTable(TaskNoProjectTable):
+
     project = CustomNoneColumn(field='proj', header='Project')
 
     class Meta:
@@ -211,7 +220,9 @@ class ProjectTable(Table):
     )
 
     title = CustomNoneColumn(field='title', header='Title')
-    notes = CustomNoneColumn(field='notes', header='Notes')
+    percent = Column(field='percentage_formatted', header='Completion')
+    deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format='%b %d, %Y')
+    notes = CustomNoneColumn(field='notes_trimmed', header='Notes')
 
     class Meta:
         model = Project
@@ -252,4 +263,73 @@ class OrgTable(Table):
 
         attrs = {'class': 'table-striped table-hover'}                                                                     
 
+#___  ____ ____  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
+#|__] |__/ |  |  | __ |    |  | |\ | __ |__| [__  [__  |  | |    
+#|    |  \ |__| _|    |___ |__| | \|    |  | ___] ___] |__| |___ 
+#
 
+# This table is "Contact" looking at "Project"
+# So we mostly want to display the values of "Project"
+class ProjCon_Project_Table(Table):
+
+    view =  LinkColumn(
+        header='View', 
+        links=[
+            Link(
+                text='',
+                viewname='project-detail', 
+                args=(
+                    A('proj.id'),
+                ),
+                attrs={
+                    'class':
+                        'glyphicon glyphicon-eye-open'
+                },
+            ),
+        ],
+        searchable=False,
+        sortable=False,
+    )
+
+    title = CustomNoneColumn(field='proj.title', header='Title')
+    role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
+    deadline = NoneableDatetimeColumn(field='proj.deadline', header='Deadline', format='%b %d, %Y')
+    notes = CustomNoneColumn(field='proj.notes_trimmed', header='Notes')    
+
+    class Meta:
+        model = ProjectContactAssoc
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+# This table is "Project" looking at "Contact"
+# So we mostly want to display the values of "Contact"
+class ProjCon_Contact_Table(Table):
+
+    view =  LinkColumn(
+        header='View', 
+        links=[
+            Link(
+                text='',
+                viewname='contact-detail', 
+                args=(
+                    A('con.id'),
+                ),
+                attrs={
+                    'class':
+                        'glyphicon glyphicon-eye-open'
+                },
+            ),
+        ],
+        searchable=False,
+        sortable=False,
+    )
+
+    name = CustomNoneColumn(field='con.name', header='Name')
+    role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
+
+    class Meta:
+        model = ProjectContactAssoc
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}

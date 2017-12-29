@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.db import models
 
 import datetime
+import math
 
 class Organization(models.Model):
     """
@@ -153,11 +154,25 @@ class Project(models.Model):
     """
     Model representing a project
     """
-    title = models.CharField(max_length=50, help_text="Shorthand for referring to this project.")
-    notes = models.TextField(max_length=1000, help_text="Any extra notes for this project.", blank=True)
+    title = models.CharField(
+        max_length=50, help_text="Shorthand for referring to this project."
+    )
+    notes = models.TextField(
+        max_length=1000, help_text="Any extra notes for this project.", 
+        blank=True
+    )
 
-    # ManyToManyField used because many contacts can be assigned to many projects.
-    # associated = models.ManyToManyField(Contact, help_text="Who is associated with this project?")
+    #Deadline for this task
+    deadline = models.DateField(
+        null=True, blank=True, help_text="What is the deadline for this project?"
+    )
+
+    #Who is this project associated with?
+    contacts = models.ManyToManyField(
+        Contact, through='ProjectContactAssoc', 
+        help_text="Who is associated with this project?", 
+        related_name="projects"
+    )
 
     def __str__(self):
         """
@@ -165,20 +180,39 @@ class Project(models.Model):
         """
         return self.title
 
-    @property
-    def associated_contacts(self):
-        return Contact.objects.filter(tasks__proj=self).distinct()
-        #return self.task_set.contact_set
-
-    @property
-    def tasks(self):
-        return self.task_set
-
     def get_absolute_url(self):
         """
         Returns the url to access a particular project.
         """
         return reverse('project-detail', args=[str(self.id)])
+
+    @property
+    def complete_percent(self):
+        val = 0
+
+        if self.tasks.exists():
+            val = self.tasks.filter(complete__exact=True).count() / self.tasks.count()
+            val *= 100
+            val = math.floor(val)
+
+        return val 
+
+    def percentage_formatted(self):
+        return str(self.complete_percent) + '%'
+
+
+    @property
+    def notes_trimmed(self):
+        char_lim = 247
+        ret_val = None
+
+        if self.notes:
+            if len(self.notes) > char_lim:
+                ret_val = self.notes[:char_lim] + '...'
+            else:
+                ret_val = self.notes
+
+        return ret_val
 
 class Task(models.Model):
     """
@@ -287,3 +321,33 @@ class TaskContactAssoc(models.Model):
         String for representing the Model object (in Admin site etc.)
         """
         return self.task.brief[:25] + '(' + self.con.name[:25] + ')'
+
+class ProjectContactAssoc(models.Model):
+    """
+    Model representing an association with a task
+    """
+    #Possible Choices
+    ASSOC_TYPE_LIST = (
+        ('as', 'Assigned'),
+        ('cr', 'Creator'),
+        ('na', 'Unspecified')
+    )
+
+    #The contact for this task
+    con  = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name="proj_assocs")
+    
+    #The task for this contact
+    proj = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="con_assocs")
+
+    #The associated type list
+    tag_type = models.CharField(max_length=2, choices=ASSOC_TYPE_LIST, default='na')
+
+    class Meta: 
+        unique_together = ( 'con', 'proj', )
+        ordering = ['con', 'proj', 'tag_type', ]
+
+    def __str__(self):
+        """
+        String for representing the Model object (in Admin site etc.)
+        """
+        return self.proj.title[:25] + '(' + self.con.name[:25] + ')'

@@ -20,30 +20,10 @@
     {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
   </h2>
 
-<!--
-  <div class="col-sm-1">
-  </div>
-  <div class="col-sm-1">
-  </div>
--->
-  <div class="col-sm-12 sublist-major">
-    <!--                           -->
-    <!-- Block 2 - Project Listing -->
-    <!--                           -->
-    <h3>Associated Projects</h3>
+  <div class="col-sm-12">
 
-    {% if contact.associated_projects %}
-      {% for proj in contact.associated_projects.all %}
-        <hr>
-        <a href="{{ proj.get_absolute_url }}">{{ proj.title }}</a>
-
-      {% endfor %}
-    {% else %}
-      <p>No associated projects!</p>
-    {% endif %}
-
-    {# {% use_macro display_associated_table associated_projects_table "Associated Projects" %} #}
-
+    <hr>
+    {% use_macro display_associated_table associated_projects_table "Associated Projects" %}
     <hr>
     {% use_macro display_associated_table associated_tasks_table "Associated Tasks" %}
     <hr>

@@ -152,14 +152,14 @@ td.centerized {
     background-color: #85A6A6;
 }
 
-.task-status.incomplete {
+.incomplete {
     background-color: #666;
 }
 
-.task-status.overdue {
+.overdue {
     background-color: #e23131;
 }
 
-.task-status.completed {
+.completed {
     background-color: #56cc4b;
 }

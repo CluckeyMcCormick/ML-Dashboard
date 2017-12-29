@@ -61,7 +61,5 @@ class TagColumn(Column):
         output_form = '<strong class="{0} {1}">{2}</strong>'
         val = super(TagColumn, self).render(obj)
 
-        print(Accessor(self.field).resolve(obj))
-
         return mark_safe( output_form.format(self.wrap_class, val.lower(), val) )
         
