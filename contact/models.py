@@ -29,15 +29,11 @@ class Contact(models.Model):
     Model representing a contact
     """
     name = models.CharField(max_length=50, help_text="The name of your contact.")
-
     email = models.EmailField(help_text="The contact's email address.", null=True, blank=True)
-
     phone = models.CharField(max_length=20, help_text="The phone number of your contact.", null=True, blank=True)
 
     org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name="contacts")
-
     notes = models.TextField(max_length=1000, help_text="Any extra notes for this contact.", blank=True)
-
     user_link = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

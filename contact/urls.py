@@ -20,6 +20,15 @@ urlpatterns = [
     url(r'^contact/(?P<pk>\d+)/delete/$', views.ContactDelete.as_view(), name='contact-delete'),
 
     #
+    # ORGANIZATIONS
+    #
+    url(r'^orgs/$', views.OrgListView.as_view(), name='orgs'),
+    url(r'^org/(?P<pk>\d+)$', views.OrgDetailView.as_view(), name='org-detail'),
+    url(r'^org/create/$', views.OrgCreate.as_view(), name='org-create'),
+    url(r'^org/(?P<pk>\d+)/update/$', views.OrgUpdate.as_view(), name='org-update'),
+    url(r'^org/(?P<pk>\d+)/delete/$', views.OrgDelete.as_view(), name='org-delete'),
+
+    #
     # PROJECTS
     #
     url(r'^projects/$', views.ProjectListView.as_view(), name='projects'),

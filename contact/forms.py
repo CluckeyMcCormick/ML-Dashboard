@@ -4,8 +4,10 @@ from django.db.utils import OperationalError
 
 from django import forms
 
-from .models import Contact, ContactTypeTag, Organization
-from .models import Project, Task, TaskContactAssoc
+from .models import (
+    ContactTypeTag, Task, TaskContactAssoc,
+    Organization, Contact, Project,
+)
 
 class ContactForm(forms.ModelForm):
 
@@ -48,6 +50,12 @@ class ContactForm(forms.ModelForm):
                 #Create it!
                 new_tag = ContactTypeTag(contact=contact, tag_type=tag_val)
                 new_tag.save()
+
+class OrgForm(forms.ModelForm):
+
+    class Meta:
+        model = Organization
+        fields = '__all__'
 
 class ProjectForm(forms.ModelForm):
 

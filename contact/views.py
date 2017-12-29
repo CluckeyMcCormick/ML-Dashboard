@@ -7,12 +7,17 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.views import generic
 
-from .models import ContactTypeTag, Task, TaskContactAssoc
-from .models import Organization, Contact, Project
+from .models import (
+    ContactTypeTag, Task, TaskContactAssoc,
+    Organization, Contact, Project,
+)
 
-from .forms import MyTaskSearchForm, ContactForm, ProjectForm, TaskForm
+from .forms import ContactForm, ProjectForm, TaskForm, OrgForm
 
-from .tables import ContactTable, TaskTable, MyAssocTable, ProjectTable
+from .tables import (
+    ContactTable, TaskTable, TaskConAssocTable, ProjectTable, 
+    OrgTable,
+)
 # Create your views here.
 
 @login_required
@@ -89,7 +94,10 @@ def my_dashboard_complete(request):
         },
     )
 
-# CONTACTS, BRUH! ~~~~~~~~~~~~~~~~~~~~~~
+#____ ____ _  _ ___ ____ ____ ___    _  _ _ ____ _ _ _ ____ 
+#|    |  | |\ |  |  |__| |     |     |  | | |___ | | | [__  
+#|___ |__| | \|  |  |  | |___  |      \/  | |___ |_|_| ___] 
+#
 class ContactListView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'contacts/contact_list.html'
 
@@ -109,6 +117,9 @@ class ContactDetailView(LoginRequiredMixin, generic.DetailView):
 
         context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
         context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
+
+        context['associated_projects_table'] = ProjectTable()
+        context['associated_tasks_table'] = TaskConAssocTable( TaskContactAssoc.objects.filter(con__exact=self.object) )
 
         return context
 
@@ -171,8 +182,70 @@ class ContactDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('contacts')
     model = Contact
 
+#____ ____ ____ ____ _  _ _ ___  ____ ___ _ ____ _  _    _  _ _ ____ _ _ _ ____ 
+#|  | |__/ | __ |__| |\ | |   /  |__|  |  | |  | |\ |    |  | | |___ | | | [__  
+#|__| |  \ |__] |  | | \| |  /__ |  |  |  | |__| | \|     \/  | |___ |_|_| ___] 
+#
+class OrgListView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'organizations/org_list.html'
 
-# PROJECTS, MAH BOI! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def get_context_data(self, **kwargs):
+        context = super(OrgListView, self).get_context_data(**kwargs)
+
+        context['org_table'] = OrgTable()
+
+        return context
+
+class OrgDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Organization
+    template_name = 'organizations/org_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrgDetailView, self).get_context_data(**kwargs)
+
+        context['org_edit_url'] = reverse_lazy('org-update', args=(context['organization'].pk,))
+        context['org_delete_url'] = reverse_lazy('org-delete', args=(context['organization'].pk,))
+        context['associated_contact_table'] = ContactTable( Contact.objects.filter(org__exact=self.object) ) 
+
+        return context
+
+class OrgCreate(LoginRequiredMixin, CreateView):
+    model = Organization
+    template_name = 'organizations/org_form.html'
+    form_class = OrgForm
+    success_url = reverse_lazy('org-detail')
+
+    def get_context_data(self, **kwargs):
+        context = super(OrgCreate, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = True
+
+        return context
+
+    def form_valid(self, form):
+        updated_org = form.save()       
+        return HttpResponseRedirect(reverse_lazy('org-detail', args=(updated_org.pk,)))
+
+class OrgUpdate(LoginRequiredMixin, UpdateView):
+    model = Organization
+    template_name = 'organizations/org_form.html'
+    form_class = OrgForm
+    success_url = reverse_lazy('org-detail')
+
+    def form_valid(self, form):
+        updated_org = form.save()       
+        return HttpResponseRedirect(reverse_lazy('org-detail', args=(updated_org.pk,)))
+
+class OrgDelete(LoginRequiredMixin, DeleteView):
+    model = Organization
+    template_name = 'organizations/org_confirm_delete.html'
+    success_url = reverse_lazy('orgs')
+
+#___  ____ ____  _ ____ ____ ___    _  _ _ ____ _ _ _ ____ 
+#|__] |__/ |  |  | |___ |     |     |  | | |___ | | | [__  
+#|    |  \ |__| _| |___ |___  |      \/  | |___ |_|_| ___] 
+#                                                          
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     context_object_name = 'project_list'
@@ -228,7 +301,10 @@ class ProjectDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('projects')
     model = Project
 
-# TASKS, MOUH MAHN! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#___ ____ ____ _  _    _  _ _ ____ _ _ _ ____ 
+# |  |__| [__  |_/     |  | | |___ | | | [__  
+# |  |  | ___] | \_     \/  | |___ |_|_| ___] 
+#                                             
 class TaskListView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'tasks/task_list.html'
 
@@ -345,19 +421,21 @@ class TaskDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('tasks')
     model = Task
 
-# TASKS CONTACT ASSOCIATIONS, MIJO! ~~~~~~~~~~~~~
+#___ ____ ____ _  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
+# |  |__| [__  |_/  __ |    |  | |\ | __ |__| [__  [__  |  | |    
+# |  |  | ___] | \_    |___ |__| | \|    |  | ___] ___] |__| |___ 
+#                                                                 
+#_  _ _ ____ _ _ _ ____ 
+#|  | | |___ | | | [__  
+# \/  | |___ |_|_| ___] 
+#                       
 class MyTaskView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'con_task_assocs/my_assoc.html'
 
     def get_context_data(self, **kwargs):
         context = super(MyTaskView, self).get_context_data(**kwargs)
         
-        form = MyTaskSearchForm(self.request.GET)
-
-        #Get the tasks associated with the user
-        context['form'] = form
-
         user_con = self.request.user.contact
-        context['my_task_table'] = MyAssocTable(user_con.task_assocs.exclude(tag_type__exact='ta'))
+        context['my_task_table'] = TaskConAssocTable(user_con.task_assocs.exclude(tag_type__exact='ta'))
 
         return context

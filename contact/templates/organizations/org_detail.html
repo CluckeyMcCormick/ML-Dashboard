@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+
+{% load bootstrap3 %}
+{% load macros %}
+
+{% loadmacros "associated_macros.html" %}
+
+{% block content %}
+
+	<h1><strong>Organization: </strong>{{ organization.name }}</h1>
+	<p><strong>Notes: </strong>{{ organization.notes }}</p>
+
+	{% bootstrap_button content='Edit' button_type='link' href=org_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+
+	{% bootstrap_button content='Delete' button_type='link' href=org_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+
+	<hr>
+	{% use_macro display_associated_table associated_contact_table "Associated Contacts" %}
+	<hr>
+
+{% endblock %}
