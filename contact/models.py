@@ -196,10 +196,13 @@ class Project(models.Model):
             val = math.floor(val)
 
         return val 
+    
+    @property
+    def is_complete(self):
+        return complete_percent >= 100
 
     def percentage_formatted(self):
         return str(self.complete_percent) + '%'
-
 
     @property
     def notes_trimmed(self):
@@ -329,7 +332,9 @@ class ProjectContactAssoc(models.Model):
     #Possible Choices
     ASSOC_TYPE_LIST = (
         ('as', 'Assigned'),
+        ('le', 'Lead'),
         ('cr', 'Creator'),
+        ('re', 'Resource'),
         ('na', 'Unspecified')
     )
 

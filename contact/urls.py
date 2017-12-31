@@ -36,6 +36,8 @@ urlpatterns = [
     url(r'^project/create/$', views.ProjectCreate.as_view(), name='project-create'),
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
     url(r'^project/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project-delete'),
+    url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
+    url(r'^project/assign/$', views.AssignContactView.as_view(), name='project-assign'),
 
     #
     # TASKS

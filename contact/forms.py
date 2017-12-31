@@ -61,7 +61,11 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = ['title', 'notes', 'deadline']
+        widgets = {
+            'notes': forms.Textarea( attrs={'max_length' : 1000} ),
+            'deadline': forms.SelectDateWidget(),
+        }
 
 class TaskForm(forms.ModelForm):
 

@@ -7,18 +7,23 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.views import generic
 
+import datetime
+
 from .models import (
     ContactTypeTag, Task, TaskContactAssoc,
     Organization, Contact, Project,
+    ProjectContactAssoc,
 )
 
 from .forms import ContactForm, ProjectForm, TaskForm, OrgForm
-
 from .tables import (
-    ContactTable, TaskTable, TaskConAssocTable, ProjectTable, 
-    OrgTable, ProjCon_Project_Table, ProjCon_Contact_Table,
-    TaskNoProjectTable
-)
+    assoc_tables        as table_assoc,
+    contact_tables      as table_con,
+    organization_tables as table_org,
+    project_tables      as table_proj,
+    task_tables         as table_task
+) 
+
 # Create your views here.
 
 @login_required
@@ -53,11 +58,17 @@ def my_dashboard(request):
     #Get the associated contact for our user
     user_con  = request.user.contact
 
-    #Get the projects associated with the user
-    user_proj = user_con.associated_projects
+    qs_proj_assoc = user_con.proj_assocs.exclude(tag_type__exact='re')
 
+    qs_task_assoc = user_con.task_assocs.exclude(tag_type__exact='ta')
+    qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__lte=datetime.date.today())
+    qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
+    #qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
+
+    #Get the projects associated with the user
+    user_proj_table = table_assoc.ProjCon_Project_Table(qs_proj_assoc)
     #Get the tasks associated with the user
-    user_task = user_con.task_assocs.exclude(tag_type__exact='ta').exclude(task__complete__exact=True)
+    user_task_table = table_assoc.TaskCon_Task_Table(qs_task_assoc)
 
     # Render the HTML template index.html with the data in the context variable
     return render(
@@ -65,33 +76,8 @@ def my_dashboard(request):
         'my_dashboard.html',
         context={
             'user_con':user_con,
-            'user_proj':user_proj,
-            'user_task':user_task,
-        },
-    )
-
-@login_required
-def my_dashboard_complete(request):
-    """
-    View function for the current user's dashboard, showing completed tasks
-    """
-    #Get the associated contact for our user
-    user_con  = request.user.contact
-
-    #Get the projects associated with the user
-    user_proj = user_con.project_set
-
-    #Get the tasks associated with the user
-    user_task = user_con.taskcontactassoc_set.exclude(tag_type__exact='ta')
-
-    # Render the HTML template index.html with the data in the context variable
-    return render(
-        request,
-        'my_dashboard.html',
-        context={
-            'user_con':user_con,
-            'user_proj':user_proj,
-            'user_task':user_task,
+            'user_proj_table':user_proj_table,
+            'user_task_table':user_task_table,
         },
     )
 
@@ -105,7 +91,7 @@ class ContactListView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ContactListView, self).get_context_data(**kwargs)
 
-        context['contact_table'] = ContactTable()
+        context['contact_table'] = table_con.ContactTable()
 
         return context
 
@@ -119,8 +105,8 @@ class ContactDetailView(LoginRequiredMixin, generic.DetailView):
         context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
         context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
 
-        context['associated_projects_table'] = ProjCon_Project_Table( self.object.proj_assocs.get_queryset() )
-        context['associated_tasks_table'] = TaskConAssocTable( self.object.task_assocs.get_queryset() )
+        context['associated_projects_table'] = table_assoc.ProjCon_Project_Table( self.object.proj_assocs.get_queryset() )
+        context['associated_tasks_table'] = table_assoc.TaskCon_Task_Table( self.object.task_assocs.get_queryset() )
 
         return context
 
@@ -193,7 +179,7 @@ class OrgListView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(OrgListView, self).get_context_data(**kwargs)
 
-        context['org_table'] = OrgTable()
+        context['org_table'] = table_org.OrgTable()
 
         return context
 
@@ -206,7 +192,7 @@ class OrgDetailView(LoginRequiredMixin, generic.DetailView):
 
         context['org_edit_url'] = reverse_lazy('org-update', args=(context['organization'].pk,))
         context['org_delete_url'] = reverse_lazy('org-delete', args=(context['organization'].pk,))
-        context['associated_contact_table'] = ContactTable( Contact.objects.filter(org__exact=self.object) ) 
+        context['associated_contact_table'] = table_con.ContactTable( Contact.objects.filter(org__exact=self.object) ) 
 
         return context
 
@@ -255,7 +241,7 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(ProjectListView, self).get_context_data(**kwargs)
 
-        context['project_table'] = ProjectTable()
+        context['project_table'] = table_proj.ProjectTable()
         return context
 
     
@@ -268,10 +254,13 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
 
         context['project_edit_url'] = reverse_lazy('project-update', args=(context['project'].pk,))
         context['project_delete_url'] = reverse_lazy('project-delete', args=(context['project'].pk,))
+
+        context['project_assign_url'] = reverse_lazy('project-assign')
+
         context['new_project_task_url'] = reverse_lazy('task-project-create', args=(context['project'].pk,))
 
-        context['associated_contact_table'] = ProjCon_Contact_Table( self.object.con_assocs.get_queryset() )
-        context['associated_task_table'] = TaskNoProjectTable(self.object.tasks.get_queryset())
+        context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table( self.object.con_assocs.get_queryset() )
+        context['associated_task_table'] = table_task.TaskNoProjectTable(self.object.tasks.get_queryset())
 
         return context
 
@@ -287,6 +276,17 @@ class ProjectCreate(LoginRequiredMixin, CreateView):
         context['is_create'] = True
 
         return context
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        new_proj = form.save()
+        
+        creator_assoc = ProjectContactAssoc(con=self.request.user.contact, proj=new_proj, tag_type='cr')
+        creator_assoc.save()
+
+        return HttpResponseRedirect(reverse_lazy('project-detail', args=(new_proj.pk,)))
+
 
 class ProjectUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'projects/project_form.html'
@@ -315,7 +315,7 @@ class TaskListView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskListView, self).get_context_data(**kwargs)
-        context['task_table'] = TaskTable()
+        context['task_table'] = table_task.TaskTable()
 
         return context
 
@@ -441,6 +441,26 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyTaskView, self).get_context_data(**kwargs)
 
         user_con = self.request.user.contact
-        context['my_task_table'] = TaskConAssocTable(user_con.task_assocs.exclude(tag_type__exact='ta'))
+        context['my_task_table'] = table_assoc.TaskCon_Task_Table(user_con.task_assocs.exclude(tag_type__exact='ta'))
 
         return context
+
+#___  ____ ____  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
+#|__] |__/ |  |  | __ |    |  | |\ | __ |__| [__  [__  |  | |    
+#|    |  \ |__| _|    |___ |__| | \|    |  | ___] ___] |__| |___ 
+#                                                                
+#_  _ _ ____ _ _ _ ____ 
+#|  | | |___ | | | [__  
+# \/  | |___ |_|_| ___] 
+#                       
+class AssignContactView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'proj_con_assocs/assign_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AssignContactView, self).get_context_data(**kwargs)
+
+        user_con = self.request.user.contact
+        context['assign_table'] = table_con.SelectContactTable(Contact.objects.get_queryset())
+
+        return context
+
