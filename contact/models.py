@@ -136,7 +136,6 @@ class ContactTypeTag(models.Model):
 
     class Meta: 
         unique_together = ( 'contact', 'tag_type',)
-        ordering = ['contact', '-tag_type']
 
     def get_contact_abbrv(self):
         """
@@ -155,7 +154,8 @@ class Project(models.Model):
     Model representing a project
     """
     title = models.CharField(
-        max_length=50, help_text="Shorthand for referring to this project."
+        max_length=50, help_text="Shorthand for referring to this project.",
+        unique=True
     )
     notes = models.TextField(
         max_length=1000, help_text="Any extra notes for this project.", 
@@ -167,12 +167,18 @@ class Project(models.Model):
         null=True, blank=True, help_text="What is the deadline for this project?"
     )
 
+    #Is this task complete?
+    complete = models.BooleanField(help_text="Is this project complete?", default=False)
+
     #Who is this project associated with?
     contacts = models.ManyToManyField(
         Contact, through='ProjectContactAssoc', 
         help_text="Who is associated with this project?", 
         related_name="projects"
     )
+
+    class Meta: 
+        ordering = ['deadline','complete',]
 
     def __str__(self):
         """
@@ -196,10 +202,6 @@ class Project(models.Model):
             val = math.floor(val)
 
         return val 
-    
-    @property
-    def is_complete(self):
-        return complete_percent >= 100
 
     def percentage_formatted(self):
         return str(self.complete_percent) + '%'
@@ -217,6 +219,15 @@ class Project(models.Model):
 
         return ret_val
 
+    @property
+    def status(self):
+        if self.complete:
+            return "Completed"
+        elif (self.deadline is None) or (datetime.date.today() < self.deadline):
+            return "Incomplete"
+        else:
+            return "Overdue"
+
 class Task(models.Model):
     """
     Model representing a task that needs doing
@@ -231,7 +242,7 @@ class Task(models.Model):
     contacts = models.ManyToManyField(Contact, through='TaskContactAssoc', help_text="Who is associated with this task?", related_name="tasks")
 
     #Is this task complete?
-    complete = models.BooleanField(help_text="Is this task complete?")
+    complete = models.BooleanField(help_text="Is this task complete?", default=False)
 
     #Deadline for this task
     deadline = models.DateField(null=True, blank=True, help_text="What is the deadline for this task?")
@@ -303,6 +314,7 @@ class TaskContactAssoc(models.Model):
         ('as', 'Assigned'),
         ('cr', 'Creator'),
         ('ta', 'Target'),
+        ('re', 'Resource'),
         ('na', 'Unspecified')
     )
 
@@ -317,7 +329,6 @@ class TaskContactAssoc(models.Model):
 
     class Meta: 
         unique_together = ( 'con', 'task', )
-        ordering = ['con', 'task', 'tag_type', ]
 
     def __str__(self):
         """
@@ -349,7 +360,6 @@ class ProjectContactAssoc(models.Model):
 
     class Meta: 
         unique_together = ( 'con', 'proj', )
-        ordering = ['con', 'proj', 'tag_type', ]
 
     def __str__(self):
         """

@@ -6,7 +6,7 @@ from ..models import Project
 
 from .custom_columns import *
 
-from . import date_time_format
+from . import date_time_format, center_attrs
 
 #___  ____ ____  _ ____ ____ ___ 
 #|__] |__/ |  |  | |___ |     |  
@@ -34,6 +34,7 @@ class ProjectTable(Table):
     )
 
     title = CustomNoneColumn(field='title', header='Title')
+    status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
     percent = Column(field='percentage_formatted', header='Completion')
     deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)
     notes = CustomNoneColumn(field='notes_trimmed', header='Notes')

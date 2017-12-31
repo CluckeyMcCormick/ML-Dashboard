@@ -18,10 +18,20 @@
   </div> 
 
   <h4><strong>Deadline:</strong> {{ project.deadline }}</h4>
+  
+  <p>
+    <strong>Task Status: </strong>
+    <strong class="task-status {{project.status.lower}}">{{project.status}}</strong>
+  </p>
 
   <p><strong>Notes: </strong>{{ project.notes }}</p>
 
   <h2 class="col-sm-12">
+    {% if task.complete %}
+      {% bootstrap_button content='Mark Incomplete' button_type='link' href="" button_class="incomplete hoverable" icon="glyphicon glyphicon-repeat" %}
+    {% else %}
+      {% bootstrap_button content='Mark Completed' button_type='link' href="" button_class="completed hoverable" icon="glyphicon glyphicon-ok" %}
+    {% endif %}
     {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
     {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
   </h2>
@@ -34,7 +44,9 @@
       <a href='#assoc_con' class="btn btn-info" data-toggle="collapse">
         <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
       </a>
-      {% bootstrap_button content='Change Contacts' button_type='link' href=project_assign_url button_class="btn-warning" icon="glyphicon glyphicon-pencil"%}
+      {% bootstrap_button content='Assign Volunteers' button_type='link' href="" button_class="as hoverable" icon="glyphicon glyphicon-pencil"%}
+      {% bootstrap_button content='Add Targets' button_type='link' href="" button_class="ta hoverable" icon="glyphicon glyphicon-pencil"%}
+      {% bootstrap_button content='Add Resources' button_type='link' href="" button_class="re hoverable" icon="glyphicon glyphicon-pencil"%}  
     </h3>
     <div id='assoc_con' class="collapse">
       {% render_table associated_contact_table %}

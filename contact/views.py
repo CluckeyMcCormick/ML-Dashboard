@@ -329,6 +329,8 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
         context['edit_url'] = reverse_lazy('task-update', args=(context['task'].pk,))
         context['delete_url'] = reverse_lazy('task-delete', args=(context['task'].pk,))
 
+        context['associated_contact_table'] = table_assoc.TaskCon_Contact_Table( self.object.con_assocs.get_queryset() )
+
         return context
 
 class TaskCreate(LoginRequiredMixin, CreateView):

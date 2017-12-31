@@ -84,58 +84,69 @@ td.centerized {
 }
 
 /* Creator Tag */                           /* Scheme 1   Scheme 2    Scheme 3*/
-.cr { 
-    background-color: #2C594F;
-    color: white; 
-}
+.cr,
 .creator { 
     background-color: #2C594F;
     color: white; 
 }
 
 /* Assigned Tag */ 
-.as { 
-    background-color: #E54661;
-}
-
+.as, 
 .assigned { 
     background-color: #E54661;
-}
-
-.as.hoverable { 
     color: white; 
 }
 
-.as.hoverable:hover { 
+.as.hoverable:hover,
+.as.hoverable:focus,
+.as.hoverable:active,
+.as.hoverable.active { 
     background-color: #B0364B;
+    color: white; 
 }
 
 /* Target Tag */
-.ta { 
+.ta, 
+.target { 
     background-color: #FFA644;
-}
-
-.target {
-    background-color: #FFA644;
-}
-
-.ta.hoverable { 
     color: white; 
 }
 
-.ta.hoverable:hover { 
+.ta.hoverable:hover, 
+.ta.hoverable:focus,
+.ta.hoverable:active,
+.ta.hoverable.active { 
     background-color: #DB8F3A;
+    color: white; 
 }
 
 /* Non-Specified or Non-Aligned Tag */
-.na { 
+.na,
+.unspecified { 
     background-color: #002D40;
     color: white;
 }
 
-.unspecified {
-    background-color: #002D40;
+.na.hoverable:hover,
+.na.hoverable:focus,
+.na.hoverable:active,
+.na.hoverable.active { 
+    color: white; 
+    background-color: #002333;
+}
+
+.re,
+.resource {
+    background-color: #0099cc;
     color: white;    
+}
+
+.re.hoverable:hover,
+.re.hoverable:focus,
+.re.hoverable:active,
+.re.hoverable.active { 
+    color: white; 
+    background-color: #007399;
 }
 
 /* 
@@ -153,13 +164,37 @@ td.centerized {
 }
 
 .incomplete {
+    color: white; 
     background-color: #666;
+}
+.incomplete.hoverable:hover,
+.incomplete.hoverable:focus,
+.incomplete.hoverable:active,
+.incomplete.hoverable.active { 
+    color: white; 
+    background-color: #555;
 }
 
 .overdue {
+    color: white; 
     background-color: #e23131;
+}
+.overdue.hoverable:hover,
+.overdue.hoverable:focus,
+.overdue.hoverable:active,
+.overdue.hoverable.active { 
+    color: white; 
+    background-color: #D92F2F;
 }
 
 .completed {
+    color: white; 
     background-color: #56cc4b;
+}
+.completed.hoverable:hover,
+.completed.hoverable:focus,
+.completed.hoverable:active,
+.completed.hoverable.active { 
+    color: white; 
+    background-color: #51BF46;
 }

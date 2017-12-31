@@ -123,10 +123,9 @@ class ProjCon_Project_Table(Table):
 
     title = CustomNoneColumn(field='proj.title', header='Title')
     role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
-    deadline = NoneableDatetimeColumn(field='proj.deadline', header='Deadline', format=date_time_format)
+    deadline = NoneableDatetimeColumn(field='proj.deadline', header='Deadline', format=date_time_format)   
+    status = TagColumn(field='proj.status', header='Status', wrap_class='task-status', attrs=center_attrs)
     percent = Column(field='proj.percentage_formatted', header='Completion')
-
-    notes = CustomNoneColumn(field='proj.notes_trimmed', header='Notes')    
 
     class Meta:
         model = ProjectContactAssoc
