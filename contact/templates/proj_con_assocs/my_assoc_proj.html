@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% load table_tags %}
+
+{% block content %}
+	<h1>My Projects</h1>
+
+	{% render_table my_project_table %}
+
+{% endblock %}

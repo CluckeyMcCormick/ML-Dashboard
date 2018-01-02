@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/add_volunteer/$', views.project_assign, name='project-add-volunteer'),
     url(r'^project/(?P<pk>\d+)/add_resource/$', views.project_resource, name='project-add-resource'),
 
+    url(r'^projects/mine/$', views.MyProjectView.as_view(), name='my-proj-assocs'),
 
     #
     # TASKS
@@ -57,5 +58,5 @@ urlpatterns = [
     url(r'^task/create/project_type/(?P<pk>\d+)/$', views.TaskProjectCreate.as_view(), name='task-project-create'),
 
     #View your associations with tasks - ergo, a derivative of tasks
-    url(r'^tasks/mine/$', views.MyTaskView.as_view(), name='my-assocs'),
+    url(r'^tasks/mine/$', views.MyTaskView.as_view(), name='my-task-assocs'),
 ]

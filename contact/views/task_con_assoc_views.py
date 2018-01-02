@@ -1,8 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.utils.safestring import mark_safe
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
+
+from ..models import Contact, Task, TaskContactAssoc
 
 from ..tables import (
     assoc_tables as table_assoc,
@@ -17,7 +22,7 @@ from ..tables import (
 # \/  | |___ |_|_| ___] 
 #                       
 class MyTaskView(LoginRequiredMixin, generic.TemplateView):
-    template_name = 'con_task_assocs/my_assoc.html'
+    template_name = 'task_con_assocs/my_assoc_task.html'
 
     def get_context_data(self, **kwargs):
         context = super(MyTaskView, self).get_context_data(**kwargs)

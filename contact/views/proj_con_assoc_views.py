@@ -1,13 +1,16 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
+from django.views import generic
 
 from ..models import Contact, Project, ProjectContactAssoc
 
 from ..tables import (
+    assoc_tables   as table_assoc,
     contact_tables as table_con,
 ) 
 
@@ -19,6 +22,18 @@ from ..tables import (
 #|  | | |___ | | | [__  
 # \/  | |___ |_|_| ___] 
 #                       
+class MyProjectView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'proj_con_assocs/my_assoc_proj.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MyProjectView, self).get_context_data(**kwargs)
+
+        user_con = self.request.user.contact
+        context['my_project_table'] = table_assoc.ProjCon_Project_Table(user_con.proj_assocs.exclude(tag_type__exact='re'))
+
+        return context
+
+@login_required
 def project_assign(request, pk):
     """
     View function for renewing a specific BookInstance by librarian
@@ -46,6 +61,7 @@ def project_assign(request, pk):
 
     return response
 
+@login_required
 def project_lead(request, pk):
     """
     View function for renewing a specific BookInstance by librarian
@@ -74,6 +90,7 @@ def project_lead(request, pk):
 
     return response
 
+@login_required
 def project_resource(request, pk):
     """
     View function for renewing a specific BookInstance by librarian
