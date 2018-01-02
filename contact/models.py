@@ -343,7 +343,7 @@ class ProjectContactAssoc(models.Model):
     #Possible Choices
     ASSOC_TYPE_LIST = (
         ('as', 'Assigned'),
-        ('le', 'Lead'),
+        ('le', 'Project Lead'),
         ('cr', 'Creator'),
         ('re', 'Resource'),
         ('na', 'Unspecified')

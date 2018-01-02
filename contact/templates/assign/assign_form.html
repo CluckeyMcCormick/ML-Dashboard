@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+{% load table_tags %}
+
+{% block content %}
+	<h1>{{page_title}} <strong>{{item_title}}</strong></h1>
+
+	<form action="" method="post">
+		{% csrf_token %}
+		{% render_table assign_table %}
+	</form>
+{% endblock %}

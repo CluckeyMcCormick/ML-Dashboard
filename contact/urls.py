@@ -37,7 +37,11 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
     url(r'^project/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project-delete'),
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
-    url(r'^project/assign/$', views.AssignContactView.as_view(), name='project-assign'),
+
+    url(r'^project/(?P<pk>\d+)/add_lead/$', views.project_lead, name='project-add-lead'),
+    url(r'^project/(?P<pk>\d+)/add_volunteer/$', views.project_assign, name='project-add-volunteer'),
+    url(r'^project/(?P<pk>\d+)/add_resource/$', views.project_resource, name='project-add-resource'),
+
 
     #
     # TASKS

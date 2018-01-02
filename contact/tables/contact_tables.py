@@ -98,11 +98,39 @@ class ContactTable(ContactBasicMixin, ContactInfoMixin, ContactTagMixin):
 #[__  |___ |    |___ |     |     |    |  | |\ |  |  |__| |     |  [__  
 #___] |___ |___ |___ |___  |     |___ |__| | \|  |  |  | |___  |  ___] 
 # 
-class SelectContactTable(ContactBasicMixin, ContactTagMixin):
+class SelectVolunteerTable(ContactBasicMixin, ContactTagMixin):
     
-    lead_check = CheckboxColumn(header='Lead', attrs=center_attrs)
-    assigned_check = CheckboxColumn(header='Assigned', attrs=center_attrs)
-    resource_check = CheckboxColumn(header='Resource', attrs=center_attrs)
+    check = AddButtonColumn(b_class='as hoverable', b_name='vol_id')
+
+    class Meta:
+        model = Contact
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class SelectTargetTable(ContactBasicMixin, ContactTagMixin):
+    
+    check = AddButtonColumn(b_class='ta hoverable', b_name='targ_id')
+
+    class Meta:
+        model = Contact
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class SelectResourceTable(ContactBasicMixin, ContactTagMixin):
+    
+    check = AddButtonColumn(b_class='re hoverable', b_name='res_id')
+
+    class Meta:
+        model = Contact
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class SelectLeadTable(ContactBasicMixin, ContactTagMixin):
+    
+    check = AddButtonColumn(b_class='le hoverable', b_name='lead_id')
 
     class Meta:
         model = Contact

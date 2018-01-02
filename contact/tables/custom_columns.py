@@ -3,6 +3,8 @@ from django.utils.safestring import mark_safe
 from table.utils import Accessor, A
 from table.columns import Column, LinkColumn, DatetimeColumn, Link
 
+import string
+
 class BooleanIconColumn(Column):
     def __init__(self, field=None, header=None, true_icon=None, false_icon=None, true_class='', false_class='', **kwargs):
         super(BooleanIconColumn, self).__init__(field=field, header=header, **kwargs)
@@ -61,5 +63,46 @@ class TagColumn(Column):
         output_form = '<strong class="{0} {1}">{2}</strong>'
         val = super(TagColumn, self).render(obj)
 
-        return mark_safe( output_form.format(self.wrap_class, val.lower(), val) )
-        
+        return mark_safe( output_form.format(self.wrap_class,  val.lower().replace(' ', '-'), val) )
+
+class ValueButtonColumn(Column):
+    def __init__(self, field=None, header=None, b_class='', b_type='', b_name='', b_content='', **kwargs):
+        super(ValueButtonColumn, self).__init__(field=field, header=header, **kwargs)
+        self.b_class = b_class
+        self.b_type = b_type
+        self.b_name = b_name
+        self.b_content = b_content
+
+    def render(self, obj):
+        output_form = '''
+        <button class="btn {0}" type="{1}" name="{2}" value="{3}">
+            {4}
+        </button>
+        '''
+        val = super(ValueButtonColumn, self).render(obj)
+
+        return mark_safe( 
+            output_form.format(
+                self.b_class, 
+                self.b_type, 
+                self.b_name, 
+                val, 
+                self.b_content
+            ) 
+        )
+
+class AddButtonColumn(ValueButtonColumn):
+    content = '''
+        <span class="glyphicon glyphicon-plus">
+        </span> 
+        Add
+    '''
+    def __init__(self, b_class='', b_name='', **kwargs):
+        super(AddButtonColumn, self).__init__(
+            field='pk', header='Add', 
+            b_content=self.content, 
+            b_type='submit', 
+            b_class=b_class, 
+            b_name=b_name, 
+            **kwargs
+        )
