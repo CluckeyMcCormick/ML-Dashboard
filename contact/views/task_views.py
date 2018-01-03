@@ -39,6 +39,10 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
         context['edit_url'] = reverse_lazy('task-update', args=(context['task'].pk,))
         context['delete_url'] = reverse_lazy('task-delete', args=(context['task'].pk,))
 
+        context['add_volunteer_url'] = reverse_lazy('task-add-volunteer', args=(context['task'].pk,))
+        context['add_target_url'] = reverse_lazy('task-add-target', args=(context['task'].pk,))
+        context['add_resource_url'] = reverse_lazy('task-add-resource', args=(context['task'].pk,))
+
         context['associated_contact_table'] = table_assoc.TaskCon_Contact_Table( self.object.con_assocs.get_queryset() )
 
         return context
@@ -63,7 +67,6 @@ class TaskCreate(LoginRequiredMixin, CreateView):
         
         creator_assoc = TaskContactAssoc(con=self.request.user.contact, task=new_task, tag_type='cr')
         creator_assoc.save()
-        form.handle_task_assignments(new_task)
 
         return HttpResponseRedirect(reverse_lazy('task-detail', args=(new_task.pk,)))
 

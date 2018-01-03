@@ -33,88 +33,78 @@ class MyProjectView(LoginRequiredMixin, generic.TemplateView):
 
         return context
 
-@login_required
-def project_assign(request, pk):
-    """
-    View function for renewing a specific BookInstance by librarian
-    """
-    con_que = Contact.objects.exclude(projects__pk__in=[pk]).filter(tags__tag_type__in=['vo'])
+class ProjAssoc_AddView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'assign/assign_form.html'
 
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-        # Create a form instance and populate it with data from the request (binding):
-        con_inst=get_object_or_404(Contact, pk=request.POST["vol_id"])
-        proj_inst=get_object_or_404(Project, pk=pk)
+    def get_context_data(self, **kwargs):
+        context = super(ProjAssoc_AddView, self).get_context_data(**kwargs)
 
-        new_assoc = ProjectContactAssoc(proj=proj_inst, con=con_inst, tag_type='as')
+        context['con_que'] = Contact.objects.exclude(projects__pk__in=[ kwargs['pk'] ])
+
+        context['assign_table'] = ' '
+        context['page_title'] = 'Assign <t style="text-decoration: underline;">{0}</t> -'
+        context['item_title'] = Project.objects.get(pk=kwargs['pk']).title
+
+        return context        
+
+    def post(self, *args, **kwargs):
+
+        proj_inst = get_object_or_404(Project, pk=kwargs['pk'])
+        con_inst = get_object_or_404(Contact, pk=args[0].POST[ kwargs['target_key'] ])
+
+        new_assoc = ProjectContactAssoc(proj=proj_inst, con=con_inst, tag_type=kwargs['tag_type'])
         new_assoc.save()
 
-        response = HttpResponseRedirect( reverse_lazy( 'project-detail', args=(pk,) ) )
-    else:
-        context = {}
+        return HttpResponseRedirect( reverse_lazy( 'project-detail', args=(kwargs['pk'],) ) )
 
-        context['assign_table'] = table_con.SelectVolunteerTable(con_que)
-        context['page_title'] = mark_safe('Assign <t style="text-decoration: underline;">Volunteer</t> -')
-        context['item_title'] = Project.objects.get(pk=pk).title
+class ProjectAssoc_AssignView(ProjAssoc_AddView):
 
-        response = render(request, 'assign/assign_form.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(ProjectAssoc_AssignView, self).get_context_data(**kwargs)
 
-    return response
+        context['con_que'] = context['con_que'].filter(tags__tag_type__in=['vo'])
 
-@login_required
-def project_lead(request, pk):
-    """
-    View function for renewing a specific BookInstance by librarian
-    """
-    con_que = Contact.objects.exclude(projects__pk__in=[pk]).filter(tags__tag_type__in=['vo'])
+        context['assign_table'] = table_con.SelectVolunteerTable( context['con_que'] )
+        context['page_title'] = mark_safe( context['page_title'].format('Volunteer') )
 
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-        # Create a form instance and populate it with data from the request (binding):
-        con_inst=get_object_or_404(Contact, pk=request.POST["lead_id"])
-        proj_inst=get_object_or_404(Project, pk=pk)
+        return context
 
-        new_assoc = ProjectContactAssoc(proj=proj_inst, con=con_inst, tag_type='le')
-        new_assoc.save()
+    def post(self, *args, **kwargs):
+        kwargs['tag_type'] = 'as'
+        kwargs['target_key'] = 'vol_id'
 
-        response = HttpResponseRedirect( reverse_lazy( 'project-detail', args=(pk,) ) )
+        return super(ProjectAssoc_AssignView, self).post(*args, **kwargs)
 
-    else:
-        context = {}
+class ProjectAssoc_LeadView(ProjAssoc_AddView):
 
-        context['assign_table'] = table_con.SelectLeadTable(con_que)
-        context['page_title'] = mark_safe('Assign <t style="text-decoration: underline;">Volunteer</t> -')
-        context['item_title'] = Project.objects.get(pk=pk).title
+    def get_context_data(self, **kwargs):
+        context = super(ProjectAssoc_LeadView, self).get_context_data(**kwargs)
 
-        response = render(request, 'assign/assign_form.html', context)
+        context['con_que'] = context['con_que'].filter(tags__tag_type__in=['vo'])
 
-    return response
+        context['assign_table'] = table_con.SelectLeadTable( context['con_que'] )
+        context['page_title'] = mark_safe( context['page_title'].format('Lead') )
 
-@login_required
-def project_resource(request, pk):
-    """
-    View function for renewing a specific BookInstance by librarian
-    """
-    con_que = Contact.objects.exclude(projects__pk__in=[pk])
+        return context
 
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-        # Create a form instance and populate it with data from the request (binding):
-        con_inst=get_object_or_404(Contact, pk=request.POST["res_id"])
-        proj_inst=get_object_or_404(Project, pk=pk)
+    def post(self, *args, **kwargs):
+        kwargs['tag_type'] = 'le'
+        kwargs['target_key'] = 'lead_id'
 
-        new_assoc = ProjectContactAssoc(proj=proj_inst, con=con_inst, tag_type='re')
-        new_assoc.save()
+        return super(ProjectAssoc_LeadView, self).post(*args, **kwargs)
 
-        response = HttpResponseRedirect( reverse_lazy( 'project-detail', args=(pk,) ) )
+class ProjectAssoc_ResourceView(ProjAssoc_AddView):
 
-    else:
-        context = {}
+    def get_context_data(self, **kwargs):
+        context = super(ProjectAssoc_ResourceView, self).get_context_data(**kwargs)
 
-        context['assign_table'] = table_con.SelectResourceTable(con_que)
-        context['page_title'] = mark_safe('Add <t style="text-decoration: underline;">Resource</t> -')
-        context['item_title'] = Project.objects.get(pk=pk).title
+        context['assign_table'] = table_con.SelectResourceTable( context['con_que'] )
+        context['page_title'] = mark_safe( context['page_title'].format('Resource') )
 
-        response = render(request, 'assign/assign_form.html', context)
+        return context
 
-    return response
+    def post(self, *args, **kwargs):
+        kwargs['tag_type'] = 're'
+        kwargs['target_key'] = 'res_id'
+
+        return super(ProjectAssoc_ResourceView, self).post(*args, **kwargs)

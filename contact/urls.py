@@ -14,8 +14,9 @@ urlpatterns = [
     # CONTACTS
     #
     url(r'^contacts/$', views.ContactListView.as_view(), name='contacts'),
-    url(r'^contact/(?P<pk>\d+)$', views.ContactDetailView.as_view(), name='contact-detail'),
     url(r'^contact/create/$', views.ContactCreate.as_view(), name='contact-create'),
+
+    url(r'^contact/(?P<pk>\d+)$', views.ContactDetailView.as_view(), name='contact-detail'),
     url(r'^contact/(?P<pk>\d+)/update/$', views.ContactUpdate.as_view(), name='contact-update'),
     url(r'^contact/(?P<pk>\d+)/delete/$', views.ContactDelete.as_view(), name='contact-delete'),
 
@@ -23,8 +24,9 @@ urlpatterns = [
     # ORGANIZATIONS
     #
     url(r'^orgs/$', views.OrgListView.as_view(), name='orgs'),
-    url(r'^org/(?P<pk>\d+)$', views.OrgDetailView.as_view(), name='org-detail'),
     url(r'^org/create/$', views.OrgCreate.as_view(), name='org-create'),
+
+    url(r'^org/(?P<pk>\d+)$', views.OrgDetailView.as_view(), name='org-detail'),
     url(r'^org/(?P<pk>\d+)/update/$', views.OrgUpdate.as_view(), name='org-update'),
     url(r'^org/(?P<pk>\d+)/delete/$', views.OrgDelete.as_view(), name='org-delete'),
 
@@ -32,15 +34,15 @@ urlpatterns = [
     # PROJECTS
     #
     url(r'^projects/$', views.ProjectListView.as_view(), name='projects'),
-    url(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
     url(r'^project/create/$', views.ProjectCreate.as_view(), name='project-create'),
+
+    url(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
     url(r'^project/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project-delete'),
-    url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
 
-    url(r'^project/(?P<pk>\d+)/add_lead/$', views.project_lead, name='project-add-lead'),
-    url(r'^project/(?P<pk>\d+)/add_volunteer/$', views.project_assign, name='project-add-volunteer'),
-    url(r'^project/(?P<pk>\d+)/add_resource/$', views.project_resource, name='project-add-resource'),
+    url(r'^project/(?P<pk>\d+)/add_lead/$', views.ProjectAssoc_LeadView.as_view(), name='project-add-lead'),
+    url(r'^project/(?P<pk>\d+)/add_volunteer/$', views.ProjectAssoc_AssignView.as_view(), name='project-add-volunteer'),
+    url(r'^project/(?P<pk>\d+)/add_resource/$', views.ProjectAssoc_ResourceView.as_view(), name='project-add-resource'),
 
     url(r'^projects/mine/$', views.MyProjectView.as_view(), name='my-proj-assocs'),
 
@@ -48,10 +50,15 @@ urlpatterns = [
     # TASKS
     #
     url(r'^tasks/$', views.TaskListView.as_view(), name='tasks'),
-    url(r'^task/(?P<pk>\d+)$', views.TaskDetailView.as_view(), name='task-detail'),
     url(r'^task/create/$', views.TaskCreate.as_view(), name='task-create'),
+
+    url(r'^task/(?P<pk>\d+)$', views.TaskDetailView.as_view(), name='task-detail'),
     url(r'^task/(?P<pk>\d+)/update/$', views.TaskUpdate.as_view(), name='task-update'),
     url(r'^task/(?P<pk>\d+)/delete/$', views.TaskDelete.as_view(), name='task-delete'),
+
+    url(r'^task/(?P<pk>\d+)/add_target/$', views.TaskAssocTargetView.as_view(), name='task-add-target'),
+    url(r'^task/(?P<pk>\d+)/add_volunteer/$', views.TaskAssocAssignView.as_view(), name='task-add-volunteer'),
+    url(r'^task/(?P<pk>\d+)/add_resource/$', views.TaskAssocResourceView.as_view(), name='task-add-resource'),
 
     #View for specifically creating bounded or un-bounded tasks
     url(r'^task/create/free_type/$', views.TaskUnboundCreate.as_view(), name='task-unbound-create'),

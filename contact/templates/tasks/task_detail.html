@@ -30,9 +30,9 @@
       <a href='#assoc_con' class="btn btn-info" data-toggle="collapse">
         <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
       </a>
-      {% bootstrap_button content='Assign a Volunteer' button_type='link' href="" button_class="as hoverable" icon="glyphicon glyphicon-plus"%}
-      {% bootstrap_button content='Add a Target' button_type='link' href="" button_class="ta hoverable" icon="glyphicon glyphicon-plus"%}
-      {% bootstrap_button content='Add a Resource' button_type='link' href="" button_class="re hoverable" icon="glyphicon glyphicon-plus"%}         
+      {% bootstrap_button content='Assign a Volunteer' button_type='link' href=add_volunteer_url button_class="as hoverable" icon="glyphicon glyphicon-plus"%}
+      {% bootstrap_button content='Add a Target' button_type='link' href=add_target_url button_class="ta hoverable" icon="glyphicon glyphicon-plus"%}
+      {% bootstrap_button content='Add a Resource' button_type='link' href=add_resource_url button_class="re hoverable" icon="glyphicon glyphicon-plus"%}         
     </h3>
     <div id='assoc_con' class="collapse">
       {% render_table associated_contact_table %}
