@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -50,6 +51,15 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
         context['associated_task_table'] = table_task.TaskNoProjectTable(self.object.tasks.get_queryset())
 
         return context
+
+    def post(self, *args, **kwargs):
+
+        proj_inst = get_object_or_404(Project, pk=kwargs['pk'])
+
+        proj_inst.complete = self.request.POST['mark']
+        proj_inst.save()
+
+        return HttpResponseRedirect( reverse_lazy( 'project-detail', args=(kwargs['pk'],) ) )
 
 class ProjectCreate(LoginRequiredMixin, CreateView):
     template_name = 'projects/project_form.html'

@@ -27,13 +27,18 @@
   <p><strong>Notes: </strong>{{ project.notes }}</p>
 
   <h2 class="col-sm-12">
-    {% if task.complete %}
-      {% bootstrap_button content='Mark Incomplete' button_type='link' href="" button_class="incomplete hoverable" icon="glyphicon glyphicon-repeat" %}
-    {% else %}
-      {% bootstrap_button content='Mark Completed' button_type='link' href="" button_class="completed hoverable" icon="glyphicon glyphicon-ok" %}
-    {% endif %}
-    {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
-    {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+    <form action="" method="post">
+      {% csrf_token %}
+
+      {% if project.complete %}
+        {% bootstrap_button content='Mark Incomplete' button_type='submit' name='mark' value='False' button_class="incomplete hoverable" icon="glyphicon glyphicon-repeat" %}
+      {% else %}
+        {% bootstrap_button content='Mark Completed' button_type='submit' name='mark' value='True' button_class="completed hoverable" icon="glyphicon glyphicon-ok" %}
+      {% endif %}
+
+      {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+      {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+    </form>
   </h2>
   <div class="col-sm-12">
     <hr>

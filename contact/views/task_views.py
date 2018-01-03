@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -46,6 +47,15 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
         context['associated_contact_table'] = table_assoc.TaskCon_Contact_Table( self.object.con_assocs.get_queryset() )
 
         return context
+
+    def post(self, *args, **kwargs):
+
+        task_inst = get_object_or_404(Task, pk=kwargs['pk'])
+
+        task_inst.complete = self.request.POST['mark']
+        task_inst.save()
+
+        return HttpResponseRedirect( reverse_lazy( 'task-detail', args=(kwargs['pk'],) ) )
 
 class TaskCreate(LoginRequiredMixin, CreateView):
     template_name = 'tasks/task_form.html'
