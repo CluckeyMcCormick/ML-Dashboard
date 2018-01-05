@@ -22,6 +22,28 @@ td.centerized {
     text-align: center;
 }
 
+button.as-link {
+    background:none!important;
+    border:none; 
+    padding:0!important;
+
+    color:#337ab7;
+    cursor:pointer;
+}
+
+button.as-link:hover {
+    color:#23527c;
+    text-decoration:underline;
+}
+
+button.as-link.danger {
+    color:#D30;
+}
+
+button.as-link.danger:hover {
+    color:#C20;
+}
+
 /* 
     Contact Type Tags
 */

@@ -75,7 +75,7 @@ class ValueButtonColumn(Column):
 
     def render(self, obj):
         output_form = '''
-        <button class="btn {0}" type="{1}" name="{2}" value="{3}">
+        <button class="{0}" type="{1}" name="{2}" value="{3}">
             {4}
         </button>
         '''
@@ -102,7 +102,22 @@ class AddButtonColumn(ValueButtonColumn):
             field='pk', header='Add', 
             b_content=self.content, 
             b_type='submit', 
-            b_class=b_class, 
+            b_class="btn " + b_class, 
             b_name=b_name, 
             **kwargs
         )
+
+class RemoveItemColumn(ValueButtonColumn):
+    content = '''
+        <span class="glyphicon glyphicon-remove">
+        </span> 
+    '''
+    def __init__(self, b_class='', b_name='', **kwargs):
+        super(RemoveItemColumn, self).__init__(
+            field='pk', header='Remove', 
+            b_content=self.content, 
+            b_type='submit', 
+            b_class="as-link danger" + b_class, 
+            b_name=b_name, 
+            **kwargs
+        )       

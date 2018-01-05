@@ -44,16 +44,20 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
         context['add_target_url'] = reverse_lazy('task-add-target', args=(context['task'].pk,))
         context['add_resource_url'] = reverse_lazy('task-add-resource', args=(context['task'].pk,))
 
-        context['associated_contact_table'] = table_assoc.TaskCon_Contact_Table( self.object.con_assocs.get_queryset() )
+        context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
 
         return context
 
     def post(self, *args, **kwargs):
 
-        task_inst = get_object_or_404(Task, pk=kwargs['pk'])
+        if 'mark' in self.request.POST:
+            task_inst = get_object_or_404(Task, pk=kwargs['pk'])
+            task_inst.complete = self.request.POST['mark']
+            task_inst.save()
 
-        task_inst.complete = self.request.POST['mark']
-        task_inst.save()
+        elif 'assoc_id' in self.request.POST:
+            assoc_inst = get_object_or_404(TaskContactAssoc, pk=self.request.POST['assoc_id'])
+            assoc_inst.delete()
 
         return HttpResponseRedirect( reverse_lazy( 'task-detail', args=(kwargs['pk'],) ) )
 

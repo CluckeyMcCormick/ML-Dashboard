@@ -47,17 +47,20 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
 
         context['new_project_task_url'] = reverse_lazy('task-project-create', args=(context['project'].pk,))
 
-        context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table( self.object.con_assocs.get_queryset() )
+        context['associated_contact_table'] = table_assoc.ProjCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
         context['associated_task_table'] = table_task.TaskNoProjectTable(self.object.tasks.get_queryset())
 
         return context
 
     def post(self, *args, **kwargs):
 
-        proj_inst = get_object_or_404(Project, pk=kwargs['pk'])
-
-        proj_inst.complete = self.request.POST['mark']
-        proj_inst.save()
+        if 'mark' in self.request.POST:
+            proj_inst = get_object_or_404(Project, pk=kwargs['pk'])
+            proj_inst.complete = self.request.POST['mark']
+            proj_inst.save()
+        elif 'assoc_id' in self.request.POST:
+            assoc_inst = get_object_or_404(ProjectContactAssoc, pk=self.request.POST['assoc_id'])
+            assoc_inst.delete()
 
         return HttpResponseRedirect( reverse_lazy( 'project-detail', args=(kwargs['pk'],) ) )
 

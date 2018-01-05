@@ -90,6 +90,19 @@ class TaskCon_Contact_Table(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
+class TaskCon_ContactRemove_Table(TaskCon_Contact_Table):
+    """
+    Meant to be used from the "perspective" of a single Task.
+    Displays the associated contacts, and the role of each.
+    """
+    remove = RemoveItemColumn(b_name='assoc_id')
+
+    class Meta:
+        model = TaskContactAssoc
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
 #___  ____ ____  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
 #|__] |__/ |  |  | __ |    |  | |\ | __ |__| [__  [__  |  | |    
 #|    |  \ |__| _|    |___ |__| | \|    |  | ___] ___] |__| |___ 
@@ -159,6 +172,20 @@ class ProjCon_Contact_Table(Table):
 
     name = CustomNoneColumn(field='con.name', header='Name')
     role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
+
+    class Meta:
+        model = ProjectContactAssoc
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class ProjCon_ContactRemove_Table(ProjCon_Contact_Table):
+    """
+    Meant to be used from the "perspective" of a single Project.
+    Displays the associated contacts, and the role of each.
+    """
+
+    remove = RemoveItemColumn(b_name='assoc_id')
 
     class Meta:
         model = ProjectContactAssoc
