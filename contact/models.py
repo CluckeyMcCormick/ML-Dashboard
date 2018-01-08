@@ -12,6 +12,12 @@ class Organization(models.Model):
     name = models.CharField(max_length=50, help_text="The name of this organization.")
     notes = models.TextField(max_length=1000, help_text="Any extra notes for this organization.", blank=True)
 
+    class Meta:
+        permissions = (
+            ("organization_view_all", "Can view all organizations."),
+            ("organization_down_sum_all", "Can download summaries for all organizations."),
+        )
+
     def __str__(self):
         """
         String for representing the Model object (in Admin site etc.)
@@ -36,6 +42,18 @@ class Contact(models.Model):
     org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name="contacts")
     notes = models.TextField(max_length=1000, help_text="Any extra notes for this contact.", blank=True)
     user_link = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        permissions = (
+            ("contact_view_all", "Can view all contacts."),
+            ("contact_view_related", "Can view related contacts."),
+
+            ("contact_view_projects", "Can view a contact's projects."),
+            ("contact_view_tasks", "Can view a contact's tasks."),
+
+            ("contact_down_sum_all", "Can download different overall summaries - of all contacts."),
+            ("contact_down_sum_each", "Can download summaries for each contact."),
+        )
 
     def __str__(self):
         """
@@ -179,6 +197,10 @@ class Project(models.Model):
 
     class Meta: 
         ordering = ['deadline','complete',]
+        permissions = (
+            ("project_view_all", "Can view all projects."),
+            ("project_view_related", "Can view related projects."),
+        )
 
     def __str__(self):
         """
@@ -253,7 +275,10 @@ class Task(models.Model):
     class Meta: 
         unique_together = ( 'brief', 'proj',)
         ordering = ['deadline','complete',]
-
+        permissions = (
+            ("task_view_all", "Can view all tasks."),
+            ("task_view_related", "Can view related tasks."),
+        )
 
     def __str__(self):
         """
