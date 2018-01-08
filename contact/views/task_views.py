@@ -168,24 +168,12 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
     form_class = TaskForm
     model = Task
 
-    def get_initial(self):
-        initial = super(TaskUpdate, self).get_initial()
+    def get_form(self):
+        form = super(TaskUpdate, self).get_form()
 
-        id_query = TaskContactAssoc.objects.filter(task__exact=self.object.pk, tag_type__in=['as','ta'])
+        form.fields['proj'].disabled = True
 
-        assigned_query = Contact.objects.filter(task_assocs__in=id_query.filter(tag_type__exact='as'))
-        target_query = Contact.objects.filter(task_assocs__in=id_query.filter(tag_type__exact='ta'))
-
-        initial['volunteers'] = []
-        initial['targets'] = []
-
-        for vol_val in assigned_query.values_list('id', flat=True):
-            initial['volunteers'].append(vol_val)
-
-        for tar_val in target_query.values_list('id', flat=True):
-            initial['targets'].append(tar_val)
-
-        return initial
+        return form
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
