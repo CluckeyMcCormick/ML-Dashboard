@@ -1,9 +1,16 @@
 {% extends "base_generic.html" %}
+
 {% load table_tags %}
+{% load bootstrap3 %}
 
 {% block content %}
 
   <h1>Task List</h1>
+
+  <h2>
+	{% bootstrap_button content='Download Excel List' button_type='link' href=download_all_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+	{% bootstrap_button content='Download Excel (Incomplete Only)' button_type='link' href=download_incomplete_url button_class="btn-primary incomplete hoverable" icon="glyphicon glyphicon-download"%}
+  </h2>
 
   {% render_table task_table %} 
     

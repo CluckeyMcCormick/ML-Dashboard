@@ -10,7 +10,11 @@
 
   {% use_macro display_task_header task  as_title=True       %}
   {% use_macro display_task_body   task  show_contact=False  %}
-   
+  <h2>
+    {% bootstrap_button content='Download Excel Summary' button_type='link' href=task_download_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+  </h2>
+
+
   <form action="" method="post">
     <!-- Buttons go here! -->
     <div>

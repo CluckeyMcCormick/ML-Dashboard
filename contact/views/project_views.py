@@ -2,9 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
+
+import datetime
 
 from ..models import Project, ProjectContactAssoc
 
@@ -14,7 +16,9 @@ from ..tables import (
     assoc_tables        as table_assoc,
     project_tables      as table_proj,
     task_tables         as table_task
-) 
+)
+
+from ..reports import get_project_dataset, get_project_summary
 
 #___  ____ ____  _ ____ ____ ___    _  _ _ ____ _ _ _ ____ 
 #|__] |__/ |  |  | |___ |     |     |  | | |___ | | | [__  
@@ -29,8 +33,36 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
         context = super(ProjectListView, self).get_context_data(**kwargs)
 
         context['project_table'] = table_proj.ProjectTable()
+        context['download_all_url'] = reverse_lazy('projects-all-download')
+        context['download_incomplete_url'] = reverse_lazy('projects-incomplete-download')
         return context
-    
+
+def download_project_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="project_list_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    proj_set = get_project_dataset(Project.objects.get_queryset())
+
+    response.write(proj_set.export('xlsx'))
+    return response
+
+def download_project_incomplete_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="project_list_incomplete_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    proj_set = get_project_dataset(Project.objects.filter(complete__exact=False))
+
+    response.write(proj_set.export('xlsx'))
+    return response
+
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
     template_name = 'projects/project_detail.html'
@@ -40,6 +72,8 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
 
         context['project_edit_url'] = reverse_lazy('project-update', args=(context['project'].pk,))
         context['project_delete_url'] = reverse_lazy('project-delete', args=(context['project'].pk,))
+        context['project_download_url'] = reverse_lazy('project-download', args=(context['project'].pk,))
+
 
         context['project_add_lead_url'] = reverse_lazy('project-add-lead', args=(context['project'].pk,))
         context['project_add_assign_url'] = reverse_lazy('project-add-volunteer', args=(context['project'].pk,))
@@ -63,6 +97,23 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
             assoc_inst.delete()
 
         return HttpResponseRedirect( reverse_lazy( 'project-detail', args=(kwargs['pk'],) ) )
+
+def download_project_summary(request, pk=None):
+    proj = Project.objects.get(pk=pk)
+
+    normal_title =  re.sub( r"[,-.?!/\]", '', proj.title.lower() ).replace(' ','_')
+
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="{0}_{1}.xlsx"'.format(normal_title, current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    proj_sum = get_project_summary(pk)
+
+    response.write(proj_sum.export('xlsx'))
+    return response
 
 class ProjectCreate(LoginRequiredMixin, CreateView):
     template_name = 'projects/project_form.html'

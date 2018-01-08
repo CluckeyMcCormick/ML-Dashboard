@@ -2,7 +2,6 @@ from django.conf.urls import url, include
 
 from . import views
 
-
 urlpatterns = [
 	#reroute non-specific requests to the index
     #url(r'^$', views.index, name='index'),
@@ -14,6 +13,13 @@ urlpatterns = [
     # CONTACTS
     #
     url(r'^contacts/$', views.ContactListView.as_view(), name='contacts'),
+    url(r'^contacts/download/$', views.download_contact_dataset, name='contacts-all-download'),
+    url(r'^contacts/download_volunteer/$', views.download_contact_volunteer_dataset, name='contacts-volunteer-download'),
+    url(r'^contacts/download_prospect/$', views.download_contact_prospect_dataset, name='contacts-prospect-download'),
+    url(r'^contacts/download_donor/$', views.download_contact_donor_dataset, name='contacts-donor-download'),
+    url(r'^contacts/download_grant/$', views.download_contact_grant_dataset, name='contacts-grant-download'),
+    url(r'^contacts/download_corporation/$', views.download_contact_corporation_dataset, name='contacts-corporation-download'),
+
     url(r'^contact/create/$', views.ContactCreate.as_view(), name='contact-create'),
 
     url(r'^contact/(?P<pk>\d+)$', views.ContactDetailView.as_view(), name='contact-detail'),
@@ -34,9 +40,13 @@ urlpatterns = [
     # PROJECTS
     #
     url(r'^projects/$', views.ProjectListView.as_view(), name='projects'),
+    url(r'^projects/download/$', views.download_project_dataset, name='projects-all-download'),
+    url(r'^projects/download_incomplete/$', views.download_project_incomplete_dataset, name='projects-incomplete-download'),
+
     url(r'^project/create/$', views.ProjectCreate.as_view(), name='project-create'),
 
     url(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
+    url(r'^project/(?P<pk>\d+)/download/$', views.download_project_summary, name='project-download'),
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
     url(r'^project/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project-delete'),
 
@@ -50,9 +60,13 @@ urlpatterns = [
     # TASKS
     #
     url(r'^tasks/$', views.TaskListView.as_view(), name='tasks'),
+    url(r'^tasks/download/$', views.download_task_dataset, name='tasks-all-download'),
+    url(r'^tasks/download_incomplete/$', views.download_task_incomplete_dataset, name='tasks-incomplete-download'),
+
     url(r'^task/create/$', views.TaskCreate.as_view(), name='task-create'),
 
     url(r'^task/(?P<pk>\d+)$', views.TaskDetailView.as_view(), name='task-detail'),
+    url(r'^task/(?P<pk>\d+)/download/$', views.download_task_summary, name='task-download'),
     url(r'^task/(?P<pk>\d+)/update/$', views.TaskUpdate.as_view(), name='task-update'),
     url(r'^task/(?P<pk>\d+)/delete/$', views.TaskDelete.as_view(), name='task-delete'),
 

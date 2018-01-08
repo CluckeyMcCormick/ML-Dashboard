@@ -1,9 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
+
+import datetime
+
+from ..reports import get_contact_dataset
 
 from ..models import ContactTypeTag, Contact
 
@@ -26,7 +30,92 @@ class ContactListView(LoginRequiredMixin, generic.TemplateView):
 
         context['contact_table'] = table_con.ContactTable()
 
+        context['download_all_url'] = reverse_lazy('contacts-all-download')
+        context['download_volunteer_url'] = reverse_lazy('contacts-volunteer-download')
+        context['download_prospect_url'] = reverse_lazy('contacts-prospect-download')
+        context['download_donor_url'] = reverse_lazy('contacts-donor-download')
+        context['download_grant_url'] = reverse_lazy('contacts-grant-download')
+        context['download_corporation_url'] = reverse_lazy('contacts-corporation-download')
+
         return context
+
+def download_contact_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.get_queryset())
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+def download_contact_volunteer_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_volunteer_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['vo']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+def download_contact_prospect_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_prospect_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['pr']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+def download_contact_donor_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_donor_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['do']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+def download_contact_grant_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_grant_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['_g']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+def download_contact_corporation_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_corporation_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['_f']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
 
 class ContactDetailView(LoginRequiredMixin, generic.DetailView):
     model = Contact

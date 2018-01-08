@@ -1,9 +1,22 @@
 {% extends "base_generic.html" %}
+
 {% load table_tags %}
+{% load bootstrap3 %}
 
 {% block content %}
 
   <h1>Contact List</h1>
+
+  <h2>
+	{% bootstrap_button content='Download Excel List' button_type='link' href=download_all_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+  </h2>
+  <h2>
+	{% bootstrap_button content='Download Excel (Volunteer Only)' button_type='link' href=download_volunteer_url button_class="vo hoverable" icon="glyphicon glyphicon-download"%}
+	{% bootstrap_button content='Download Excel (Prospect Only)' button_type='link' href=download_prospect_url button_class="pr hoverable" icon="glyphicon glyphicon-download"%}
+	{% bootstrap_button content='Download Excel (Donor Only)' button_type='link' href=download_donor_url button_class="do hoverable" icon="glyphicon glyphicon-download"%}
+	{% bootstrap_button content='Download Excel (Grant Only)' button_type='link' href=download_grant_url button_class="_g hoverable" icon="glyphicon glyphicon-download"%}
+	{% bootstrap_button content='Download Excel (Corporation Only)' button_type='link' href=download_corporation_url button_class="_f hoverable" icon="glyphicon glyphicon-download"%}
+  </h2>
 
   {% render_table contact_table %}
          

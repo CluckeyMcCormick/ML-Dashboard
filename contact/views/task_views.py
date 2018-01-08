@@ -2,11 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 
 import datetime
+import re
+
+from ..reports import get_task_dataset, get_task_summary
 
 from ..models import Task, TaskContactAssoc, Contact
 
@@ -28,7 +31,38 @@ class TaskListView(LoginRequiredMixin, generic.TemplateView):
         context = super(TaskListView, self).get_context_data(**kwargs)
         context['task_table'] = table_task.TaskTable()
 
+        context['download_all_url'] = reverse_lazy('tasks-all-download')
+        context['download_incomplete_url'] = reverse_lazy('tasks-incomplete-download')
+
         return context
+
+
+def download_task_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="task_list_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    task_set = get_task_dataset(Task.objects.get_queryset())
+
+    response.write(task_set.export('xlsx'))
+    return response
+
+def download_task_incomplete_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="task_list_incomplete_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    task_set = get_task_dataset(Task.objects.filter(complete__exact=False))
+
+    response.write(task_set.export('xlsx'))
+    return response
+
 
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
@@ -39,6 +73,8 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
 
         context['edit_url'] = reverse_lazy('task-update', args=(context['task'].pk,))
         context['delete_url'] = reverse_lazy('task-delete', args=(context['task'].pk,))
+
+        context['task_download_url'] = reverse_lazy('task-download', args=(context['task'].pk,))
 
         context['add_volunteer_url'] = reverse_lazy('task-add-volunteer', args=(context['task'].pk,))
         context['add_target_url'] = reverse_lazy('task-add-target', args=(context['task'].pk,))
@@ -60,6 +96,24 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
             assoc_inst.delete()
 
         return HttpResponseRedirect( reverse_lazy( 'task-detail', args=(kwargs['pk'],) ) )
+
+def download_task_summary(request, pk=None):
+    task = Task.objects.get(pk=pk)
+
+    normal_title = re.sub( r"[,-.?!/\\]", '', task.brief.lower() ).replace(' ','_')
+
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="{0}_{1}.xlsx"'.format(normal_title, current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    task_sum = get_task_summary(pk)
+
+    response.write(task_sum.export('xlsx'))
+
+    return response
 
 class TaskCreate(LoginRequiredMixin, CreateView):
     template_name = 'tasks/task_form.html'

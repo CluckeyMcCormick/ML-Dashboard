@@ -29,6 +29,9 @@
 
   <form action="" method="post">
     <h2 class="col-sm-12">
+      {% bootstrap_button content='Download Excel Summary' button_type='link' href=project_download_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+    </h2>
+    <h2 class="col-sm-12">
       
       {% csrf_token %}
 

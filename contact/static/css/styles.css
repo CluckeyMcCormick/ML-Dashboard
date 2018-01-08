@@ -77,19 +77,74 @@ button.as-link.danger:hover {
 }
 
 /* Donor Tag */
-.do { background-color: #FF8C19; } 
+.do { 
+    background-color: #FF8C19;
+    color: white;   
+} 
+
+.do.hoverable:hover,
+.do.hoverable:focus,
+.do.hoverable:active,
+.do.hoverable.active { 
+    color: white; 
+    background-color: #ff8000;
+}
 
 /* Prospect Tag */
-.pr { background-color: #008FBF; }
+.pr { 
+    background-color: #008FBF; 
+    color: white;   
+}
+
+.pr.hoverable:hover,
+.pr.hoverable:focus,
+.pr.hoverable:active,
+.pr.hoverable.active { 
+    color: white; 
+    background-color: #007399;
+}
 
 /* Volunteer Tag */
-.vo { background-color: #4C9926; }
+.vo { 
+    background-color: #4C9926; 
+    color: white;   
+}
+
+.vo.hoverable:hover,
+.vo.hoverable:focus,
+.vo.hoverable:active,
+.vo.hoverable.active { 
+    color: white; 
+    background-color: #3d7a1f;
+}
 
 /* Corporation / Foundation Tag */
-._f { background-color: #9F9F9F; }
+._f { 
+    background-color: #9F9F9F; 
+    color: white;   
+}
 
-/* Prospect Tag */
-._g { background-color: #85A6A6; }
+._f.hoverable:hover,
+._f.hoverable:focus,
+._f.hoverable:active,
+._f.hoverable.active { 
+    color: white; 
+    background-color: #8c8c8c;
+}
+
+/* Grant Resource Tag */
+._g { 
+    background-color: #85A6A6;
+    color: white; 
+}
+
+._g.hoverable:hover,
+._g.hoverable:focus,
+._g.hoverable:active,
+._g.hoverable.active { 
+    color: white; 
+    background-color: #6b9494;
+}
 
 /* 
     Contact Assoc Type Tags
