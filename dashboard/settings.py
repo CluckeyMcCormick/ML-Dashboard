@@ -42,7 +42,7 @@ SECRET_KEY = KEY_OF_SECRETS
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = SECRET_HOSTS
 
 # Application definition
 

@@ -195,15 +195,6 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
         return context
 
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        new_task = form.save()
-        
-        form.handle_task_assignments(new_task)
-
-        return HttpResponseRedirect(reverse_lazy('task-detail', args=(new_task.pk,)))
-
 class TaskDelete(LoginRequiredMixin, DeleteView):
     template_name = 'tasks/task_confirm_delete.html'
     success_url = reverse_lazy('tasks')
