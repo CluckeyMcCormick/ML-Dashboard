@@ -86,7 +86,7 @@ class ContactTagMixin(Table):
 #|    |  | |\ |  |  |__| |     |  
 #|___ |__| | \|  |  |  | |___  |  
 #
-class ContactTable(ContactBasicMixin, ContactInfoMixin, ContactTagMixin):
+class ContactTable(ContactBasicMixin, ContactTagMixin):
 
     class Meta:
         model = Contact
