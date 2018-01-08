@@ -64,7 +64,7 @@ class ProjectForm(forms.ModelForm):
         fields = ['title', 'notes', 'deadline']
         widgets = {
             'notes': forms.Textarea( attrs={'max_length' : 1000} ),
-            'deadline': forms.SelectDateWidget(),
+            'deadline': forms.SelectDateWidget(years=[str(v) for v in range(2017, 2035)]),
         }
 
 class TaskForm(forms.ModelForm):
@@ -82,6 +82,6 @@ class TaskForm(forms.ModelForm):
         }
 
         widgets = {
-            'deadline': forms.SelectDateWidget(),
+            'deadline': forms.SelectDateWidget(years=[str(v) for v in range(2017, 2035)]),
             'proj': forms.Select(attrs={'disabled': True}),
         }                          
