@@ -14,8 +14,8 @@ class Organization(models.Model):
 
     class Meta:
         permissions = (
-            ("organization_view_all", "Can view all organizations."),
-            ("organization_down_sum_all", "Can download summaries for all organizations."),
+            ("organization_view_all", "View all organizations."),
+            ("organization_down_sum_all", "Download organizations summaries."),
         )
 
     def __str__(self):
@@ -45,14 +45,14 @@ class Contact(models.Model):
 
     class Meta:
         permissions = (
-            ("contact_view_all", "Can view all contacts."),
-            ("contact_view_related", "Can view related contacts."),
+            ("contact_view_all", "View all contacts."),
+            ("contact_view_related", "View related contacts."),
 
-            ("contact_view_projects", "Can view a contact's projects."),
-            ("contact_view_tasks", "Can view a contact's tasks."),
+            ("contact_view_projects", "View contact's projects."),
+            ("contact_view_tasks", "View contact's tasks."),
 
-            ("contact_down_sum_all", "Can download different overall summaries - of all contacts."),
-            ("contact_down_sum_each", "Can download summaries for each contact."),
+            ("contact_down_sum_all", "Download overall contact summary."),
+            ("contact_down_sum_each", "Download individual contact summaries."),
         )
 
     def __str__(self):
@@ -200,6 +200,9 @@ class Project(models.Model):
         permissions = (
             ("project_view_all", "View all projects."),
             ("project_view_related", "View related projects."),
+
+            ("project_down_sum_all", "Download overall project summary."),
+            ("project_down_sum_each", "Download individual project summaries."),
         )
 
     def __str__(self):
@@ -276,8 +279,11 @@ class Task(models.Model):
         unique_together = ( 'brief', 'proj',)
         ordering = ['deadline','complete',]
         permissions = (
-            ("task_view_all", "Can view all tasks."),
-            ("task_view_related", "Can view related tasks."),
+            ("task_view_all", "View all tasks."),
+            ("task_view_related", "View related tasks."),
+
+            ("task_down_sum_all", "Download overall task summary."),
+            ("task_down_sum_each", "Download individual task summaries."),
         )
 
     def __str__(self):
