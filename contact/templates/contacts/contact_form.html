@@ -31,11 +31,14 @@
   <div class="col-sm-12">
     {% bootstrap_field form.notes %}
   </div>
-  <div class="col-sm-12">
-    {% buttons %}
-      {% bootstrap_button content='Save' button_type='submit' button_class="btn-primary" icon="glyphicon glyphicon-floppy-disk"%}
-    {% endbuttons %}
-  </div>
+
+  {% if perms.contact.add_contact or perms.contact.change_contact %}
+    <div class="col-sm-12">
+      {% buttons %}
+        {% bootstrap_button content='Save' button_type='submit' button_class="btn-primary" icon="glyphicon glyphicon-floppy-disk"%}
+      {% endbuttons %}
+    </div>
+  {% endif %}
 
 </form>
 {% endblock %}

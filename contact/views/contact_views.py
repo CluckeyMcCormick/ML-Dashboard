@@ -1,5 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import permission_required
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ import datetime
 
 from ..reports import get_contact_dataset
 
-from ..models import ContactTypeTag, Contact
+from ..models import ContactTypeTag, Contact, Task, Project
 
 from ..forms import ContactForm
 
@@ -18,12 +19,31 @@ from ..tables import (
     contact_tables      as table_con,
 ) 
 
+def is_related_contact(con_a, con_b):
+    #find all the Contacts where a and b are associated through a common task
+    t_que_a = Task.objects.filter(contacts__in=[con_a], con_assocs__tag_type__in=['cr', 'as']).order_by()
+    t_que_b = Task.objects.filter(contacts__in=[con_b]).order_by()
+
+    #find all the Contacts where a and b are associated through a common project
+    p_que_a = Project.objects.filter(contacts__in=[con_a], con_assocs__tag_type__in=['cr', 'as', 'le']).order_by()
+    p_que_b = Project.objects.filter(contacts__in=[con_b]).order_by()
+
+    #find all the Contacts where a is project associated and b is task associated
+    p_t_que_a = Project.objects.filter(contacts__in=[con_a], con_assocs__tag_type__in=['cr', 'as', 'le'] ).order_by()
+    p_t_que_b = Project.objects.filter(tasks__contacts__in=[con_b]).order_by()
+
+    return t_que_a.intersection(t_que_b).exists() \
+    or p_que_a.intersection(p_que_b).exists()     \
+    or p_t_que_a.intersection(p_t_que_b).exists() 
+
 #____ ____ _  _ ___ ____ ____ ___    _  _ _ ____ _ _ _ ____ 
 #|    |  | |\ |  |  |__| |     |     |  | | |___ | | | [__  
 #|___ |__| | \|  |  |  | |___  |      \/  | |___ |_|_| ___] 
 #
-class ContactListView(LoginRequiredMixin, generic.TemplateView):
+class ContactListView(LoginRequiredMixin, PermissionRequiredMixin, generic.TemplateView):
     template_name = 'contacts/contact_list.html'
+
+    permission_required = 'contact.contact_view_all'
 
     def get_context_data(self, **kwargs):
         context = super(ContactListView, self).get_context_data(**kwargs)
@@ -39,85 +59,7 @@ class ContactListView(LoginRequiredMixin, generic.TemplateView):
 
         return context
 
-def download_contact_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="contact_list_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    contact_set = get_contact_dataset(Contact.objects.get_queryset())
-
-    response.write(contact_set.export('xlsx'))
-    return response
-
-def download_contact_volunteer_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="contact_list_volunteer_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['vo']))
-
-    response.write(contact_set.export('xlsx'))
-    return response
-
-def download_contact_prospect_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="contact_list_prospect_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['pr']))
-
-    response.write(contact_set.export('xlsx'))
-    return response
-
-def download_contact_donor_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="contact_list_donor_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['do']))
-
-    response.write(contact_set.export('xlsx'))
-    return response
-
-def download_contact_grant_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="contact_list_grant_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['_g']))
-
-    response.write(contact_set.export('xlsx'))
-    return response
-
-def download_contact_corporation_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="contact_list_corporation_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['_f']))
-
-    response.write(contact_set.export('xlsx'))
-    return response
-
-class ContactDetailView(LoginRequiredMixin, generic.DetailView):
+class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
     model = Contact
     template_name = 'contacts/contact_detail.html'
 
@@ -132,10 +74,21 @@ class ContactDetailView(LoginRequiredMixin, generic.DetailView):
 
         return context
 
-class ContactCreate(LoginRequiredMixin, CreateView):
+    def test_func(self):
+        if self.request.user.has_perm("contact.contact_view_all"):
+            return True
+        elif self.request.user.has_perm("contact.contact_view_related"):
+            this = Contact.objects.get(pk=self.kwargs['pk'])
+            return is_related_contact(self.request.user.contact, this)
+        return False
+
+
+class ContactCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'contacts/contact_form.html'
     form_class = ContactForm
     model = Contact
+
+    permission_required = 'contact.contact_view_all'
 
     def get_context_data(self, **kwargs):
         context = super(ContactCreate, self).get_context_data(**kwargs)
@@ -153,10 +106,12 @@ class ContactCreate(LoginRequiredMixin, CreateView):
         
         return HttpResponseRedirect(reverse_lazy('contact-detail', args=(new_contact.pk,)))
 
-class ContactUpdate(LoginRequiredMixin, UpdateView):
+class ContactUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = 'contacts/contact_form.html'
     form_class = ContactForm
     model = Contact
+
+    permission_required = 'contact.change_contact'
 
     def get_initial(self):
         initial = super(ContactUpdate, self).get_initial()
@@ -186,7 +141,98 @@ class ContactUpdate(LoginRequiredMixin, UpdateView):
         
         return HttpResponseRedirect(reverse_lazy('contact-detail', args=(updated_contact.pk,)))
 
-class ContactDelete(LoginRequiredMixin, DeleteView):
+class ContactDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     template_name = 'contacts/contact_confirm_delete.html'
     success_url = reverse_lazy('contacts')
     model = Contact
+
+    permission_required = 'contact.delete_contact'
+
+#___  ____ _ _ _ _  _ _    ____ ____ ___  ____ 
+#|  \ |  | | | | |\ | |    |  | |__| |  \ [__  
+#|__/ |__| |_|_| | \| |___ |__| |  | |__/ ___] 
+#
+@permission_required('contact.contact_down_sum_all')
+def download_contact_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.get_queryset())
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+@permission_required('contact.contact_down_sum_all')
+def download_contact_volunteer_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_volunteer_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['vo']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+@permission_required('contact.contact_down_sum_all')
+def download_contact_prospect_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_prospect_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['pr']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+
+@permission_required('contact.contact_down_sum_all')
+def download_contact_donor_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_donor_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['do']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+@permission_required('contact.contact_down_sum_all')
+def download_contact_grant_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_grant_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['_g']))
+
+    response.write(contact_set.export('xlsx'))
+    return response
+
+@permission_required('contact.contact_down_sum_all')
+def download_contact_corporation_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="contact_list_corporation_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    contact_set = get_contact_dataset(Contact.objects.filter(tags__tag_type__in=['_f']))
+
+    response.write(contact_set.export('xlsx'))
+    return response

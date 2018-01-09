@@ -198,8 +198,8 @@ class Project(models.Model):
     class Meta: 
         ordering = ['deadline','complete',]
         permissions = (
-            ("project_view_all", "Can view all projects."),
-            ("project_view_related", "Can view related projects."),
+            ("project_view_all", "View all projects."),
+            ("project_view_related", "View related projects."),
         )
 
     def __str__(self):

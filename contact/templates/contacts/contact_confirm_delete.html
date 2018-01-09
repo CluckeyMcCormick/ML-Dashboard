@@ -26,14 +26,17 @@
 	This cannot be undone!
 </em></strong></h4>
 
-<form action="" method="post">
-    {% csrf_token %}
-    <table>
-    {{ form.as_table }}
-    </table>
-  	{% buttons %}
-  	   {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
-  	{% endbuttons %}
-    
-</form>
+{% if perms.contact.delete_contact %}
+	<form action="" method="post">
+	    {% csrf_token %}
+	    <table>
+	    {{ form.as_table }}
+	    </table>
+	  	{% buttons %}
+	  	   {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+	  	{% endbuttons %}
+	    
+	</form>
+{% endif %}
+
 {% endblock %}
