@@ -27,17 +27,17 @@ def is_related_contact(con, task):
     task_assign_que = Task.objects.filter(pk__exact=task.pk, contacts__in=[con], con_assocs__tag_type__in=['cr', 'as'])
 
     #Is this contact assigned to the task's project?
-    proj_assign_que = Task.objects.filter(pk__exact=task.pk, project__contacts__in=[con], project__con_assocs__tag_type__in=['cr', 'as', 'le'])
+    proj_assign_que = Task.objects.filter(pk__exact=task.pk, proj__contacts__in=[con], proj__con_assocs__tag_type__in=['cr', 'as', 'le'])
 
     return task_assign_que.exists() or proj_assign_que.exists()
 
 #Is the provided contact admin role of provided task?
 def is_admined_contact_task(con, task):
     #Is this contact assigned to this task?
-    task_assign_que = Task.objects.filter(pk__exact=task.pk, contacts__in=[con_a], con_assocs__tag_type__in=['cr'])
+    task_assign_que = Task.objects.filter(pk__exact=task.pk, contacts__in=[con], con_assocs__tag_type__in=['cr'])
 
     #Is this contact assigned to the task's project?
-    proj_assign_que = Task.objects.filter(pk__exact=task.pk, project__contacts__in=[con_a], project__con_assocs__tag_type__in=['cr', 'le'])
+    proj_assign_que = Task.objects.filter(pk__exact=task.pk, proj__contacts__in=[con], proj__con_assocs__tag_type__in=['cr', 'le'])
 
     return task_assign_que.exists() or proj_assign_que.exists()
 
@@ -45,7 +45,7 @@ def is_admined_contact_task(con, task):
 def is_admined_contact_project(con, proj):
 
     #Is this contact assigned to the task's project?
-    proj_assign_que = Proj.objects.filter(pk__exact=proj.pk, contacts__in=[con_a], con_assocs__tag_type__in=['cr', 'le'])
+    proj_assign_que = Proj.objects.filter(pk__exact=proj.pk, contacts__in=[con], con_assocs__tag_type__in=['cr', 'le'])
 
     return proj_assign_que.exists()
 
@@ -92,6 +92,30 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
         context['add_resource_url'] = reverse_lazy('task-add-resource', args=(context['task'].pk,))
 
         context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
+
+        context['can_download'] = False
+        if self.request.user.has_perm("contact.task_down_sum_each"):
+            context['can_download'] = True
+        elif self.request.user.has_perm("contact.task_down_sum_related"):
+            context['can_download'] = is_related_contact(self.request.user.contact, self.object)
+
+        context['can_edit'] = False
+        if self.request.user.has_perm("contact.change_task"):
+            context['can_edit'] = True
+        elif self.request.user.has_perm("contact.task_change_admin"):
+            context['can_edit'] = is_admined_contact_task(self.request.user.contact, self.object)
+
+        context['can_delete'] = False
+        if self.request.user.has_perm("contact.delete_task"):
+            context['can_delete'] = True
+        elif self.request.user.has_perm("contact.task_delete_admin"):
+            context['can_delete'] = is_admined_contact_task(self.request.user.contact, self.object)
+
+        context['can_assign'] = False
+        if self.request.user.has_perm("contact.task_assign"):
+            context['can_assign'] = True
+        elif self.request.user.has_perm("contact.task_assign_admin"):
+            context['can_assign'] = is_admined_contact_task(self.request.user.contact, self.object)
 
         return context
 
@@ -247,9 +271,15 @@ def download_task_incomplete_dataset(request):
     response.write(task_set.export('xlsx'))
     return response
 
-@permission_required('contact.task_down_sum_each')
 def download_task_summary(request, pk=None):
     task = Task.objects.get(pk=pk)
+
+    if not ( \
+        (is_related_contact(request.user.contact, task) and \
+        request.user.has_perm("contact.task_down_sum_related") \
+    ) \
+    or request.user.has_perm("contact.task_down_sum_each") ):
+        return redirect('/accounts/login/?next=%s' % request.path)
 
     normal_title = re.sub( r"[,-.?!/\\]", '', task.brief.lower() ).replace(' ','_')
 

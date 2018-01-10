@@ -201,11 +201,11 @@ class Project(models.Model):
             ("project_view_all", "View all projects."),
             ("project_view_related", "View related projects."),
 
-            ("project_assign", "Assign contacts to projects")
-            ("project_assign_admin", "Assign contacts to admined projects")
+            ("project_assign", "Assign contacts to projects"),
+            ("project_assign_admin", "Assign contacts to admined projects"),
 
-            ("project_change_admin", "Change admined project tasks")
-            ("project_delete_admin", "Delete admined project tasks")
+            ("project_change_admin", "Change admined project tasks"),
+            ("project_delete_admin", "Delete admined project tasks"),
 
             ("project_down_sum_all", "Download overall project summary."),
             ("project_down_sum_each", "Download individual project summaries."),
@@ -289,12 +289,12 @@ class Task(models.Model):
             ("task_view_all", "View all tasks."),
             ("task_view_related", "View related tasks."),
 
-            ("task_assign", "Assign contacts to projects")
-            ("task_assign_admin", "Assign contacts to admined projects")
+            ("task_assign", "Assign contacts to tasks"),
+            ("task_assign_admin", "Assign contacts to admined tasks"),
 
-            ("task_add_admin", "Add tasks to admined projects")
-            ("task_change_admin", "Change admined project tasks")
-            ("task_delete_admin", "Delete admined project tasks")
+            ("task_add_admin", "Add tasks to admined projects"),
+            ("task_change_admin", "Change admined project tasks"),
+            ("task_delete_admin", "Delete admined project tasks"),
 
             ("task_down_sum_all", "Download overall task summary."),
             ("task_down_sum_each", "Download individual task summaries."),

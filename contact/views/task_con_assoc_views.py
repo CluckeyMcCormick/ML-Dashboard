@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
 
@@ -13,6 +13,8 @@ from ..tables import (
     assoc_tables   as table_assoc,
     contact_tables as table_con
 ) 
+
+from .task_views import is_admined_contact_task
 
 #___ ____ ____ _  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
 # |  |__| [__  |_/  __ |    |  | |\ | __ |__| [__  [__  |  | |    
@@ -33,8 +35,21 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
 
         return context
 
-class TaskAssocAddView(LoginRequiredMixin, generic.TemplateView):
+"""
+Creates an association between a contact and a task.
+This is meant to act as a framework class so that we 
+don't have to write any repeat code. 
+"""
+class TaskAssocAddView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
     template_name = 'assign/assign_form.html'
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.task_assign"):
+            return True
+        elif self.request.user.has_perm("contact.task_assign_admin"):
+            task = Task.objects.get(pk=self.kwargs['pk'])
+            return is_admined_contact_task(self.request.user.contact, task)
+        return False
 
     def get_context_data(self, **kwargs):
         context = super(TaskAssocAddView, self).get_context_data(**kwargs)
@@ -56,6 +71,10 @@ class TaskAssocAddView(LoginRequiredMixin, generic.TemplateView):
 
         return HttpResponseRedirect( reverse_lazy( 'task-detail', args=(kwargs['pk'],) ) )
 
+"""
+Displays a list of contacts.
+The one selected will be ASSIGNED to the task.
+"""
 class TaskAssocAssignView(TaskAssocAddView):
 
     def get_context_data(self, **kwargs):
@@ -81,6 +100,10 @@ class TaskAssocAssignView(TaskAssocAddView):
 
         return super(TaskAssocAssignView, self).post(*args, **kwargs)
 
+"""
+Displays a list of contacts.
+The one selected will be a TARGET for the task.
+"""
 class TaskAssocTargetView(TaskAssocAddView):
 
     def get_context_data(self, **kwargs):
@@ -97,6 +120,10 @@ class TaskAssocTargetView(TaskAssocAddView):
 
         return super(TaskAssocTargetView, self).post(*args, **kwargs)
 
+"""
+Displays a list of contacts.
+The one selected will be a RESOURCE for the task.
+"""
 class TaskAssocResourceView(TaskAssocAddView):
 
     def get_context_data(self, **kwargs):
