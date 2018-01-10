@@ -7,11 +7,15 @@
 
   <h1>Task List</h1>
 
-  <h2>
-	{% bootstrap_button content='Download Excel List' button_type='link' href=download_all_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
-	{% bootstrap_button content='Download Excel (Incomplete Only)' button_type='link' href=download_incomplete_url button_class="incomplete hoverable" icon="glyphicon glyphicon-download"%}
-  </h2>
+  {% if perms.contact.task_down_sum_all %}
+    <h2>
+      {% bootstrap_button content='Download Excel List' button_type='link' href=download_all_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+      {% bootstrap_button content='Download Excel (Incomplete Only)' button_type='link' href=download_incomplete_url button_class="incomplete hoverable" icon="glyphicon glyphicon-download"%}
+    </h2>
+  {% endif %}
 
-  {% render_table task_table %} 
+  {% if perms.contact.task_view_all %}
+    {% render_table task_table %} 
+  {% endif %}
     
 {% endblock %}

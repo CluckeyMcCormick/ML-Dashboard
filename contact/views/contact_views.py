@@ -88,7 +88,7 @@ class ContactCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = ContactForm
     model = Contact
 
-    permission_required = 'contact.contact_view_all'
+    permission_required = 'contact.add_contact'
 
     def get_context_data(self, **kwargs):
         context = super(ContactCreate, self).get_context_data(**kwargs)

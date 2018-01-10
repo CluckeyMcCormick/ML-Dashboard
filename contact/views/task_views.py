@@ -1,5 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import permission_required
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -11,7 +12,7 @@ import re
 
 from ..reports import get_task_dataset, get_task_summary
 
-from ..models import Task, TaskContactAssoc, Contact
+from ..models import Task, TaskContactAssoc, Contact, Project
 
 from ..forms import TaskForm
 
@@ -20,12 +21,42 @@ from ..tables import (
     task_tables         as table_task
 ) 
 
+#Is the provided contact related to task?
+def is_related_contact(con, task):
+    #Is this contact assigned to this task?
+    task_assign_que = Task.objects.filter(pk__exact=task.pk, contacts__in=[con], con_assocs__tag_type__in=['cr', 'as'])
+
+    #Is this contact assigned to the task's project?
+    proj_assign_que = Task.objects.filter(pk__exact=task.pk, project__contacts__in=[con], project__con_assocs__tag_type__in=['cr', 'as', 'le'])
+
+    return task_assign_que.exists() or proj_assign_que.exists()
+
+#Is the provided contact admin role of provided task?
+def is_admined_contact_task(con, task):
+    #Is this contact assigned to this task?
+    task_assign_que = Task.objects.filter(pk__exact=task.pk, contacts__in=[con_a], con_assocs__tag_type__in=['cr'])
+
+    #Is this contact assigned to the task's project?
+    proj_assign_que = Task.objects.filter(pk__exact=task.pk, project__contacts__in=[con_a], project__con_assocs__tag_type__in=['cr', 'le'])
+
+    return task_assign_que.exists() or proj_assign_que.exists()
+
+#Is the provided contact admin role of provided project?
+def is_admined_contact_project(con, proj):
+
+    #Is this contact assigned to the task's project?
+    proj_assign_que = Proj.objects.filter(pk__exact=proj.pk, contacts__in=[con_a], con_assocs__tag_type__in=['cr', 'le'])
+
+    return proj_assign_que.exists()
+
 #___ ____ ____ _  _    _  _ _ ____ _ _ _ ____ 
 # |  |__| [__  |_/     |  | | |___ | | | [__  
 # |  |  | ___] | \_     \/  | |___ |_|_| ___] 
 #                                             
-class TaskListView(LoginRequiredMixin, generic.TemplateView):
+class TaskListView(LoginRequiredMixin, PermissionRequiredMixin, generic.TemplateView):
     template_name = 'tasks/task_list.html'
+
+    permission_required = 'contact.task_view_all'
 
     def get_context_data(self, **kwargs):
         context = super(TaskListView, self).get_context_data(**kwargs)
@@ -36,37 +67,17 @@ class TaskListView(LoginRequiredMixin, generic.TemplateView):
 
         return context
 
-
-def download_task_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="task_list_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    task_set = get_task_dataset(Task.objects.get_queryset())
-
-    response.write(task_set.export('xlsx'))
-    return response
-
-def download_task_incomplete_dataset(request):
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="task_list_incomplete_{0}.xlsx"'.format(current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    task_set = get_task_dataset(Task.objects.filter(complete__exact=False))
-
-    response.write(task_set.export('xlsx'))
-    return response
-
-
-class TaskDetailView(LoginRequiredMixin, generic.DetailView):
+class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
     model = Task
     template_name = 'tasks/task_detail.html'
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.task_view_all"):
+            return True
+        elif self.request.user.has_perm("contact.task_view_related"):
+            this = Task.objects.get(pk=self.kwargs['pk'])
+            return is_related_contact(self.request.user.contact, this)
+        return False
 
     def get_context_data(self, **kwargs):
         context = super(TaskDetailView, self).get_context_data(**kwargs)
@@ -97,24 +108,6 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
 
         return HttpResponseRedirect( reverse_lazy( 'task-detail', args=(kwargs['pk'],) ) )
 
-def download_task_summary(request, pk=None):
-    task = Task.objects.get(pk=pk)
-
-    normal_title = re.sub( r"[,-.?!/\\]", '', task.brief.lower() ).replace(' ','_')
-
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="{0}_{1}.xlsx"'.format(normal_title, current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    task_sum = get_task_summary(pk)
-
-    response.write(task_sum.export('xlsx'))
-
-    return response
-
 class TaskCreate(LoginRequiredMixin, CreateView):
     template_name = 'tasks/task_form.html'
     form_class = TaskForm
@@ -138,7 +131,9 @@ class TaskCreate(LoginRequiredMixin, CreateView):
 
         return HttpResponseRedirect(reverse_lazy('task-detail', args=(new_task.pk,)))
 
-class TaskUnboundCreate(TaskCreate):
+class TaskUnboundCreate(TaskCreate, PermissionRequiredMixin):
+
+    permission_required = 'contact.add_task'
 
     def get_form(self):
         form = super(TaskUnboundCreate, self).get_form()
@@ -147,7 +142,23 @@ class TaskUnboundCreate(TaskCreate):
 
         return form
 
-class TaskProjectCreate(TaskUnboundCreate):
+class TaskProjectCreate(TaskCreate, UserPassesTestMixin):
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.add_task"):
+            return True
+        elif self.request.user.has_perm("contact.task_add_admin"):
+            proj = Project.objects.get(pk=self.kwargs['pk'])
+            return is_admined_contact_project(self.request.user.contact, proj)
+        return False
+
+
+    def get_form(self):
+        form = super(TaskProjectCreate, self).get_form()
+
+        form.fields['proj'].disabled = True
+
+        return form
 
     def get_initial(self):
         initial = super(TaskUnboundCreate, self).get_initial()
@@ -163,10 +174,18 @@ class TaskProjectCreate(TaskUnboundCreate):
 
         return context
 
-class TaskUpdate(LoginRequiredMixin, UpdateView):
+class TaskUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'tasks/task_form.html'
     form_class = TaskForm
     model = Task
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.change_task"):
+            return True
+        elif self.request.user.has_perm("contact.task_change_admin"):
+            task = Task.objects.get(pk=self.kwargs['pk'])
+            return is_admined_contact_task(self.request.user.contact, task)
+        return False
 
     def get_form(self):
         form = super(TaskUpdate, self).get_form()
@@ -183,7 +202,66 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
         return context
 
-class TaskDelete(LoginRequiredMixin, DeleteView):
+class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'tasks/task_confirm_delete.html'
     success_url = reverse_lazy('tasks')
     model = Task
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.delete_task"):
+            return True
+        elif self.request.user.has_perm("contact.task_delete_admin"):
+            task = Task.objects.get(pk=self.kwargs['pk'])
+            return is_admined_contact_task(self.request.user.contact, task)
+        return False
+
+#___  ____ _ _ _ _  _ _    ____ ____ ___  ____ 
+#|  \ |  | | | | |\ | |    |  | |__| |  \ [__  
+#|__/ |__| |_|_| | \| |___ |__| |  | |__/ ___] 
+#
+@permission_required('contact.task_down_sum_all')
+def download_task_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="task_list_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    task_set = get_task_dataset(Task.objects.get_queryset())
+
+    response.write(task_set.export('xlsx'))
+    return response
+
+@permission_required('contact.task_down_sum_all')
+def download_task_incomplete_dataset(request):
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="task_list_incomplete_{0}.xlsx"'.format(current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    task_set = get_task_dataset(Task.objects.filter(complete__exact=False))
+
+    response.write(task_set.export('xlsx'))
+    return response
+
+@permission_required('contact.task_down_sum_each')
+def download_task_summary(request, pk=None):
+    task = Task.objects.get(pk=pk)
+
+    normal_title = re.sub( r"[,-.?!/\\]", '', task.brief.lower() ).replace(' ','_')
+
+    current_str = datetime.date.today().strftime('%Y_%m_%d')
+
+    dispose = 'attachment; filename="{0}_{1}.xlsx"'.format(normal_title, current_str)
+
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = dispose
+
+    task_sum = get_task_summary(pk)
+
+    response.write(task_sum.export('xlsx'))
+
+    return response

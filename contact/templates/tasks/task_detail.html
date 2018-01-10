@@ -10,9 +10,12 @@
 
   {% use_macro display_task_header task  as_title=True       %}
   {% use_macro display_task_body   task  show_contact=False  %}
-  <h2>
-    {% bootstrap_button content='Download Excel Summary' button_type='link' href=task_download_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
-  </h2>
+
+  {% if perms.contact.task_down_sum_each %}
+    <h2>
+      {% bootstrap_button content='Download Excel Summary' button_type='link' href=task_download_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+    </h2>
+  {% endif %}
 
 
   <form action="" method="post">
@@ -26,9 +29,13 @@
         {% bootstrap_button content='Mark Completed' button_type='submit' name='mark' value='True' button_class="completed hoverable" icon="glyphicon glyphicon-ok" %}
       {% endif %}
 
-      {% bootstrap_button content='Edit' button_type='link' href=edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil" %}
+      {% if perms.contact.change_task %}
+        {% bootstrap_button content='Edit' button_type='link' href=edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil" %}
+      {% endif %}
 
-      {% bootstrap_button content='Delete' button_type='link' href=delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+      {% if perms.contact.delete_task %}
+        {% bootstrap_button content='Delete' button_type='link' href=delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+      {% endif %}
     </div>
     <div>
       <hr>
