@@ -292,6 +292,7 @@ class Task(models.Model):
             ("task_assign", "Assign contacts to tasks"),
             ("task_assign_admin", "Assign contacts to admined tasks"),
 
+            ("task_add_to", "Add tasks to any project"),
             ("task_add_admin", "Add tasks to admined projects"),
             ("task_change_admin", "Change admined project tasks"),
             ("task_delete_admin", "Delete admined project tasks"),

@@ -91,7 +91,7 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
         context['add_target_url'] = reverse_lazy('task-add-target', args=(context['task'].pk,))
         context['add_resource_url'] = reverse_lazy('task-add-resource', args=(context['task'].pk,))
 
-        context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
+        context['associated_contact_table'] = table_assoc.TaskCon_Contact_Table( self.object.con_assocs.get_queryset() )
 
         context['can_download'] = False
         if self.request.user.has_perm("contact.task_down_sum_each"):
@@ -114,8 +114,10 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
         context['can_assign'] = False
         if self.request.user.has_perm("contact.task_assign"):
             context['can_assign'] = True
+            context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
         elif self.request.user.has_perm("contact.task_assign_admin"):
             context['can_assign'] = is_admined_contact_task(self.request.user.contact, self.object)
+            context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
 
         return context
 

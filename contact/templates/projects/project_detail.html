@@ -28,9 +28,11 @@
 
 
   <form action="" method="post">
-    <h2 class="col-sm-12">
-      {% bootstrap_button content='Download Excel Summary' button_type='link' href=project_download_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
-    </h2>
+    {% if can_download %}
+      <h2 class="col-sm-12">
+        {% bootstrap_button content='Download Excel Summary' button_type='link' href=project_download_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
+      </h2>
+    {% endif %}
     <h2 class="col-sm-12">
       
       {% csrf_token %}
@@ -41,8 +43,13 @@
         {% bootstrap_button content='Mark Completed' button_type='submit' name='mark' value='True' button_class="completed hoverable" icon="glyphicon glyphicon-ok" %}
       {% endif %}
 
-      {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
-      {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+      {% if can_edit %}
+        {% bootstrap_button content='Edit' button_type='link' href=project_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+      {% endif %}
+
+      {% if can_delete %}
+        {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+      {% endif %}
 
     </h2>
     <div class="col-sm-12">
@@ -53,9 +60,11 @@
         <a href='#assoc_con' class="btn btn-info" data-toggle="collapse">
           <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
         </a>
-        {% bootstrap_button content='Add a Project Lead' button_type='link' href=project_add_lead_url button_class="le hoverable" icon="glyphicon glyphicon-plus"%}
-        {% bootstrap_button content='Assign a Volunteer' button_type='link' href=project_add_assign_url button_class="as hoverable" icon="glyphicon glyphicon-plus"%}
-        {% bootstrap_button content='Add a Resource' button_type='link' href=project_add_resource_url button_class="re hoverable" icon="glyphicon glyphicon-plus"%}  
+        {% if can_assign %}
+          {% bootstrap_button content='Add a Project Lead' button_type='link' href=project_add_lead_url button_class="le hoverable" icon="glyphicon glyphicon-plus"%}
+          {% bootstrap_button content='Assign a Volunteer' button_type='link' href=project_add_assign_url button_class="as hoverable" icon="glyphicon glyphicon-plus"%}
+          {% bootstrap_button content='Add a Resource' button_type='link' href=project_add_resource_url button_class="re hoverable" icon="glyphicon glyphicon-plus"%} 
+        {% endif %} 
       </h3>
       <div id='assoc_con' class="collapse">
         {% render_table associated_contact_table %}
@@ -68,7 +77,9 @@
         <a href='#assoc_task' class="btn btn-info" data-toggle="collapse">
           <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
         </a>
-        {% bootstrap_button content='Add New Task' button_type='link' href=new_project_task_url button_class="btn-success" icon="glyphicon glyphicon-plus"%}
+        {% if can_add_task %}
+          {% bootstrap_button content='Add New Task' button_type='link' href=new_project_task_url button_class="btn-success" icon="glyphicon glyphicon-plus"%}
+        {% endif %}
       </h3>
       <div id='assoc_task' class="collapse">
          {% render_table associated_task_table %}
