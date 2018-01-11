@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
 
@@ -13,6 +13,8 @@ from ..tables import (
     assoc_tables   as table_assoc,
     contact_tables as table_con,
 ) 
+
+from .project_views import is_admined_contact_proj
 
 #___  ____ ____  _ ____ ____ ___    ____ ____ ____ ____ ____ 
 #|__] |__/ |  |  | |___ |     |     |__| [__  [__  |  | |    
@@ -33,8 +35,16 @@ class MyProjectView(LoginRequiredMixin, generic.TemplateView):
 
         return context
 
-class ProjAssoc_AddView(LoginRequiredMixin, generic.TemplateView):
+class ProjAssoc_AddView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
     template_name = 'assign/assign_form.html'
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.task_assign"):
+            return True
+        elif self.request.user.has_perm("contact.task_assign_admin"):
+            task = Task.objects.get(pk=self.kwargs['pk'])
+            return is_admined_contact_proj(self.request.user.contact, task)
+        return False
 
     def get_context_data(self, **kwargs):
         context = super(ProjAssoc_AddView, self).get_context_data(**kwargs)

@@ -43,7 +43,7 @@ class ProjectListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListV
     context_object_name = 'project_list'
     template_name = 'projects/project_list.html'
 
-    permission_required = 'contact.task_view_all'
+    permission_required = 'contact.project_view_all'
 
     def get_context_data(self, **kwargs):
         context = super(ProjectListView, self).get_context_data(**kwargs)
@@ -191,6 +191,7 @@ class ProjectDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 #|  \ |  | | | | |\ | |    |  | |__| |  \ [__  
 #|__/ |__| |_|_| | \| |___ |__| |  | |__/ ___] 
 #
+@permission_required('contact.project_down_sum_all')
 def download_project_dataset(request):
     current_str = datetime.date.today().strftime('%Y_%m_%d')
 
@@ -204,6 +205,7 @@ def download_project_dataset(request):
     response.write(proj_set.export('xlsx'))
     return response
 
+@permission_required('contact.project_down_sum_all')
 def download_project_incomplete_dataset(request):
     current_str = datetime.date.today().strftime('%Y_%m_%d')
 
@@ -219,6 +221,13 @@ def download_project_incomplete_dataset(request):
 
 def download_project_summary(request, pk=None):
     proj = Project.objects.get(pk=pk)
+
+    if not ( \
+        (is_related_contact(request.user.contact, proj) and \
+        request.user.has_perm("contact.project_down_sum_related") \
+    ) \
+    or request.user.has_perm("contact.project_down_sum_each") ):
+        return redirect('/accounts/login/?next=%s' % request.path)
 
     normal_title =  re.sub( r"[,-.?!/\]", '', proj.title.lower() ).replace(' ','_')
 
