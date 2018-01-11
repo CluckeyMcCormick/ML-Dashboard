@@ -31,7 +31,7 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyTaskView, self).get_context_data(**kwargs)
 
         user_con = self.request.user.contact
-        context['my_task_table'] = table_assoc.TaskCon_Task_Table(user_con.task_assocs.exclude(tag_type__exact='ta'))
+        context['my_task_table'] = table_assoc.TaskCon_Task_Table(user_con.task_assocs.exclude(tag_type__in=['ta', 're']))
 
         return context
 

@@ -50,11 +50,12 @@ def my_dashboard(request):
     user_con  = request.user.contact
 
     qs_proj_assoc = user_con.proj_assocs.exclude(tag_type__exact='re')
+    qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__lte=datetime.date.today())
+    qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__exact=None)
 
-    qs_task_assoc = user_con.task_assocs.exclude(tag_type__exact='ta')
+    qs_task_assoc = user_con.task_assocs.exclude(tag_type__in=['ta', 're'])
     qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__lte=datetime.date.today())
     qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
-    #qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
 
     #Get the projects associated with the user
     user_proj_table = table_assoc.ProjCon_Project_Table(qs_proj_assoc)

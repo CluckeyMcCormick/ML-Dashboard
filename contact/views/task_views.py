@@ -45,7 +45,7 @@ def is_admined_contact_task(con, task):
 def is_admined_contact_project(con, proj):
 
     #Is this contact assigned to the task's project?
-    proj_assign_que = Proj.objects.filter(pk__exact=proj.pk, contacts__in=[con], con_assocs__tag_type__in=['cr', 'le'])
+    proj_assign_que = Project.objects.filter(pk__exact=proj.pk, contacts__in=[con], con_assocs__tag_type__in=['cr', 'le'])
 
     return proj_assign_que.exists()
 
@@ -114,21 +114,23 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
         context['can_assign'] = False
         if self.request.user.has_perm("contact.task_assign"):
             context['can_assign'] = True
-            context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
         elif self.request.user.has_perm("contact.task_assign_admin"):
             context['can_assign'] = is_admined_contact_task(self.request.user.contact, self.object)
+
+        if context['can_assign']:
             context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
 
         return context
 
     def post(self, *args, **kwargs):
+        task_inst = get_object_or_404(Task, pk=kwargs['pk'])
+        user = self.request.user.contact
 
-        if 'mark' in self.request.POST:
-            task_inst = get_object_or_404(Task, pk=kwargs['pk'])
+        if ('mark' in self.request.POST) and is_related_contact(user, task_inst):
             task_inst.complete = self.request.POST['mark']
             task_inst.save()
 
-        elif 'assoc_id' in self.request.POST:
+        elif ('assoc_id' in self.request.POST) and is_admined_contact_task(user, task_inst):
             assoc_inst = get_object_or_404(TaskContactAssoc, pk=self.request.POST['assoc_id'])
             assoc_inst.delete()
 
@@ -187,7 +189,7 @@ class TaskProjectCreate(TaskCreate, UserPassesTestMixin):
         return form
 
     def get_initial(self):
-        initial = super(TaskUnboundCreate, self).get_initial()
+        initial = super(TaskProjectCreate, self).get_initial()
         initial['proj'] = self.kwargs['pk']
 
         return initial

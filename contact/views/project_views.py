@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.contrib.auth.decorators import permission_required
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -7,6 +8,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 import datetime
+import re
 
 from ..models import Project, ProjectContactAssoc
 
@@ -102,9 +104,10 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
         context['can_assign'] = False
         if self.request.user.has_perm("contact.project_assign"):
             context['can_assign'] = True
-            context['associated_contact_table'] = table_assoc.ProjCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
         elif self.request.user.has_perm("contact.project_assign_admin"):
             context['can_assign'] = is_admined_contact_proj(self.request.user.contact, self.object)
+        
+        if context['can_assign']:    
             context['associated_contact_table'] = table_assoc.ProjCon_ContactRemove_Table( self.object.con_assocs.get_queryset() )
 
         context['can_add_task'] = False
@@ -113,16 +116,17 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
         elif self.request.user.has_perm("contact.task_add_admin"):
             context['can_add_task'] = is_admined_contact_proj(self.request.user.contact, self.object)
 
-
         return context
 
     def post(self, *args, **kwargs):
+        proj_inst = get_object_or_404(Project, pk=kwargs['pk'])
+        user = self.request.user.contact
 
-        if 'mark' in self.request.POST:
-            proj_inst = get_object_or_404(Project, pk=kwargs['pk'])
+        if ('mark' in self.request.POST) and is_related_contact(user, proj_inst):
             proj_inst.complete = self.request.POST['mark']
             proj_inst.save()
-        elif 'assoc_id' in self.request.POST:
+
+        elif ('assoc_id' in self.request.POST) and is_admined_contact_proj(user, proj_inst):
             assoc_inst = get_object_or_404(ProjectContactAssoc, pk=self.request.POST['assoc_id'])
             assoc_inst.delete()
 
@@ -229,7 +233,7 @@ def download_project_summary(request, pk=None):
     or request.user.has_perm("contact.project_down_sum_each") ):
         return redirect('/accounts/login/?next=%s' % request.path)
 
-    normal_title =  re.sub( r"[,-.?!/\]", '', proj.title.lower() ).replace(' ','_')
+    normal_title = re.sub( r"[,-.?!/\\]", '', proj.title.lower() ).replace(' ','_')
 
     current_str = datetime.date.today().strftime('%Y_%m_%d')
 
