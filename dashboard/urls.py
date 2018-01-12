@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.conf import settings
 
+
 from django.urls import path
 
 urlpatterns = [
@@ -36,6 +37,10 @@ urlpatterns = [
     url(r'^catalog/', RedirectView.as_view(url='/contact_app/', permanent=True)),
     url(r'^contact/', RedirectView.as_view(url='/contact_app/', permanent=True)),
     #Authentication fun
+    path('accounts/password_change/',
+        auth_views.PasswordChangeView.as_view(template_name='registration/change_password.html'),
+    ),
     url(r'^accounts/', include('django.contrib.auth.urls')),
+
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
