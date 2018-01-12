@@ -14,11 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.views.generic import RedirectView
+
+from django.contrib.auth import views as auth_views
 from django.contrib import admin
 
 from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.conf import settings
+
+from django.urls import path
 
 urlpatterns = [
 	#redirect to admin site

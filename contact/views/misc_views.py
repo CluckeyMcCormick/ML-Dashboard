@@ -1,9 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.shortcuts import render
+
+from django.shortcuts import render, redirect
 
 import datetime
 
