@@ -88,6 +88,6 @@ class TaskForm(forms.ModelForm):
 
         widgets = {
             'deadline': forms.SelectDateWidget(years=[str(v) for v in range(2017, 2035)]),
-            'proj': forms.Select(attrs={'disabled': True}),
+            #'proj': forms.Select(attrs={'disabled': True}),
             'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
         }                          

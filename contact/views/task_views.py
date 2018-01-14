@@ -166,7 +166,8 @@ class TaskUnboundCreate(TaskCreate, PermissionRequiredMixin):
     def get_form(self):
         form = super(TaskUnboundCreate, self).get_form()
 
-        form.fields['proj'].disabled = True
+        form.fields['proj'].disabled = False
+        print()
 
         return form
 
@@ -179,7 +180,6 @@ class TaskProjectCreate(TaskCreate, UserPassesTestMixin):
             proj = Project.objects.get(pk=self.kwargs['pk'])
             return is_admined_contact_project(self.request.user.contact, proj)
         return False
-
 
     def get_form(self):
         form = super(TaskProjectCreate, self).get_form()

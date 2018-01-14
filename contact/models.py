@@ -8,14 +8,6 @@ import datetime
 import bleach
 import math
 
-all_bleach = {}
-
-all_bleach['tags'] = []
-all_bleach['attributes'] = []
-all_bleach['styles'] = []
-all_bleach['strip'] = True
-all_bleach['strip_comments'] = True
-
 class Organization(models.Model):
     """
     Model representing a contact
