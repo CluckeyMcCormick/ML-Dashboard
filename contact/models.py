@@ -2,8 +2,12 @@ from django.contrib.auth.models import User
 from django.urls import reverse 
 from django.db import models
 
+import django_bleach
+
 import datetime
+import bleach
 import math
+
 
 class Organization(models.Model):
     """
@@ -175,6 +179,7 @@ class Project(models.Model):
         max_length=50, help_text="Shorthand for referring to this project.",
         unique=True
     )
+
     notes = models.TextField(
         max_length=2500, help_text="Any extra notes for this project.", 
         blank=True
@@ -244,6 +249,20 @@ class Project(models.Model):
         ret_val = None
 
         if self.notes:
+            if len(self.notes) > char_lim:
+                ret_val = self.notes[:char_lim] + '...'
+            else:
+                ret_val = self.notes
+
+        return ret_val
+
+    @property
+    def notes_bleach_trim(self):
+        char_lim = 247
+        ret_val = None
+
+        if self.notes:
+            bleach_func = django_bleach.utils.get_bleach_default_options
             if len(self.notes) > char_lim:
                 ret_val = self.notes[:char_lim] + '...'
             else:

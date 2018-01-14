@@ -1,8 +1,9 @@
 {% extends "base_generic.html" %}
 
+{% load bleach_tags %}
+{% load table_tags %}
 {% load bootstrap3 %}
 {% load macros %}
-{% load table_tags %}
 
 {% loadmacros "tasks/task_macro.html" %}
 {% loadmacros "associated_macros.html" %}
@@ -24,7 +25,8 @@
     <strong class="task-status {{project.status.lower}}">{{project.status}}</strong>
   </p>
 
-  <p><strong>Notes: </strong>{{ project.notes }}</p>
+  <p><strong>Notes: </strong></p>
+  <p>{{ project.notes|bleach }}</p>
 
 
   <form action="" method="post">

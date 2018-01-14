@@ -1,6 +1,6 @@
 {% extends "base_generic.html" %}
 
-
+{% load bleach_tags %}
 {% load bootstrap3 %}
 {% load macros %}
 
@@ -9,7 +9,9 @@
 {% block content %}
 
 	<h1><strong>Organization: </strong>{{ organization.name }}</h1>
-	<p><strong>Notes: </strong>{{ organization.notes }}</p>
+
+	<p><strong>Notes: </strong></p>
+	<p>{{ organization.notes|bleach }}</p>
 
 	{% bootstrap_button content='Edit' button_type='link' href=org_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
 

@@ -1,3 +1,4 @@
+{% load bleach_tags %}
 {% load macros %}
 
 <!--
@@ -53,7 +54,8 @@ MACRO: Display the body of a task...
   {% endif %}
 
   <!-- Notes for this task -->
-  <p><strong>Notes: </strong>{{ task.notes }}</p>  
+  <p><strong>Notes: </strong></p>
+  <p>{{ task.notes | bleach }}</p>  
   <!-- Listing the contacts assigned to this task -->
   {% if show_contact %}
     {% for creator in task.creator_contacts %}
