@@ -167,7 +167,6 @@ class TaskUnboundCreate(TaskCreate, PermissionRequiredMixin):
         form = super(TaskUnboundCreate, self).get_form()
 
         form.fields['proj'].disabled = False
-        print()
 
         return form
 

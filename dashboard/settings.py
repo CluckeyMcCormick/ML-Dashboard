@@ -154,8 +154,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'toolbar': '''
         formatselect | bold italic underline strikethrough | superscript 
         subscript | forecolor backcolor | removeformat | link charmap hr 
-        | alignleft aligncenter alignright alignjustify | bullist numlist | 
-        outdent indent | preview code 
+        insertdatetime | bullist numlist | outdent indent | preview code 
     ''',      
 }
 

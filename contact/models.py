@@ -424,9 +424,6 @@ class TaskContactAssoc(models.Model):
     #The associated type list
     tag_type = models.CharField(max_length=2, choices=ASSOC_TYPE_LIST, default='na')
 
-    class Meta: 
-        unique_together = ( 'con', 'task', )
-
     def __str__(self):
         """
         String for representing the Model object (in Admin site etc.)
@@ -454,9 +451,6 @@ class ProjectContactAssoc(models.Model):
 
     #The associated type list
     tag_type = models.CharField(max_length=2, choices=ASSOC_TYPE_LIST, default='na')
-
-    class Meta: 
-        unique_together = ( 'con', 'proj', )
 
     def __str__(self):
         """
