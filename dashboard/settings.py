@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'macros',
     'bootstrap3',
     'table',
+    'tinymce',
+    'django_bleach',
 ]
 
 MIDDLEWARE = [
@@ -126,9 +128,38 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+BLEACH_ALLOWED_TAGS = [
+    'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'em', 'strong', 'a', 'ul', 'ol', 
+    'li', 'span', 'address', 'pre', 'sub', 'sup', 'hr',
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
+]
+
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style']
+
+BLEACH_ALLOWED_STYLES = [
+    'font-family', 'font-weight', 'text-decoration', 'font-variant', 
+    'background-color', 'text-align',
+    
+    'padding-left', 'padding-right', 'padding-top', 'padding-bottom', 'padding'
+]
+
+
+TINYMCE_DEFAULT_CONFIG = {
+    'menubar': False,
+    'relative_urls': False,
+    'plugins' : '''
+        lists, advlist, link, autolink, charmap, code, contextmenu, colorpicker,
+        hr, insertdatetime, paste, textcolor, visualblocks, wordcount, preview
+    ''',
+    'toolbar': '''
+        formatselect | bold italic underline strikethrough | superscript 
+        subscript | forecolor backcolor | removeformat | link charmap hr 
+        | alignleft aligncenter alignright alignjustify | bullist numlist | 
+        outdent indent | preview code 
+    ''',      
+}
+
+TINYMCE_INCLUDE_JQUERY = False
 
 LANGUAGE_CODE = 'en-us'
 

@@ -4,6 +4,8 @@ from django.db.utils import OperationalError
 
 from django import forms
 
+import tinymce
+
 from .models import (
     ContactTypeTag, Task, TaskContactAssoc,
     Organization, Contact, Project,
@@ -23,7 +25,7 @@ class ContactForm(forms.ModelForm):
         model = Contact
         fields = ['name', 'email', 'phone', 'org', 'notes']
         widgets = {
-            'notes': forms.Textarea( attrs={'max_length' : 1000} ),
+            'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
         }
         labels = {
             'org': ugettext_lazy('Organization'),
@@ -56,6 +58,9 @@ class OrgForm(forms.ModelForm):
     class Meta:
         model = Organization
         fields = '__all__'
+        widgets = {
+            'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
+        }
 
 class ProjectForm(forms.ModelForm):
 
@@ -63,7 +68,7 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = ['title', 'notes', 'deadline']
         widgets = {
-            'notes': forms.Textarea( attrs={'max_length' : 1000} ),
+            'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
             'deadline': forms.SelectDateWidget(years=[str(v) for v in range(2017, 2035)]),
         }
 
@@ -84,4 +89,5 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'deadline': forms.SelectDateWidget(years=[str(v) for v in range(2017, 2035)]),
             'proj': forms.Select(attrs={'disabled': True}),
+            'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
         }                          

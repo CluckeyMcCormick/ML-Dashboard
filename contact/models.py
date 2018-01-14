@@ -10,7 +10,7 @@ class Organization(models.Model):
     Model representing a contact
     """
     name = models.CharField(max_length=50, help_text="The name of this organization.")
-    notes = models.TextField(max_length=1000, help_text="Any extra notes for this organization.", blank=True)
+    notes = models.TextField(max_length=2500, help_text="Any extra notes for this organization.", blank=True)
 
     class Meta:
         permissions = (
@@ -40,7 +40,7 @@ class Contact(models.Model):
     phone = models.CharField(max_length=20, help_text="The phone number of your contact.", null=True, blank=True)
 
     org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name="contacts")
-    notes = models.TextField(max_length=1000, help_text="Any extra notes for this contact.", blank=True)
+    notes = models.TextField(max_length=2500, help_text="Any extra notes for this contact.", blank=True)
     user_link = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
@@ -176,7 +176,7 @@ class Project(models.Model):
         unique=True
     )
     notes = models.TextField(
-        max_length=1000, help_text="Any extra notes for this project.", 
+        max_length=2500, help_text="Any extra notes for this project.", 
         blank=True
     )
 
@@ -280,7 +280,7 @@ class Task(models.Model):
     deadline = models.DateField(null=True, blank=True, help_text="What is the deadline for this task?")
 
     #notes for this task
-    notes = models.TextField(max_length=555, help_text="Any extra notes for this project.", blank=True)
+    notes = models.TextField(max_length=2500, help_text="Any extra notes for this project.", blank=True)
 
     class Meta: 
         unique_together = ( 'brief', 'proj',)

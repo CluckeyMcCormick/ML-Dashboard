@@ -2,33 +2,37 @@
 
 {% load bootstrap3 %}
 
+{% block addhead %}  
+  {{ form.media }}
+{% endblock %}
+
 {% block content %}
 
-{% if is_create %}
-  {% if is_bound %}
-    <h1>Create Task for Project</h1>
+  {% if is_create %}
+    {% if is_bound %}
+      <h1>Create Task for Project</h1>
+    {% else %}
+      <h1>Create Task</h1>
+    {% endif %}
+
   {% else %}
-    <h1>Create Task</h1>
+    <h1><strong>Edit Task:</strong> {{ task.brief }}</h1>
   {% endif %}
 
-{% else %}
-  <h1><strong>Edit Task:</strong> {{ task.brief }}</h1>
-{% endif %}
+  <form action="" method="post">
+    {% csrf_token %}
 
-<form action="" method="post">
-  {% csrf_token %}
+    {% bootstrap_field form.brief %}
 
-  {% bootstrap_field form.brief %}
+    {% bootstrap_field form.deadline %}
 
-  {% bootstrap_field form.deadline %}
+    {% bootstrap_field form.proj %}
+   
+    {% bootstrap_field form.notes %}   
+    
+    {% buttons %}
+      {% bootstrap_button content='Save' button_type='submit' button_class="btn-primary" icon="glyphicon glyphicon-floppy-disk"%}
+    {% endbuttons %}
 
-  {% bootstrap_field form.proj %}
- 
-  {% bootstrap_field form.notes %}   
-  
-  {% buttons %}
-    {% bootstrap_button content='Save' button_type='submit' button_class="btn-primary" icon="glyphicon glyphicon-floppy-disk"%}
-  {% endbuttons %}
-
-</form>
+  </form>
 {% endblock %}

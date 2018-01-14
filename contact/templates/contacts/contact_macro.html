@@ -1,5 +1,6 @@
 {% load macros %}
 
+{% load bleach_tags %}
 <!--
 
 MACRO: Display the tags of the Contact in a large format
@@ -28,7 +29,8 @@ MACRO: Display the tags of the Contact in a large format
       <p><strong>Organization:</strong> {{ contact.org }} </p>
     </div>
     <div class="col-sm-9">
-      <p><strong>Notes:</strong> {{ contact.notes }} </p>
+      <p><strong>Notes:</strong></p>
+      <p>{{ contact.notes|bleach }}</p>
     </div>
   </div>
 
