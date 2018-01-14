@@ -51,6 +51,12 @@ class ContactInfoMixin(Table):
     email = CustomNoneColumn(field='email', header='E-Mail')
     phone = CustomNoneColumn(field='phone', header='Phone')
 
+class ContactNotesMixin(Table):
+    """
+    A single column - a clipping of the contact's notes
+    """
+    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')      
+
 class ContactTagMixin(Table):
     """
     Columns to display a Contact's Type Tag info.
@@ -86,7 +92,7 @@ class ContactTagMixin(Table):
 #|    |  | |\ |  |  |__| |     |  
 #|___ |__| | \|  |  |  | |___  |  
 #
-class ContactTable(ContactBasicMixin, ContactTagMixin):
+class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactTagMixin):
 
     class Meta:
         model = Contact

@@ -44,6 +44,7 @@ class TaskNoProjectTable(Table):
 class TaskTable(TaskNoProjectTable):
 
     project = CustomNoneColumn(field='proj', header='Project')
+    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes') 
 
     class Meta:
         model = Task

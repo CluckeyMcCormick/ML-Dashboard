@@ -29,12 +29,12 @@ class BooleanIconColumn(Column):
         return safe_str
 
 class CheckOnlyColumn(BooleanIconColumn):
-    def __init__(self, field=None, header=None, true_class='', **kwargs):
-        super(CheckOnlyColumn, self).__init__(field=field, header=header, true_icon='glyphicon-ok', true_class=true_class, **kwargs)
+    def __init__(self, **kwargs):
+        super(CheckOnlyColumn, self).__init__( true_icon='glyphicon-ok', **kwargs)
 
 class CustomNoneColumn(Column):
-    def __init__(self, field=None, header=None, none_str='', **kwargs):
-        super(CustomNoneColumn, self).__init__(field=field, header=header, **kwargs)
+    def __init__(self, none_str='', **kwargs):
+        super(CustomNoneColumn, self).__init__(**kwargs)
         self.none_str = none_str
 
     def render(self, obj):
@@ -55,8 +55,8 @@ class NoneableDatetimeColumn(DatetimeColumn):
         return ret
 
 class TagColumn(Column):
-    def __init__(self, field=None, header=None, wrap_class='', **kwargs):
-        super(TagColumn, self).__init__(field=field, header=header, **kwargs)
+    def __init__(self, wrap_class='', **kwargs):
+        super(TagColumn, self).__init__(**kwargs)
         self.wrap_class = wrap_class
 
     def render(self, obj):
@@ -66,8 +66,8 @@ class TagColumn(Column):
         return mark_safe( output_form.format(self.wrap_class,  val.lower().replace(' ', '-'), val) )
 
 class ValueButtonColumn(Column):
-    def __init__(self, field=None, header=None, b_class='', b_type='', b_name='', b_content='', **kwargs):
-        super(ValueButtonColumn, self).__init__(field=field, header=header, **kwargs)
+    def __init__(self, b_class='', b_type='', b_name='', b_content='', **kwargs):
+        super(ValueButtonColumn, self).__init__(**kwargs)
         self.b_class = b_class
         self.b_type = b_type
         self.b_name = b_name
@@ -97,13 +97,12 @@ class AddButtonColumn(ValueButtonColumn):
         </span> 
         Add
     '''
-    def __init__(self, b_class='', b_name='', **kwargs):
+    def __init__(self, b_class='', **kwargs):
         super(AddButtonColumn, self).__init__(
             field='pk', header='Add', 
             b_content=self.content, 
             b_type='submit', 
             b_class="btn " + b_class, 
-            b_name=b_name, 
             **kwargs
         )
 
@@ -112,12 +111,11 @@ class RemoveItemColumn(ValueButtonColumn):
         <span class="glyphicon glyphicon-remove">
         </span> 
     '''
-    def __init__(self, b_class='', b_name='', **kwargs):
+    def __init__(self, b_class='', **kwargs):
         super(RemoveItemColumn, self).__init__(
             field='pk', header='Remove', 
             b_content=self.content, 
             b_type='submit', 
             b_class="as-link danger" + b_class, 
-            b_name=b_name, 
             **kwargs
         )       

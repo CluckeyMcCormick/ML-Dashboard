@@ -29,9 +29,10 @@ class OrgTable(Table):
         searchable=False,
         sortable=False,
     )
+
     name = CustomNoneColumn(field='name', header='Name')
-    cons = Column(field='contacts.count', header='Contacts')
-    notes = CustomNoneColumn(field='notes', header='Notes')
+    cons = Column(field='contact_count', header='Contacts')
+    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')
 
     class Meta:
         model = Organization

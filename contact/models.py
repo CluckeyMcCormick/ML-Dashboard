@@ -8,6 +8,13 @@ import datetime
 import bleach
 import math
 
+all_bleach = {}
+
+all_bleach['tags'] = []
+all_bleach['attributes'] = []
+all_bleach['styles'] = []
+all_bleach['strip'] = True
+all_bleach['strip_comments'] = True
 
 class Organization(models.Model):
     """
@@ -33,6 +40,24 @@ class Organization(models.Model):
         Returns the url to access a particular project.
         """
         return reverse('organization-detail', args=[str(self.id)])
+
+    @property
+    def notes_bleach_trim(self):
+        char_lim = 97
+        ret_val = None
+
+        if self.notes:
+            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
+            
+            if len(ret_val) > char_lim:
+                ret_val = ret_val[:char_lim] + '...'
+
+        return ret_val
+
+    @property
+    def contact_count(self):
+        return self.contacts.count()
+
 
 # Create your models here.
 class Contact(models.Model):
@@ -70,6 +95,20 @@ class Contact(models.Model):
         Returns the url to access a particular project.
         """
         return reverse('contact-detail', args=[str(self.id)])
+
+    @property
+    def notes_bleach_trim(self):
+        char_lim = 97
+        ret_val = None
+
+        if self.notes:
+            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
+            
+            if len(ret_val) > char_lim:
+                ret_val = ret_val[:char_lim] + '...'
+
+        return ret_val
+
 
     # #########
     # Type Tags
@@ -244,29 +283,15 @@ class Project(models.Model):
         return str(self.complete_percent) + '%'
 
     @property
-    def notes_trimmed(self):
-        char_lim = 247
-        ret_val = None
-
-        if self.notes:
-            if len(self.notes) > char_lim:
-                ret_val = self.notes[:char_lim] + '...'
-            else:
-                ret_val = self.notes
-
-        return ret_val
-
-    @property
     def notes_bleach_trim(self):
         char_lim = 247
         ret_val = None
 
         if self.notes:
-            bleach_func = django_bleach.utils.get_bleach_default_options
-            if len(self.notes) > char_lim:
-                ret_val = self.notes[:char_lim] + '...'
-            else:
-                ret_val = self.notes
+            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
+            
+            if len(ret_val) > char_lim:
+                ret_val = ret_val[:char_lim] + '...'
 
         return ret_val
 
@@ -332,6 +357,20 @@ class Task(models.Model):
         Returns the url to access a particular task.
         """
         return reverse('task-detail', args=[str(self.id)])
+
+    @property
+    def notes_bleach_trim(self):
+        char_lim = 97
+        ret_val = None
+
+        if self.notes:
+            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
+            
+            if len(ret_val) > char_lim:
+                ret_val = ret_val[:char_lim] + '...'
+
+        return ret_val
+
 
     @property
     def assigned_contacts(self):
