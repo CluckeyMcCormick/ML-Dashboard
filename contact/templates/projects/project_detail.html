@@ -25,9 +25,14 @@
     <strong class="task-status {{project.status.lower}}">{{project.status}}</strong>
   </p>
 
+  {% if creator.con %}
+    <p>
+      <strong class="con-assoc cr">Creator:</strong> {{creator.con.name}}
+    </p>
+  {% endif %}
+
   <p><strong>Notes: </strong></p>
   <p>{{ project.notes|bleach }}</p>
-
 
   <form action="" method="post">
     {% if can_download %}

@@ -1,15 +1,41 @@
 {% extends "base_generic.html" %}
 
-{% load macros %}
+{% load bleach_tags %}
 {% load bootstrap3 %}
 {% load table_tags %}
+{% load macros %}
 
 {% loadmacros "tasks/task_macro.html" %}
 
 {% block content %}
+  <h1>
+    <strong>Task: </strong>{{task.brief}}
+  </h1>
 
-  {% use_macro display_task_header task  as_title=True       %}
-  {% use_macro display_task_body   task  show_contact=False  %}
+  {% if task.deadline %}
+    <p><strong>Complete By: </strong> {{ task.deadline }}</p>
+  {% endif %}
+
+  <p>
+    <strong>Task Status: </strong>
+    <strong class="task-status {{task.status.lower}}">{{task.status}}</strong>
+  </p>
+
+  {% if creator.con %}
+    <p>
+      <strong class="con-assoc cr">Creator:</strong> {{creator.con.name}}
+    </p>
+  {% endif %}
+
+  {% if show_project %}
+    {% if task.proj %}
+      <p><strong>Project: </strong> <a href="{{ task.proj.get_absolute_url }}">{{ task.proj.title }}</a></p>
+    {% endif %}
+  {% endif %}
+
+  <!-- Notes for this task -->
+  <p><strong>Notes: </strong></p>
+  <p>{{ task.notes | bleach }}</p>  
 
   {% if can_download %}
     <h2>

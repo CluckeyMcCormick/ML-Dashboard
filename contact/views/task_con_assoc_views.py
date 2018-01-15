@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
 
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
@@ -54,7 +55,8 @@ class TaskAssocAddView(LoginRequiredMixin, UserPassesTestMixin, generic.Template
     def get_context_data(self, **kwargs):
         context = super(TaskAssocAddView, self).get_context_data(**kwargs)
 
-        context['con_que'] = Contact.objects.exclude(tasks__pk__in=[ kwargs['pk'] ])
+        assoc_set = TaskContactAssoc.objects.filter(task=kwargs['pk'], tag_type__in=['as', 'ta', 're', 'na'])
+        context['con_que'] = Contact.objects.exclude(task_assocs__in=assoc_set)       
 
         context['assign_table'] = ' '
         context['page_title'] = 'Assign <t style="text-decoration: underline;">{0}</t> -'
@@ -85,8 +87,8 @@ class TaskAssocAssignView(TaskAssocAddView):
         
         if task_inst.proj:
             context['con_que'] = context['con_que'].filter(
-                proj_assocs__tag_type__in=['as', 'le'], 
-                proj_assocs__proj__exact=task_inst.proj
+                proj_assocs__tag_type__in=['as', 'le', 'cr'], 
+                proj_assocs__proj=task_inst.proj
             )
 
         context['assign_table'] = table_con.SelectVolunteerTable( context['con_que'] )

@@ -31,6 +31,7 @@ class MyProjectView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyProjectView, self).get_context_data(**kwargs)
 
         user_con = self.request.user.contact
+
         context['my_project_table'] = table_assoc.ProjCon_Project_Table(user_con.proj_assocs.exclude(tag_type__exact='re'))
 
         return context
@@ -49,7 +50,8 @@ class ProjAssoc_AddView(LoginRequiredMixin, UserPassesTestMixin, generic.Templat
     def get_context_data(self, **kwargs):
         context = super(ProjAssoc_AddView, self).get_context_data(**kwargs)
 
-        context['con_que'] = Contact.objects.exclude(projects__pk__in=[ kwargs['pk'] ])
+        assoc_set = ProjectContactAssoc.objects.filter(proj=kwargs['pk'], tag_type__in=['as', 'le', 're', 'na'])
+        context['con_que'] = Contact.objects.exclude(proj_assocs__in=assoc_set)  
 
         context['assign_table'] = ' '
         context['page_title'] = 'Assign <t style="text-decoration: underline;">{0}</t> -'
