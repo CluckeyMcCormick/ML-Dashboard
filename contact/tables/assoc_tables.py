@@ -95,7 +95,11 @@ class TaskCon_ContactRemove_Table(TaskCon_Contact_Table):
     Meant to be used from the "perspective" of a single Task.
     Displays the associated contacts, and the role of each.
     """
-    remove = RemoveItemColumn(b_name='assoc_id')
+    remove = RemoveConfirmColumn(
+        extra_field='con.name', 
+        message='''Are you sure you want to remove {0} from this task?''',
+        b_name='assoc_id'
+    )
 
     class Meta:
         model = TaskContactAssoc
@@ -184,8 +188,11 @@ class ProjCon_ContactRemove_Table(ProjCon_Contact_Table):
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
     """
-
-    remove = RemoveItemColumn(b_name='assoc_id')
+    remove = RemoveConfirmColumn(
+        extra_field='con.name', 
+        message='''Are you sure you want to remove {0} from this project? Note that they won\\'t be removed from any assigned tasks! ''',
+        b_name='assoc_id'
+    )
 
     class Meta:
         model = ProjectContactAssoc

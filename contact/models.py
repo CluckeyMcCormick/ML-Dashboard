@@ -441,7 +441,7 @@ class TaskContactAssoc(models.Model):
         else:
             other = TaskContactAssoc.objects.filter(tag_type__in=['as','ta','re','na'], task=self.task, con=self.con)
             if( other.exists() ):
-                message = "A non-creator relationship already exists between task {0} and {1}!"
+                message = "A non-creator relationship already exists between task '{0}' and '{1}'!"
                 raise Exception( message.format(self.task.brief, self.con.name) )
         super(TaskContactAssoc, self).save(*args, **kwargs)
     

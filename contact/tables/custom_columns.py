@@ -66,17 +66,18 @@ class TagColumn(Column):
         return mark_safe( output_form.format(self.wrap_class,  val.lower().replace(' ', '-'), val) )
 
 class ValueButtonColumn(Column):
-    def __init__(self, b_class='', b_type='', b_name='', b_content='', **kwargs):
+    def __init__(self, b_class='', b_type='', b_name='', b_content='', b_extra='', **kwargs):
         super(ValueButtonColumn, self).__init__(**kwargs)
         self.b_class = b_class
         self.b_type = b_type
         self.b_name = b_name
         self.b_content = b_content
+        self.b_extra = b_extra
 
     def render(self, obj):
         output_form = '''
-        <button class="{0}" type="{1}" name="{2}" value="{3}">
-            {4}
+        <button class="{0}" type="{1}" name="{2}" value="{3}" {4}>
+            {5}
         </button>
         '''
         val = super(ValueButtonColumn, self).render(obj)
@@ -87,6 +88,7 @@ class ValueButtonColumn(Column):
                 self.b_type, 
                 self.b_name, 
                 val, 
+                self.b_extra,
                 self.b_content
             ) 
         )
@@ -118,4 +120,26 @@ class RemoveItemColumn(ValueButtonColumn):
             b_type='submit', 
             b_class="as-link danger" + b_class, 
             **kwargs
-        )       
+        )
+
+class RemoveConfirmColumn(RemoveItemColumn):
+    extra = '''onclick="return confirm('{0}');"'''
+    def __init__(self, extra_field, message='{0}', **kwargs):
+        super(RemoveConfirmColumn, self).__init__(
+            b_extra=self.extra, 
+            **kwargs
+        )
+        self.extra_field = extra_field
+        self.message = message         
+
+    def render(self, obj):
+
+        html = super(RemoveConfirmColumn, self).render(obj)
+
+        extra_val = ''
+        val = Accessor(self.extra_field).resolve(obj)
+        if val:
+            extra_val = val
+
+
+        return mark_safe( html.format(self.message).format(extra_val) )

@@ -130,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 BLEACH_ALLOWED_TAGS = [
     'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'em', 'strong', 'a', 'ul', 'ol', 
-    'li', 'span', 'address', 'pre', 'sub', 'sup', 'hr',
+    'li', 'span', 'address', 'pre', 'sub', 'sup', 'hr', 'br'
 
 ]
 
