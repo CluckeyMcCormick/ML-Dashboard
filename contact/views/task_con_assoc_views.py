@@ -17,6 +17,29 @@ from ..tables import (
 
 from .task_views import is_admined_contact_task
 
+def get_tiered_task_assoc_qs(user_con):
+    user_tasks = user_con.tasks.get_queryset()
+
+    ua_all = user_con.task_assocs.get_queryset()
+    ua_assign = ua_all.filter(tag_type__in=['as'])
+    ua_create = ua_all.filter(tag_type__in=['cr'])
+
+    #Now, get those tasks that have an assigned relation
+    #and those that have a creator relation
+    assigned_tasks = user_tasks.filter(con_assocs__in=ua_assign)
+    created_tasks = user_tasks.filter(con_assocs__in=ua_create)
+
+    #Now, get the tasks that AREN'T assigned 
+    #Which means, only getting the tasks we've created
+    #And some others we don't really care about
+    tasks_no_assigned = user_tasks.exclude(id__in=assigned_tasks)
+
+    #Now, we take all our creator associations, and limit it to
+    #ONLY the ones that have no ASSIGN relation
+    ua_create = ua_create.filter(task__in=tasks_no_assigned)
+
+    return ua_assign.union(ua_create)
+
 #___ ____ ____ _  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
 # |  |__| [__  |_/  __ |    |  | |\ | __ |__| [__  [__  |  | |    
 # |  |  | ___] | \_    |___ |__| | \|    |  | ___] ___] |__| |___ 
@@ -31,8 +54,8 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(MyTaskView, self).get_context_data(**kwargs)
 
-        user_con = self.request.user.contact
-        context['my_task_table'] = table_assoc.TaskCon_Task_Table(user_con.task_assocs.exclude(tag_type__in=['ta', 're']))
+        assoc_que = get_tiered_task_assoc_qs( self.request.user.contact )
+        context['my_task_table'] = table_assoc.TaskCon_Task_Table( assoc_que )
 
         return context
 

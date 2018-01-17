@@ -22,6 +22,9 @@ from ..tables import (
     assoc_tables        as table_assoc
 ) 
 
+from .proj_con_assoc_views import get_tiered_proj_assoc_qs
+from .task_con_assoc_views import get_tiered_task_assoc_qs
+
 # Create your views here.
 @login_required
 def index(request):
@@ -53,13 +56,13 @@ def my_dashboard(request):
     View function for the current user's dashboard
     """
     #Get the associated contact for our user
-    user_con  = request.user.contact
+    user_con = request.user.contact
 
-    qs_proj_assoc = user_con.proj_assocs.exclude(tag_type__exact='re')
+    qs_proj_assoc = get_tiered_proj_assoc_qs(user_con)
     qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__lte=datetime.date.today())
     qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__exact=None)
 
-    qs_task_assoc = user_con.task_assocs.exclude(tag_type__in=['ta', 're'])
+    qs_task_assoc = get_tiered_task_assoc_qs(user_con)
     qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__lte=datetime.date.today())
     qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
 

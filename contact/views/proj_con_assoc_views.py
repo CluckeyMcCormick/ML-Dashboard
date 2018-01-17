@@ -16,6 +16,29 @@ from ..tables import (
 
 from .project_views import is_admined_contact_proj
 
+def get_tiered_proj_assoc_qs(user_con):
+    user_projects = user_con.projects.get_queryset()
+
+    ua_all = user_con.proj_assocs.get_queryset()
+    ua_assign = ua_all.filter(tag_type__in=['as', 'le'])
+    ua_create = ua_all.filter(tag_type__in=['cr'])
+
+    #Now, get those tasks that have an assigned relation
+    #and those that have a creator relation
+    assigned_projects = user_projects.filter(con_assocs__in=ua_assign)
+    created_projects = user_projects.filter(con_assocs__in=ua_create)
+
+    #Now, get the projects that AREN'T assigned 
+    #Which means, only getting the projects we've created
+    #And some others we don't really care about
+    projects_no_assigned = user_projects.exclude(id__in=assigned_projects)
+
+    #Now, we take all our creator associations, and limit it to
+    #ONLY the ones that have no ASSIGN relation
+    ua_create = ua_create.filter(proj__in=projects_no_assigned)
+
+    return ua_assign.union(ua_create)
+
 #___  ____ ____  _ ____ ____ ___    ____ ____ ____ ____ ____ 
 #|__] |__/ |  |  | |___ |     |     |__| [__  [__  |  | |    
 #|    |  \ |__| _| |___ |___  |     |  | ___] ___] |__| |___ 
@@ -30,9 +53,8 @@ class MyProjectView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(MyProjectView, self).get_context_data(**kwargs)
 
-        user_con = self.request.user.contact
-
-        context['my_project_table'] = table_assoc.ProjCon_Project_Table(user_con.proj_assocs.exclude(tag_type__exact='re'))
+        assoc_que = get_tiered_proj_assoc_qs( self.request.user.contact )
+        context['my_project_table'] = table_assoc.ProjCon_Project_Table( assoc_que )
 
         return context
 

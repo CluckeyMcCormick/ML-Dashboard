@@ -430,6 +430,23 @@ class TaskContactAssoc(models.Model):
         """
         return self.task.brief[:25] + '(' + self.con.name[:25] + ')'
 
+    def save(self, *args, **kwargs):
+        #If we're making a creator tag...
+        if self.tag_type == 'cr':
+            #THERE CAN ONLY BE ONE CREATOR!
+            other = TaskContactAssoc.objects.filter(tag_type='cr', task=self.task)
+            if( other.exists() ):
+                message = "Task {0} cannot have two creators!"
+                raise Exception(message.format(self.task.brief))
+        else:
+            other = TaskContactAssoc.objects.filter(tag_type__in=['as','ta','re','na'], task=self.task, con=self.con)
+            if( other.exists() ):
+                message = "A non-creator relationship already exists between task {0} and {1}!"
+                raise Exception( message.format(self.task.brief, self.con.name) )
+        super(TaskContactAssoc, self).save(*args, **kwargs)
+    
+            
+
 class ProjectContactAssoc(models.Model):
     """
     Model representing an association with a task
@@ -457,3 +474,18 @@ class ProjectContactAssoc(models.Model):
         String for representing the Model object (in Admin site etc.)
         """
         return self.proj.title[:25] + '(' + self.con.name[:25] + ')'
+
+    def save(self, *args, **kwargs):
+        #If we're making a creator tag...
+        if self.tag_type == 'cr':
+            #THERE CAN ONLY BE ONE CREATOR!
+            other = ProjectContactAssoc.objects.filter(tag_type='cr', proj=self.proj)
+            if( other.exists() ):
+                message = "Project {0} cannot have two creators!"
+                raise Exception( message.format(self.proj.title) )
+        else:
+            other = ProjectContactAssoc.objects.filter(tag_type__in=['as','ta','re','na'], proj=self.proj, con=self.con)
+            if( other.exists() ):
+                message = "A non-creator relationship already exists between project {0} and {1}!"
+                raise Exception( message.format(self.proj.title, self.con.name) )
+        super(ProjectContactAssoc, self).save(*args, **kwargs)
