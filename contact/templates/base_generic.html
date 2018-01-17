@@ -36,32 +36,39 @@
               <li><a href="{% url 'my-dashboard' %}">My Dashboard</a></li>
               <li><a href="{% url 'my-proj-assocs' %}">My Projects</a></li>
               <li><a href="{% url 'my-task-assocs' %}">My Tasks</a></li>
+              
+              {% if perms.contact.contact_view_all or perms.contact.organization_view_all or perms.contact.project_view_all or perms.contact.task_view_all %}
+                <hr>
+                {% if perms.contact.contact_view_all %}
+                  <li><a href="{% url 'contacts' %}">View all Contacts</a></li>
+                {% endif %}
+                {% if perms.contact.organization_view_all %}
+                  <li><a href="{% url 'orgs' %}">View all Organizations</a></li>
+                {% endif %}
+                {% if perms.contact.project_view_all %}
+                  <li><a href="{% url 'projects' %}">View all Projects</a></li>
+                {% endif %}
+                {% if perms.contact.task_view_all %}
+                  <li><a href="{% url 'tasks' %}">View all Tasks</a></li>
+                {% endif %}
+              {% endif %}
+              {% if perms.contact.add_contact or perms.contact.add_organization or perms.contact.add_project or perms.contact.add_task %}
+                <hr>
+                {% if perms.contact.add_contact %}
+                  <li><a href="{% url 'contact-create' %}">Create new Contact</a></li>
+                {% endif %}
+                {% if perms.contact.add_organization %}
+                  <li><a href="{% url 'org-create' %}">Create new Organization</a></li>
+                {% endif %}
+                {% if perms.contact.add_project %}
+                  <li><a href="{% url 'project-create' %}">Create new Project</a></li>
+                {% endif %}
+                {% if perms.contact.add_task %}
+                  <li><a href="{% url 'task-unbound-create' %}">Create new Task</a></li>
+                {% endif %}
+              {% endif %}
               <hr>
-              {% if perms.contact.contact_view_all %}
-                <li><a href="{% url 'contacts' %}">View all Contacts</a></li>
-              {% endif %}
-              {% if perms.contact.organization_view_all %}
-                <li><a href="{% url 'orgs' %}">View all Organizations</a></li>
-              {% endif %}
-              {% if perms.contact.project_view_all %}
-                <li><a href="{% url 'projects' %}">View all Projects</a></li>
-              {% endif %}
-              {% if perms.contact.task_view_all %}
-                <li><a href="{% url 'tasks' %}">View all Tasks</a></li>
-              {% endif %}
-              <hr>
-              {% if perms.contact.add_contact %}
-                <li><a href="{% url 'contact-create' %}">Create new Contact</a></li>
-              {% endif %}
-              {% if perms.contact.add_organization %}
-                <li><a href="{% url 'org-create' %}">Create new Organization</a></li>
-              {% endif %}
-              {% if perms.contact.add_project %}
-                <li><a href="{% url 'project-create' %}">Create new Project</a></li>
-              {% endif %}
-              {% if perms.contact.add_task %}
-                <li><a href="{% url 'task-unbound-create' %}">Create new Task</a></li>
-              {% endif %}
+              <li><a href="">Create New User</a></li>
             {% else %}
               <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}

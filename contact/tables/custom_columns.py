@@ -141,5 +141,4 @@ class RemoveConfirmColumn(RemoveItemColumn):
         if val:
             extra_val = val
 
-
         return mark_safe( html.format(self.message).format(extra_val) )
