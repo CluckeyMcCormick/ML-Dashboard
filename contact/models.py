@@ -436,7 +436,7 @@ class TaskContactAssoc(models.Model):
             #THERE CAN ONLY BE ONE CREATOR!
             other = TaskContactAssoc.objects.filter(tag_type='cr', task=self.task)
             if( other.exists() ):
-                message = "Task {0} cannot have two creators!"
+                message = "Task '{0}' cannot have two creators!"
                 raise Exception(message.format(self.task.brief))
         else:
             other = TaskContactAssoc.objects.filter(tag_type__in=['as','ta','re','na'], task=self.task, con=self.con)
@@ -481,11 +481,11 @@ class ProjectContactAssoc(models.Model):
             #THERE CAN ONLY BE ONE CREATOR!
             other = ProjectContactAssoc.objects.filter(tag_type='cr', proj=self.proj)
             if( other.exists() ):
-                message = "Project {0} cannot have two creators!"
+                message = "Project '{0}' cannot have two creators!"
                 raise Exception( message.format(self.proj.title) )
         else:
             other = ProjectContactAssoc.objects.filter(tag_type__in=['as','ta','re','na'], proj=self.proj, con=self.con)
             if( other.exists() ):
-                message = "A non-creator relationship already exists between project {0} and {1}!"
+                message = "A non-creator relationship already exists between project '{0}' and '{1}'!"
                 raise Exception( message.format(self.proj.title, self.con.name) )
         super(ProjectContactAssoc, self).save(*args, **kwargs)
