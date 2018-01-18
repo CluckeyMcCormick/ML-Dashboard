@@ -80,4 +80,8 @@ urlpatterns = [
 
     #View your associations with tasks - ergo, a derivative of tasks
     url(r'^tasks/mine/$', views.MyTaskView.as_view(), name='my-task-assocs'),
+
+    #View your associations with tasks - ergo, a derivative of tasks
+    url(r'^users/$', views.UserListView.as_view(), name='view-users'),
+    url(r'^user/create/$', views.UserCreateView.as_view(), name='create-user'),
 ]

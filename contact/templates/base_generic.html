@@ -67,8 +67,18 @@
                   <li><a href="{% url 'task-unbound-create' %}">Create new Task</a></li>
                 {% endif %}
               {% endif %}
-              <hr>
-              <li><a href="">Create New User</a></li>
+              {% if user.is_staff %}
+                <hr>
+                {% if perms.auth.add_user %}
+                  <li><a href="{% url 'create-user' %}">Create new User</a></li>
+                {% endif %}
+
+                {% if perms.auth.add_user or perms.auth.change_user or perms.auth.delete_user %}
+                  <li><a href="{% url 'view-users' %}">View all Users</a></li>
+                {% endif %}
+
+                <li><a href="{% url 'admin:index' %}">Admin Site</a></li>
+              {% endif %}
             {% else %}
               <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}

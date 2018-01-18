@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy
 from django.db.utils import OperationalError
+from django.utils.translation import ugettext_lazy
 
 from django import forms
 
@@ -91,3 +92,56 @@ class TaskForm(forms.ModelForm):
             #'proj': forms.Select(attrs={'disabled': True}),
             'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
         }                          
+
+class UserForm(forms.ModelForm):
+
+    contact = forms.ModelChoiceField(
+        queryset=Contact.objects.filter(tags__tag_type__in=['vo'], user_link=None),
+        label= ugettext_lazy('Contact'),
+        help_text= ugettext_lazy('''
+            Select the contact that will be bound to this user. 
+            You can only choose from volunteers marked as contacts.
+        '''),
+        required=True
+    )
+
+    group = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        label=ugettext_lazy('Permission Group'),
+        help_text= ugettext_lazy('''
+            Select the permissions group for this user. 
+            'Volunteers' can only see projects and tasks they are assigned to. They can edit items where they are a 'lead' or a 'creator'.
+            'Data Admins' can see and edit every item. They can also freely create any item.
+            Neither can see this page or access the admin website.
+        '''),
+        required=True
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+        labels = {
+            'username' : ugettext_lazy('Username'),
+            'password' : ugettext_lazy('Password'),
+        }
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+
+    def update_user_contact(self):        
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
+        contact = self.cleaned_data['contact']
+        group = self.cleaned_data['group']
+
+        new_user = User.objects.create_user(
+            username=username, password=password,
+            email=contact.email
+        )
+
+        new_user.save()
+        contact.user_link = new_user
+        contact.save()
+
+        group.user_set.add(new_user)
+        group.save()

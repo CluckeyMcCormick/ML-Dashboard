@@ -1,5 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
 
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -11,7 +12,11 @@ from django.shortcuts import render
 
 from django.shortcuts import render, redirect
 
+from django.views import generic
+
 import datetime
+
+from ..forms import UserForm
 
 from ..models import (
     ContactTypeTag, Organization, 
@@ -19,7 +24,8 @@ from ..models import (
 )
 
 from ..tables import (
-    assoc_tables        as table_assoc
+    assoc_tables as table_assoc,
+    user_tables  as table_user
 ) 
 
 from .proj_con_assoc_views import get_tiered_proj_assoc_qs
@@ -81,3 +87,29 @@ def my_dashboard(request):
             'user_task_table':user_task_table,
         },
     )
+
+class UserCreateView(PermissionRequiredMixin, generic.edit.FormView):
+    template_name = 'users/user_form.html'
+    form_class = UserForm
+    success_url = reverse_lazy('view-users')
+
+    permission_required = 'auth.add_user'
+
+    def form_valid(self, form):
+        form.update_user_contact()
+        return HttpResponseRedirect( reverse_lazy('view-users') )
+
+class UserListView(UserPassesTestMixin, generic.TemplateView):
+    template_name = 'users/user_list.html'
+
+    def test_func(self):
+        return self.request.user.has_perm("auth.add_user") \
+        or self.request.user.has_perm("auth.change_user")  \
+        or self.request.user.has_perm("auth.delete_user")
+
+    def get_context_data(self, **kwargs):
+        context = super(UserListView, self).get_context_data(**kwargs)
+
+        context['user_table'] = table_user.UserTable(User.objects.get_queryset())
+
+        return context

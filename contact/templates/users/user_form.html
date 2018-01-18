@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% load bootstrap3 %}
+
+
+{% block content %}
+
+  <h1>Create New User</h1>
+
+  <form action="" method="post">
+    {% csrf_token %}
+
+    {% bootstrap_form form %}
+    
+    {% buttons %}
+      {% bootstrap_button content='Save' button_type='submit' button_class="btn-primary" icon="glyphicon glyphicon-floppy-disk"%}
+    {% endbuttons %}
+
+  </form>
+
+{% endblock %}

@@ -1,8 +1,10 @@
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views import generic
 
 from ..models import Organization, Contact

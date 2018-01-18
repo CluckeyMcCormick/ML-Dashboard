@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% load table_tags %}
+
+{% block content %}
+  <h1>User List</h1>
+
+  {% render_table user_table %}
+
+{% endblock %}

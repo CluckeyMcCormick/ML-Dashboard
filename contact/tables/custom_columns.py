@@ -6,8 +6,8 @@ from table.columns import Column, LinkColumn, DatetimeColumn, Link
 import string
 
 class BooleanIconColumn(Column):
-    def __init__(self, field=None, header=None, true_icon=None, false_icon=None, true_class='', false_class='', **kwargs):
-        super(BooleanIconColumn, self).__init__(field=field, header=header, **kwargs)
+    def __init__(self, true_icon=None, false_icon=None, true_class='', false_class='', **kwargs):
+        super(BooleanIconColumn, self).__init__(**kwargs)
         self.true_icon = true_icon
         self.false_icon = false_icon
 
@@ -30,7 +30,7 @@ class BooleanIconColumn(Column):
 
 class CheckOnlyColumn(BooleanIconColumn):
     def __init__(self, **kwargs):
-        super(CheckOnlyColumn, self).__init__( true_icon='glyphicon-ok', **kwargs)
+        super(CheckOnlyColumn, self).__init__(true_icon='glyphicon-ok', **kwargs)
 
 class CustomNoneColumn(Column):
     def __init__(self, none_str='', **kwargs):
