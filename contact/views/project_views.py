@@ -17,7 +17,8 @@ from ..forms import ProjectForm
 from ..tables import (
     assoc_tables        as table_assoc,
     project_tables      as table_proj,
-    task_tables         as table_task
+    task_tables         as table_task,
+    custom_tables       as table_custom
 )
 
 from ..reports import get_project_dataset, get_project_summary
@@ -84,6 +85,11 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
 
         context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table( con_assoc_qs )
         context['associated_task_table'] = table_task.TaskNoProjectTable(self.object.tasks.get_queryset())
+        context['contact_task_intersect_table'] = table_custom.ProjectContactIntersection(
+            data=self.object.contacts.get_queryset(),
+            in_query=self.object.tasks.get_queryset(),
+            project=self.object
+        )
 
         context['creator'] = None
         ob_con_que = self.object.con_assocs.filter(tag_type='cr')

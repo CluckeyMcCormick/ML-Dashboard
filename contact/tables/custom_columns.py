@@ -54,6 +54,18 @@ class NoneableDatetimeColumn(DatetimeColumn):
 
         return ret
 
+class FunctionColumn(Column):
+    def __init__(self, function=None, extra_kwargs={}, **kwargs):
+        super(FunctionColumn, self).__init__(**kwargs)
+        self.func = function
+        self.extra_kwargs = extra_kwargs
+
+    def render(self, obj):
+        if self.func is None:
+            return super(FunctionColumn, self).render(obj)
+        else:
+            return mark_safe( self.func(obj=obj, **self.extra_kwargs) )
+
 class TagColumn(Column):
     def __init__(self, wrap_class='', **kwargs):
         super(TagColumn, self).__init__(**kwargs)
