@@ -86,7 +86,7 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
         context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table( con_assoc_qs )
         context['associated_task_table'] = table_task.TaskNoProjectTable(self.object.tasks.get_queryset())
         context['contact_task_intersect_table'] = table_custom.ProjectContactIntersection(
-            data=self.object.contacts.get_queryset(),
+            data=self.object.contacts.get_queryset().distinct(),
             in_query=self.object.tasks.get_queryset(),
             project=self.object
         )

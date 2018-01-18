@@ -79,6 +79,7 @@ button.as-link.danger:hover {
 /* Donor Tag */
 .do { 
     background-color: #FF8C19;
+    border-color: #FF8C19;
     color: white;   
 } 
 
@@ -92,7 +93,8 @@ button.as-link.danger:hover {
 
 /* Prospect Tag */
 .pr { 
-    background-color: #008FBF; 
+    background-color: #008FBF;
+    border-color: #008FBF;
     color: white;   
 }
 
@@ -106,7 +108,8 @@ button.as-link.danger:hover {
 
 /* Volunteer Tag */
 .vo { 
-    background-color: #4C9926; 
+    background-color: #4C9926;
+    border-color: #4C9926; 
     color: white;   
 }
 
@@ -121,6 +124,7 @@ button.as-link.danger:hover {
 /* Corporation / Foundation Tag */
 ._f { 
     background-color: #9F9F9F; 
+    border-color: #9F9F9F; 
     color: white;   
 }
 
@@ -135,6 +139,7 @@ button.as-link.danger:hover {
 /* Grant Resource Tag */
 ._g { 
     background-color: #85A6A6;
+    border-color: #85A6A6;
     color: white; 
 }
 
@@ -166,6 +171,7 @@ button.as-link.danger:hover {
 .cr,
 .creator { 
     background-color: #2C594F;
+    border-color: #2C594F;
     color: white; 
 }
 
@@ -173,6 +179,7 @@ button.as-link.danger:hover {
 .as, 
 .assigned { 
     background-color: #E54661;
+    border-color: #E54661;
     color: white; 
 }
 
@@ -188,6 +195,7 @@ button.as-link.danger:hover {
 .ta, 
 .target { 
     background-color: #FFA644;
+    border-color: #FFA644;
     color: white; 
 }
 
@@ -203,6 +211,7 @@ button.as-link.danger:hover {
 .na,
 .unspecified { 
     background-color: #002D40;
+    border-color: #002D40;
     color: white;
 }
 
@@ -217,6 +226,7 @@ button.as-link.danger:hover {
 .re,
 .resource {
     background-color: #0099cc;
+    border-color: #0099cc;
     color: white;    
 }
 
@@ -231,6 +241,7 @@ button.as-link.danger:hover {
 .le,
 .project-lead {
     background-color: #bf0074;
+    border-color: #bf0074;
     color: white;    
 }
 
@@ -262,6 +273,7 @@ button.as-link.danger:hover {
 .incomplete {
     color: white; 
     background-color: #666;
+    border-color: #666;
 }
 .incomplete.hoverable:hover,
 .incomplete.hoverable:focus,
@@ -274,6 +286,7 @@ button.as-link.danger:hover {
 .overdue {
     color: white; 
     background-color: #e23131;
+    border-color: #e23131;
 }
 .overdue.hoverable:hover,
 .overdue.hoverable:focus,
@@ -286,6 +299,7 @@ button.as-link.danger:hover {
 .completed {
     color: white; 
     background-color: #56cc4b;
+    border-color: #56cc4b;
 }
 .completed.hoverable:hover,
 .completed.hoverable:focus,
