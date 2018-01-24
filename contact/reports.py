@@ -1,4 +1,7 @@
 
+from django.template import loader
+from django.http import HttpResponse
+
 import tablib
 
 from .models import (
@@ -135,8 +138,5 @@ Wraps up our two task datasets into a single book
 def get_task_summary(task_pk):
     task_data, assoc_data = get_task_summary_unwrapped(task_pk)
     return tablib.Databook( sets=[task_data, assoc_data] )
-
-
-
 
 

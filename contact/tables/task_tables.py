@@ -10,8 +10,21 @@ from . import center_attrs, date_time_format
 #___ ____ ____ _  _ 
 # |  |__| [__  |_/  
 # |  |  | ___] | \_ 
-#  
-class TaskNoProjectTable(Table):
+#
+class TaskBasicTable(Table):
+
+    brief = CustomNoneColumn(field='brief', header='Brief')
+    deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)
+    status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
+    
+    class Meta:
+        model = Task
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class TaskLinkTable(Table):
+
     view =  LinkColumn(
         header='View', 
         links=[
@@ -31,24 +44,25 @@ class TaskNoProjectTable(Table):
         sortable=False,
     )
 
-    brief = CustomNoneColumn(field='brief', header='Brief')
-    deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)
-    status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
-    
     class Meta:
         model = Task
         search = True
 
         attrs = {'class': 'table-striped table-hover'}
+
+class TaskNoProjectTable(TaskLinkTable, TaskBasicTable):
+    """
+    Nothing to see here
+    """
 
 class TaskTable(TaskNoProjectTable):
 
     project = CustomNoneColumn(field='proj', header='Project')
     notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes') 
 
+class TaskNoProjectTable_Printable(TaskBasicTable):
+
     class Meta:
-        model = Task
-        search = True
-
+        search = False
+        pagination = False
         attrs = {'class': 'table-striped table-hover'}
-

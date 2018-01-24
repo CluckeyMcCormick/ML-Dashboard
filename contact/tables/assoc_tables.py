@@ -57,7 +57,22 @@ class TaskCon_Task_Table(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskCon_Contact_Table(Table):
+class TaskCon_Contact_Table_Basic(Table):
+    """
+    Meant to be used from the "perspective" of a single Task.
+    Displays the associated contacts, and the role of each.
+    """
+
+    name = CustomNoneColumn(field='con.name', header='Name')
+    role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
+
+    class Meta:
+        model = TaskContactAssoc
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class TaskCon_Contact_Table_Link(Table):
     """
     Meant to be used from the "perspective" of a single Task.
     Displays the associated contacts, and the role of each.
@@ -81,12 +96,28 @@ class TaskCon_Contact_Table(Table):
         sortable=False,
     )
 
-    name = CustomNoneColumn(field='con.name', header='Name')
-    role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
-
     class Meta:
         model = TaskContactAssoc
         search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class TaskCon_Contact_Table(TaskCon_Contact_Table_Link, TaskCon_Contact_Table_Basic):
+    """
+    Meant to be used from the "perspective" of a single Task.
+    Displays the associated contacts, and the role of each.
+    """
+
+class TaskCon_Contact_Table_Printable(TaskCon_Contact_Table_Basic):
+    """
+    Meant to be used from the "perspective" of a single Project.
+    Displays the associated contacts, and the role of each.
+    """
+
+    class Meta:
+        model = TaskContactAssoc
+        search = False
+        pagination = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -150,7 +181,22 @@ class ProjCon_Project_Table(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class ProjCon_Contact_Table(Table):
+class ProjCon_Contact_Table_Basic(Table):
+    """
+    Meant to be used from the "perspective" of a single Project.
+    Displays the associated contacts, and the role of each.
+    """
+
+    name = CustomNoneColumn(field='con.name', header='Name')
+    role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
+
+    class Meta:
+        model = ProjectContactAssoc
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class ProjCon_Contact_Table_Link(Table):
     """
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
@@ -174,12 +220,28 @@ class ProjCon_Contact_Table(Table):
         sortable=False,
     )
 
-    name = CustomNoneColumn(field='con.name', header='Name')
-    role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
-
     class Meta:
         model = ProjectContactAssoc
         search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class ProjCon_Contact_Table(ProjCon_Contact_Table_Link, ProjCon_Contact_Table_Basic):
+    """
+    Meant to be used from the "perspective" of a single Project.
+    Displays the associated contacts, and the role of each.
+    """
+
+class ProjCon_Contact_Table_Printable(ProjCon_Contact_Table_Basic):
+    """
+    Meant to be used from the "perspective" of a single Project.
+    Displays the associated contacts, and the role of each.
+    """
+
+    class Meta:
+        model = ProjectContactAssoc
+        search = False
+        pagination = False
 
         attrs = {'class': 'table-striped table-hover'}
 

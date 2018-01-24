@@ -46,7 +46,7 @@ urlpatterns = [
     url(r'^project/create/$', views.ProjectCreate.as_view(), name='project-create'),
 
     url(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
-    url(r'^project/(?P<pk>\d+)/download/$', views.download_project_summary, name='project-download'),
+    url(r'^project/(?P<pk>\d+)/download/$', views.ProjectPDFView.as_view(), name='project-download'),
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
     url(r'^project/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project-delete'),
 

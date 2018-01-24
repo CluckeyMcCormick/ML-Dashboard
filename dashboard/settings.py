@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'table',
     'tinymce',
     'django_bleach',
+    'wkhtmltopdf',
 ]
 
 MIDDLEWARE = [

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import permission_required
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
+from django.template import loader
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -239,6 +240,47 @@ def download_project_incomplete_dataset(request):
     response.write(proj_set.export('xlsx'))
     return response
 
+class ProjectPDFView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
+    template_name = 'projects/project_pdf.html'
+
+    def test_func(self):
+        proj = Project.objects.get(pk=self.kwargs['pk'])
+        if self.request.user.has_perm("contact.project_down_sum_each"):
+            return True
+        elif self.request.user.has_perm("contact.project_down_sum_related"):
+            return is_related_contact(self.request.user.contact, proj)
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectPDFView, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+
+        con_assoc_qs = context['project'].con_assocs.exclude(tag_type='cr')
+
+        context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table_Printable( 
+            con_assoc_qs, 
+        )
+
+        context['associated_task_table'] = table_task.TaskNoProjectTable_Printable(
+            context['project'].tasks.get_queryset(), 
+        )
+
+        intersection_data = context['project'].contacts.union( Contact.objects.filter(tasks__in=context['project'].tasks.get_queryset()) )
+
+        context['contact_task_intersect_table'] = table_custom.PCI_Table_Printable(
+            data=intersection_data.distinct(),
+            in_query=context['project'].tasks.get_queryset(),
+            project=context['project'],
+        )
+
+        context['creator'] = None
+        ob_con_que = context['project'].con_assocs.filter(tag_type='cr')
+        if ob_con_que.exists():
+            context['creator'] = ob_con_que.first()
+
+        return context
+
+
 def download_project_summary(request, pk=None):
     proj = Project.objects.get(pk=pk)
 
@@ -248,6 +290,8 @@ def download_project_summary(request, pk=None):
     ) \
     or request.user.has_perm("contact.project_down_sum_each") ):
         return redirect('/accounts/login/?next=%s' % request.path)
+
+    rendered = template.render_to_string('my_template.html', { 'foo': 'bar' })
 
     normal_title = re.sub( r"[,-.?!/\\]", '', proj.title.lower() ).replace(' ','_')
 

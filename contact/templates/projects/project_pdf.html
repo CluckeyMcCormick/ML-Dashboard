@@ -1,0 +1,48 @@
+
+{% load bleach_tags %}
+{% load table_tags %}
+{% load bootstrap3 %}
+{% load macros %}
+{% load static %}
+
+{% loadmacros "tasks/task_macro.html" %}
+{% loadmacros "associated_macros.html" %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript jquery=1 %}
+
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div class="col-sm-12">
+  {% block content %}
+
+    <h1><strong>Project: </strong>{{ project.title }}</h1>
+
+    <h4><strong>Deadline:</strong> {{ project.deadline }}</h4>
+    
+    <p>
+      <strong>Project Status: </strong>
+      <strong class="task-status {{project.status.lower}}">{{project.status}}</strong>
+    </p>
+
+    {% if creator.con %}
+      <p>
+        <strong class="con-assoc cr">Creator:</strong> {{creator.con.name}}
+      </p>
+    {% endif %}
+
+    <p><strong>Notes: </strong></p>
+    <p>{{ project.notes|bleach }}</p>
+
+    <hr>
+    <h3>Contact-Task Assignments</h3>
+    {% render_table contact_task_intersect_table %}
+    <hr>
+    <h3>Associated Contacts</h3>
+    {% render_table associated_contact_table %}
+    <hr>
+    <h3>Associated Tasks</h3>
+    {% render_table associated_task_table %}
+    
+  {% endblock %}
+</div>

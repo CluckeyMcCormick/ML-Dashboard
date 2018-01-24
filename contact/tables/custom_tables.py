@@ -79,3 +79,9 @@ class ProjectContactIntersection(Table):
                 function=get_assignment_tag,
             )
             self.columns.append(new_col)
+
+class PCI_Table_Printable(ProjectContactIntersection):
+    class Meta:
+        search = False
+        pagination = False
+        attrs = {'class': 'table-striped table-hover'} 
