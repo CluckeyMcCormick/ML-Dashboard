@@ -21,7 +21,7 @@ rich relationship.
 # |  |__| [__  |_/  __ |    |  | |\ | __ |__| [__  [__  |  | |    
 # |  |  | ___] | \_    |___ |__| | \|    |  | ___] ___] |__| |___ 
 #                                                                            
-class TaskCon_Task_Table(Table):
+class TaskAssocTable(Table):
     """
     Meant to be used from the "perspective" of a single Contact.
     Displays the associated tasks, and the Contact's role in each.
@@ -57,7 +57,7 @@ class TaskCon_Task_Table(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskCon_Contact_Table_Basic(Table):
+class ContactTaskTable_Basic(Table):
     """
     Meant to be used from the "perspective" of a single Task.
     Displays the associated contacts, and the role of each.
@@ -72,7 +72,7 @@ class TaskCon_Contact_Table_Basic(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskCon_Contact_Table_Link(Table):
+class ContactTaskTable_Link(Table):
     """
     Meant to be used from the "perspective" of a single Task.
     Displays the associated contacts, and the role of each.
@@ -102,15 +102,20 @@ class TaskCon_Contact_Table_Link(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskCon_Contact_Table(TaskCon_Contact_Table_Link, TaskCon_Contact_Table_Basic):
+class ContactTaskTable(ContactTaskTable_Link, ContactTaskTable_Basic):
     """
-    Meant to be used from the "perspective" of a single Task.
+    Meant to be used from the "perspective" of a single TASK.
     Displays the associated contacts, and the role of each.
     """
+    class Meta:
+        model = TaskContactAssoc
+        search = True
 
-class TaskCon_Contact_Table_Printable(TaskCon_Contact_Table_Basic):
+        attrs = {'class': 'table-striped table-hover'}
+
+class ContactTaskTable_Printable(ContactTaskTable_Basic):
     """
-    Meant to be used from the "perspective" of a single Project.
+    Meant to be used from the "perspective" of a single TASK.
     Displays the associated contacts, and the role of each.
     """
 
@@ -121,9 +126,9 @@ class TaskCon_Contact_Table_Printable(TaskCon_Contact_Table_Basic):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskCon_ContactRemove_Table(TaskCon_Contact_Table):
+class ContactTaskTable_Remove(ContactTaskTable):
     """
-    Meant to be used from the "perspective" of a single Task.
+    Meant to be used from the "perspective" of a single TASK.
     Displays the associated contacts, and the role of each.
     """
     remove = RemoveConfirmColumn(
@@ -145,7 +150,7 @@ class TaskCon_ContactRemove_Table(TaskCon_Contact_Table):
 
 # This table is "Contact" looking at "Project"
 # So we mostly want to display the values of "Project"
-class ProjCon_Project_Table(Table):
+class ProjectAssocTable(Table):
     """
     Meant to be used from the "perspective" of a single Contact.
     Displays the associated projects, and the Contact's role in each.
@@ -181,7 +186,7 @@ class ProjCon_Project_Table(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class ProjCon_Contact_Table_Basic(Table):
+class ContactProjectTable_Basic(Table):
     """
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
@@ -196,7 +201,7 @@ class ProjCon_Contact_Table_Basic(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class ProjCon_Contact_Table_Link(Table):
+class ContactProjectTable_Link(Table):
     """
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
@@ -226,13 +231,13 @@ class ProjCon_Contact_Table_Link(Table):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class ProjCon_Contact_Table(ProjCon_Contact_Table_Link, ProjCon_Contact_Table_Basic):
+class ContactProjectTable(ContactProjectTable_Link, ContactProjectTable_Basic):
     """
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
     """
 
-class ProjCon_Contact_Table_Printable(ProjCon_Contact_Table_Basic):
+class ContactProjectTable_Printable(ContactProjectTable_Basic):
     """
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
@@ -245,7 +250,7 @@ class ProjCon_Contact_Table_Printable(ProjCon_Contact_Table_Basic):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class ProjCon_ContactRemove_Table(ProjCon_Contact_Table):
+class ContactProjectTable_Remove(ContactProjectTable):
     """
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.

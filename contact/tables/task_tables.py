@@ -54,11 +54,22 @@ class TaskNoProjectTable(TaskLinkTable, TaskBasicTable):
     """
     Nothing to see here
     """
+    class Meta:
+        model = Task
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
 
 class TaskTable(TaskNoProjectTable):
 
     project = CustomNoneColumn(field='proj', header='Project')
     notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes') 
+
+    class Meta:
+        model = Task
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
 
 class TaskNoProjectTable_Printable(TaskBasicTable):
 

@@ -5,11 +5,13 @@
 {% load bootstrap3 %}
 {% load macros %}
 
-{% loadmacros "tasks/task_macro.html" %}
 {% loadmacros "associated_macros.html" %}
 
 {% block content %}
-  <h1><strong>Project: </strong>{{ project.title }}</h1>
+
+  {% include "projects/project_basic.html" %}
+
+  <!--
   <div class="progress">
     <div class="progress-bar" role="progressbar" aria-valuenow="{{project.complete_percent }}" 
     aria-valuemin="0" aria-valuemax="100" 
@@ -17,27 +19,11 @@
       <strong>{{ project.complete_percent }}%</strong>
     </div>
   </div> 
-
-  <h4><strong>Deadline:</strong> {{ project.deadline }}</h4>
-  
-  <p>
-    <strong>Project Status: </strong>
-    <strong class="task-status {{project.status.lower}}">{{project.status}}</strong>
-  </p>
-
-  {% if creator.con %}
-    <p>
-      <strong class="con-assoc cr">Creator:</strong> {{creator.con.name}}
-    </p>
-  {% endif %}
-
-  <p><strong>Notes: </strong></p>
-  <p>{{ project.notes|bleach }}</p>
-
+  -->
   <form action="" method="post">
     {% if can_download %}
       <h2 class="col-sm-12">
-        {% bootstrap_button content='View Printable Version' button_type='link' href=project_download_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
+        {% bootstrap_button content='View Printable Version' button_type='link' href=project_print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
       </h2>
     {% endif %}
     <h2 class="col-sm-12">

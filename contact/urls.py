@@ -46,7 +46,7 @@ urlpatterns = [
     url(r'^project/create/$', views.ProjectCreate.as_view(), name='project-create'),
 
     url(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
-    url(r'^project/(?P<pk>\d+)/download/$', views.ProjectPDFView.as_view(), name='project-download'),
+    url(r'^project/(?P<pk>\d+)/print/$', views.ProjectPrintView.as_view(), name='project-print'),
     url(r'^project/(?P<pk>\d+)/update/$', views.ProjectUpdate.as_view(), name='project-update'),
     url(r'^project/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project-delete'),
 
@@ -66,7 +66,7 @@ urlpatterns = [
     url(r'^task/create/$', views.TaskCreate.as_view(), name='task-create'),
 
     url(r'^task/(?P<pk>\d+)$', views.TaskDetailView.as_view(), name='task-detail'),
-    url(r'^task/(?P<pk>\d+)/download/$', views.download_task_summary, name='task-download'),
+    url(r'^task/(?P<pk>\d+)/print/$', views.TaskPrintView.as_view(), name='task-print'),
     url(r'^task/(?P<pk>\d+)/update/$', views.TaskUpdate.as_view(), name='task-update'),
     url(r'^task/(?P<pk>\d+)/delete/$', views.TaskDelete.as_view(), name='task-delete'),
 

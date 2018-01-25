@@ -54,7 +54,7 @@ class MyProjectView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyProjectView, self).get_context_data(**kwargs)
 
         assoc_que = get_tiered_proj_assoc_qs( self.request.user.contact )
-        context['my_project_table'] = table_assoc.ProjCon_Project_Table( assoc_que )
+        context['my_project_table'] = table_assoc.ProjectAssocTable( assoc_que )
 
         return context
 

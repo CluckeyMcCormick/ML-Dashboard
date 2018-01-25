@@ -73,9 +73,9 @@ def my_dashboard(request):
     qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
 
     #Get the projects associated with the user
-    user_proj_table = table_assoc.ProjCon_Project_Table(qs_proj_assoc)
+    user_proj_table = table_assoc.ProjectAssocTable(qs_proj_assoc)
     #Get the tasks associated with the user
-    user_task_table = table_assoc.TaskCon_Task_Table(qs_task_assoc)
+    user_task_table = table_assoc.TaskAssocTable(qs_task_assoc)
 
     # Render the HTML template index.html with the data in the context variable
     return render(
