@@ -55,7 +55,7 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyTaskView, self).get_context_data(**kwargs)
 
         assoc_que = get_tiered_task_assoc_qs( self.request.user.contact )
-        context['my_task_table'] = table_assoc.TaskCon_Task_Table( assoc_que )
+        context['my_task_table'] = table_assoc.TaskAssocTable( assoc_que )
 
         return context
 

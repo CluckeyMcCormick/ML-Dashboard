@@ -1,0 +1,26 @@
+
+{% load bleach_tags %}
+{% load table_tags %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript jquery=1 %}
+
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% block content %}
+
+  {% include "projects/project_basic.html" %}
+
+  <hr>
+  <h3>Contact-Task Assignments</h3>
+  {% render_table contact_task_intersect_table %}
+  <hr>
+  <h3>Associated Contacts</h3>
+  {% render_table associated_contact_table %}
+  <hr>
+  <h3>Associated Tasks</h3>
+  {% render_table associated_task_table %}
+  
+{% endblock %}

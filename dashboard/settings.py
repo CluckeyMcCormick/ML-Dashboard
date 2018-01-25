@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'table',
     'tinymce',
     'django_bleach',
-    'wkhtmltopdf',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +81,7 @@ ROOT_URLCONF = 'dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./templates',],
+        'DIRS': ['./templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

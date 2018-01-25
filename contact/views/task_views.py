@@ -85,7 +85,7 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
         context['edit_url'] = reverse_lazy('task-update', args=(context['task'].pk,))
         context['delete_url'] = reverse_lazy('task-delete', args=(context['task'].pk,))
 
-        context['task_download_url'] = reverse_lazy('task-download', args=(context['task'].pk,))
+        context['task_print_url'] = reverse_lazy('task-print', args=(context['task'].pk,))
 
         context['add_volunteer_url'] = reverse_lazy('task-add-volunteer', args=(context['task'].pk,))
         context['add_target_url'] = reverse_lazy('task-add-target', args=(context['task'].pk,))
@@ -93,7 +93,7 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
 
         con_assoc_qs = self.object.con_assocs.exclude(tag_type='cr')
 
-        context['associated_contact_table'] = table_assoc.TaskCon_Contact_Table( con_assoc_qs )
+        context['associated_contact_table'] = table_assoc.ContactTaskTable( con_assoc_qs )
 
         context['creator'] = None
         ob_con_que = self.object.con_assocs.filter(tag_type='cr')
@@ -125,7 +125,7 @@ class TaskDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView
             context['can_assign'] = is_admined_contact_task(self.request.user.contact, self.object)
 
         if context['can_assign']:
-            context['associated_contact_table'] = table_assoc.TaskCon_ContactRemove_Table( con_assoc_qs )
+            context['associated_contact_table'] = table_assoc.ContactTaskTable_Remove( con_assoc_qs )
 
         return context
 
@@ -280,6 +280,33 @@ def download_task_incomplete_dataset(request):
 
     response.write(task_set.export('xlsx'))
     return response
+
+
+class TaskPrintView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
+    model = Task
+    template_name = 'tasks/task_printable.html'
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.task_view_all"):
+            return True
+        elif self.request.user.has_perm("contact.task_view_related"):
+            this = Task.objects.get(pk=self.kwargs['pk'])
+            return is_related_contact(self.request.user.contact, this)
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskPrintView, self).get_context_data(**kwargs)
+
+        con_assoc_qs = self.object.con_assocs.exclude(tag_type='cr')
+
+        context['associated_contact_table'] = table_assoc.ContactTaskTable_Printable( con_assoc_qs )
+
+        context['creator'] = None
+        ob_con_que = self.object.con_assocs.filter(tag_type='cr')
+        if ob_con_que.exists():
+            context['creator'] = ob_con_que[0]
+
+        return context
 
 def download_task_summary(request, pk=None):
     task = Task.objects.get(pk=pk)

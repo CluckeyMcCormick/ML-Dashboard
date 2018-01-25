@@ -42,7 +42,6 @@ def is_related_contact(con_a, con_b):
 #
 class ContactListView(LoginRequiredMixin, PermissionRequiredMixin, generic.TemplateView):
     template_name = 'contacts/contact_list.html'
-
     permission_required = 'contact.contact_view_all'
 
     def get_context_data(self, **kwargs):
@@ -63,17 +62,6 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
     model = Contact
     template_name = 'contacts/contact_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(ContactDetailView, self).get_context_data(**kwargs)
-
-        context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
-        context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
-
-        context['associated_projects_table'] = table_assoc.ProjCon_Project_Table( self.object.proj_assocs.get_queryset() )
-        context['associated_tasks_table'] = table_assoc.TaskCon_Task_Table( self.object.task_assocs.get_queryset() )
-
-        return context
-
     def test_func(self):
         if self.request.user.has_perm("contact.contact_view_all"):
             return True
@@ -82,6 +70,16 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
             return is_related_contact(self.request.user.contact, this)
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super(ContactDetailView, self).get_context_data(**kwargs)
+
+        context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
+        context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
+
+        context['associated_projects_table'] = table_assoc.ProjectAssocTable( self.object.proj_assocs.get_queryset() )
+        context['associated_tasks_table'] = table_assoc.TaskAssocTable( self.object.task_assocs.get_queryset() )
+
+        return context
 
 class ContactCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'contacts/contact_form.html'

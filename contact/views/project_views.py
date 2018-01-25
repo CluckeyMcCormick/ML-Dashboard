@@ -74,7 +74,7 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
 
         context['project_edit_url'] = reverse_lazy('project-update', args=(context['project'].pk,))
         context['project_delete_url'] = reverse_lazy('project-delete', args=(context['project'].pk,))
-        context['project_download_url'] = reverse_lazy('project-download', args=(context['project'].pk,))
+        context['project_print_url'] = reverse_lazy('project-print', args=(context['project'].pk,))
 
         context['project_add_lead_url'] = reverse_lazy('project-add-lead', args=(context['project'].pk,))
         context['project_add_assign_url'] = reverse_lazy('project-add-volunteer', args=(context['project'].pk,))
@@ -84,7 +84,7 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
 
         con_assoc_qs = self.object.con_assocs.exclude(tag_type='cr')
 
-        context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table( con_assoc_qs )
+        context['associated_contact_table'] = table_assoc.ContactProjectTable( con_assoc_qs )
         context['associated_task_table'] = table_task.TaskNoProjectTable(self.object.tasks.get_queryset())
 
         intersection_data = self.object.contacts.union( Contact.objects.filter(tasks__in=self.object.tasks.get_queryset()) )
@@ -125,7 +125,7 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
             context['can_assign'] = is_admined_contact_proj(self.request.user.contact, self.object)
         
         if context['can_assign']:    
-            context['associated_contact_table'] = table_assoc.ProjCon_ContactRemove_Table( con_assoc_qs )
+            context['associated_contact_table'] = table_assoc.ContactProjectTable_Remove( con_assoc_qs )
 
         context['can_add_task'] = False
         if self.request.user.has_perm("contact.task_add_to"):
@@ -240,24 +240,24 @@ def download_project_incomplete_dataset(request):
     response.write(proj_set.export('xlsx'))
     return response
 
-class ProjectPDFView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
-    template_name = 'projects/project_pdf.html'
+class ProjectPrintView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
+    model = Project
+    template_name = 'projects/project_printable.html'
 
     def test_func(self):
-        proj = Project.objects.get(pk=self.kwargs['pk'])
-        if self.request.user.has_perm("contact.project_down_sum_each"):
+        if self.request.user.has_perm("contact.project_view_all"):
             return True
-        elif self.request.user.has_perm("contact.project_down_sum_related"):
-            return is_related_contact(self.request.user.contact, proj)
+        elif self.request.user.has_perm("contact.project_view_related"):
+            this = Project.objects.get(pk=self.kwargs['pk'])
+            return is_related_contact(self.request.user.contact, this)
         return False
 
     def get_context_data(self, **kwargs):
-        context = super(ProjectPDFView, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(pk=self.kwargs['pk'])
+        context = super(ProjectPrintView, self).get_context_data(**kwargs)
 
         con_assoc_qs = context['project'].con_assocs.exclude(tag_type='cr')
 
-        context['associated_contact_table'] = table_assoc.ProjCon_Contact_Table_Printable( 
+        context['associated_contact_table'] = table_assoc.ContactProjectTable_Printable( 
             con_assoc_qs, 
         )
 
@@ -281,28 +281,3 @@ class ProjectPDFView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateVi
         return context
 
 
-def download_project_summary(request, pk=None):
-    proj = Project.objects.get(pk=pk)
-
-    if not ( \
-        (is_related_contact(request.user.contact, proj) and \
-        request.user.has_perm("contact.project_down_sum_related") \
-    ) \
-    or request.user.has_perm("contact.project_down_sum_each") ):
-        return redirect('/accounts/login/?next=%s' % request.path)
-
-    rendered = template.render_to_string('my_template.html', { 'foo': 'bar' })
-
-    normal_title = re.sub( r"[,-.?!/\\]", '', proj.title.lower() ).replace(' ','_')
-
-    current_str = datetime.date.today().strftime('%Y_%m_%d')
-
-    dispose = 'attachment; filename="{0}_{1}.xlsx"'.format(normal_title, current_str)
-
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = dispose
-
-    proj_sum = get_project_summary(pk)
-
-    response.write(proj_sum.export('xlsx'))
-    return response
