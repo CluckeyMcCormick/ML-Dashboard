@@ -19,6 +19,9 @@ from ..tables import (
     contact_tables      as table_con,
 ) 
 
+from .proj_con_assoc_views import get_tiered_proj_assoc_qs
+from .task_con_assoc_views import get_tiered_task_assoc_qs
+
 def is_related_contact(con_a, con_b):
     #find all the Contacts where a and b are associated through a common task
     t_que_a = Task.objects.filter(contacts__in=[con_a], con_assocs__tag_type__in=['cr', 'as']).order_by()
@@ -77,8 +80,8 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
         context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
         context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
 
-        context['associated_projects_table'] = table_assoc.ProjectAssocTable( self.object.proj_assocs.get_queryset() )
-        context['associated_tasks_table'] = table_assoc.TaskAssocTable( self.object.task_assocs.get_queryset() )
+        context['associated_projects_table'] = table_assoc.ProjectAssocTable( get_tiered_proj_assoc_qs(self.object) )
+        context['associated_tasks_table'] = table_assoc.TaskAssocTable( get_tiered_task_assoc_qs(self.object) )
 
         return context
 
