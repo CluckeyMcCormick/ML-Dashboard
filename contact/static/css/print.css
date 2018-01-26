@@ -1,0 +1,142 @@
+@media print {
+    /* 
+        Contact Type Tags
+    */
+    .contag {
+        border: solid 2px;
+    	border-radius: 0px;
+        padding: 1px;
+        text-align: center;
+        font-weight: normal;
+    }
+
+    .icon {
+        border: solid 2px;
+        border-radius: 15px;
+        padding-top: 2px;
+        padding-right: 3px;
+        font-weight: normal;
+    }
+
+    .tag {
+        border: solid 2px; 
+        border-radius: 7px;
+        font-weight: normal;
+    }
+
+    .bubble {
+        border: solid 2px;
+        border-radius: 15px;
+        width: 30px;
+        display: table-cell;
+        float: left;
+        margin-right: 5px;
+        font-weight: normal;
+    }
+
+    /* Donor Tag */
+    .do { 
+        border-color: #FF8C19; 
+    } 
+    /* Prospect Tag */
+    .pr { 
+        border-color: #008FBF;
+    }
+    /* Volunteer Tag */
+    .vo { 
+        border-color: #4C9926;
+    }
+    /* Corporation / Foundation Tag */
+    ._f { 
+        border-color: #9F9F9F;
+    }
+    /* Grant Resource Tag */
+    ._g { 
+        border-color: #85A6A6;
+    }
+    /* 
+        Contact Assoc Type Tags
+    */
+    .con-assoc,
+    .con-task-assoc,
+    .con-proj-assoc  {
+        border: solid 2px;
+        border-radius: 7px;
+        padding: 1px;
+        padding-right: 5px;
+        padding-left: 5px;
+        text-align: center;
+        font-weight: normal;
+    }
+
+    /* Creator Tag */
+    .cr,
+    .creator { 
+        border-color: #2C594F;
+    }
+
+    /* Assigned Tag */ 
+    .as, 
+    .assigned { 
+        border-color: #E54661; 
+    }
+
+    /* Target Tag */
+    .ta, 
+    .target { 
+        border-color: #FFA644;
+    }
+
+    /* Non-Specified or Non-Aligned Tag */
+    .na,
+    .unspecified { 
+        border-color: #002D40;
+    }
+
+    .re,
+    .resource {
+        border-color: #0099cc;   
+    }
+
+    .le,
+    .project-lead {
+        border-color: #bf0074;  
+    }
+
+    /* 
+        Task Status Tags
+    */
+    .task-status,
+    .proj-status,
+    .task-proj-status,
+    .proj-task-status {
+        border: solid 2px;
+        border-radius: 7px;
+        padding: 1px;
+        padding-right: 5px;
+        padding-left: 5px;
+        text-align: center;
+        font-weight: normal;
+    }
+
+    .incomplete {
+        border-color: #666;
+    }
+
+    .overdue {
+        border-color: #e23131;
+    }
+
+    .completed {
+        border-color: #56cc4b;
+    }
+
+    body {
+      -webkit-print-color-adjust: exact;
+    }
+
+    .col-sm-2 {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+}

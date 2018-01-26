@@ -1,26 +1,6 @@
 
 {% load bleach_tags %}
 
-<h1><strong>Contact: </strong>{{ contact.name }}</h1>
+{% include "contacts/contact_head.html" %}
 
-<div class="col-sm-12">
-  {% for contype in contact.type_tags.all %}
-    <div class="col-sm-2">
-      <p class="contag tag {{ contype.tag_type }}">
-        <strong>{{ contype.get_tag_type_display }}</strong>
-      </p>
-    </div>
-  {% endfor %}
-</div>
-
-<div class="col-sm-12">
-  <div class="col-sm-3">
-    <p><strong>E-Mail:</strong> {{ contact.email }} </p>
-    <p><strong>Phone:</strong> {{ contact.phone }} </p>
-    <p><strong>Organization:</strong> {{ contact.org }} </p>
-  </div>
-  <div class="col-sm-9">
-    <p><strong>Notes:</strong></p>
-    <p>{{ contact.notes|bleach }}</p>
-  </div>
-</div>
+{% include "contacts/contact_body.html" %}

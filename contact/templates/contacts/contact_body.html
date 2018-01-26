@@ -1,0 +1,14 @@
+
+{% load bleach_tags %}
+
+<div class="col-sm-12">
+  <div class="col-sm-3">
+    <p><strong>E-Mail:</strong> {{ contact.email }} </p>
+    <p><strong>Phone:</strong> {{ contact.phone }} </p>
+    <p><strong>Organization:</strong> {{ contact.org }} </p>
+  </div>
+  <div class="col-sm-9">
+    <p><strong>Notes:</strong></p>
+    <p>{{ contact.notes|bleach }}</p>
+  </div>
+</div>

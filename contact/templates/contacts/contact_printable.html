@@ -15,11 +15,24 @@
 
   <!-- Add additional CSS in static file -->
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/print.css' %}">
 </head>
 
 <body>
 
-  {% include "contacts/contact_basic.html" %}
+  <h1><strong>Contact: </strong>{{ contact.name }}</h1>
+
+  <div class="col-sm-12">
+    {% for contype in contact.type_tags.all %}
+      <div class="col-sm-2">
+        <div class="contag tag {{ contype.tag_type }}">
+          <strong>{{ contype.get_tag_type_display }}</strong>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "contacts/contact_body.html" %}
 
   <div>
     {% if perms.contact.contact_view_projects %}

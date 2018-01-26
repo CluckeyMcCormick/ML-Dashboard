@@ -1,0 +1,11 @@
+<h1><strong>Contact: </strong>{{ contact.name }}</h1>
+
+<div class="col-sm-12" style="padding-left: 0px;">
+  {% for contype in contact.type_tags.all %}
+    <div class="col-sm-2">
+      <div class="contag tag {{ contype.tag_type }}" style="min-width: 165px">
+        <strong>{{ contype.get_tag_type_display }}</strong>
+      </div>
+    </div>
+  {% endfor %}
+</div>

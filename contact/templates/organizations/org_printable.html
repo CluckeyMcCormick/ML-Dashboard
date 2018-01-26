@@ -5,9 +5,9 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
-  {% block title %}<title>{{ organization.name }}</title>{% endblock %}
+<head>
+  <title>{{ organization.name }}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {# Load CSS and JavaScript #}
@@ -15,10 +15,8 @@
   {% bootstrap_javascript jquery=1 %}
 
   <!-- Add additional CSS in static file -->
-  {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  {% block addhead %}
-  {% endblock %}
+  <link rel="stylesheet" href="{% static 'css/print.css' %}">
 </head>
 
 <body>

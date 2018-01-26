@@ -171,7 +171,7 @@ class ContactTypeTag(models.Model):
         ('do', 'Donor'),
         ('pr', 'Prospect'),
         ('vo', 'Volunteer'),
-        ('_f', 'Corporate/Foundation'),
+        ('_f', 'Corporate / Foundation'),
         ('_g', 'Grant Resource'),
     )
 
