@@ -3,37 +3,34 @@
 {% load bootstrap3 %}
 {% load macros %}
 
-{% loadmacros "contacts/contact_macro.html" %}
-{% loadmacros "tasks/task_macro.html" %}
 {% loadmacros "associated_macros.html" %}
 
 {% block content %}
 
-  <h1><strong>Contact: </strong>{{ contact.name }}</h1>
+  {% include "contacts/contact_basic.html" %}
 
-  {% use_macro display_contact_large_tags contact %}
+  <h2>
+    {% bootstrap_button content='View Printable Version' button_type='link' href=contact_print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
+  </h2>
 
-  {% use_macro display_contact_body contact %}
-
-  <h2 class="col-sm-12" role="toolbar">
+  <div>
     {% if perms.contact.change_contact %}
       {% bootstrap_button content='Edit' button_type='link' href=contact_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
     {% endif %}
     {% if perms.contact.delete_contact %}
       {% bootstrap_button content='Delete' button_type='link' href=contact_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
     {% endif %}
-  </h2>
+  </div>
 
-  <div class="col-sm-12">
-    <hr>
+  <div>
     {% if perms.contact.contact_view_projects %}
-      {% use_macro display_associated_table associated_projects_table "Associated Projects" %}
       <hr>
+      {% use_macro display_associated_table associated_projects_table "Associated Projects" %}
     {% endif %}
 
     {% if perms.contact.contact_view_tasks %}
-      {% use_macro display_associated_table associated_tasks_table "Associated Tasks" %}
       <hr>
+      {% use_macro display_associated_table associated_tasks_table "Associated Tasks" %}
     {% endif %}
   </div>
 {% endblock %}

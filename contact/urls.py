@@ -8,6 +8,7 @@ urlpatterns = [
 
     url(r'^$', views.my_dashboard),
     url(r'^dashboard/$', views.my_dashboard, name='my-dashboard'),
+    url(r'^dashboard/print/$', views.my_dashboard_print, name='my-dashboard-print'),
 
     #
     # CONTACTS
@@ -23,6 +24,7 @@ urlpatterns = [
     url(r'^contact/create/$', views.ContactCreate.as_view(), name='contact-create'),
 
     url(r'^contact/(?P<pk>\d+)$', views.ContactDetailView.as_view(), name='contact-detail'),
+    url(r'^contact/(?P<pk>\d+)/print/$', views.ContactPrintView.as_view(), name='contact-print'),
     url(r'^contact/(?P<pk>\d+)/update/$', views.ContactUpdate.as_view(), name='contact-update'),
     url(r'^contact/(?P<pk>\d+)/delete/$', views.ContactDelete.as_view(), name='contact-delete'),
 
@@ -33,6 +35,7 @@ urlpatterns = [
     url(r'^org/create/$', views.OrgCreate.as_view(), name='org-create'),
 
     url(r'^org/(?P<pk>\d+)$', views.OrgDetailView.as_view(), name='org-detail'),
+    url(r'^org/(?P<pk>\d+)/print/$', views.OrgPrintView.as_view(), name='org-print'),
     url(r'^org/(?P<pk>\d+)/update/$', views.OrgUpdate.as_view(), name='org-update'),
     url(r'^org/(?P<pk>\d+)/delete/$', views.OrgDelete.as_view(), name='org-delete'),
 

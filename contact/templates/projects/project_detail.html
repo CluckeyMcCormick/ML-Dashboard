@@ -20,15 +20,12 @@
     </div>
   </div> 
   -->
+  <h2>
+    {% bootstrap_button content='View Printable Version' button_type='link' href=project_print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
+  </h2>
   <form action="" method="post">
-    {% if can_download %}
-      <h2 class="col-sm-12">
-        {% bootstrap_button content='View Printable Version' button_type='link' href=project_print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
-      </h2>
-    {% endif %}
-    <h2 class="col-sm-12">
-      
-      {% csrf_token %}
+    {% csrf_token %}
+    <div>
 
       {% if project.complete %}
         {% bootstrap_button content='Mark Incomplete' button_type='submit' name='mark' value='False' button_class="incomplete hoverable" icon="glyphicon glyphicon-repeat" %}
@@ -44,8 +41,8 @@
         {% bootstrap_button content='Delete' button_type='link' href=project_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
       {% endif %}
 
-    </h2>
-    <div class="col-sm-12">
+    </div>
+    <div>
       <hr>
       
       {% use_macro display_associated_table contact_task_intersect_table "Contact-Task Assignments" %}

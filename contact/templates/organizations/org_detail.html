@@ -1,6 +1,5 @@
 {% extends "base_generic.html" %}
 
-{% load bleach_tags %}
 {% load bootstrap3 %}
 {% load macros %}
 
@@ -8,17 +7,19 @@
 
 {% block content %}
 
-	<h1><strong>Organization: </strong>{{ organization.name }}</h1>
+  {% include "organizations/org_basic.html" %}
 
-	<p><strong>Notes: </strong></p>
-	<p>{{ organization.notes|bleach }}</p>
+  <h2>
+    {% bootstrap_button content='View Printable Version' button_type='link' href=org_print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
+  </h2>
 
-	{% bootstrap_button content='Edit' button_type='link' href=org_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
+  <div>
+    {% bootstrap_button content='Edit' button_type='link' href=org_edit_url button_class="btn-primary" icon="glyphicon glyphicon-pencil"%}
 
-	{% bootstrap_button content='Delete' button_type='link' href=org_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+    {% bootstrap_button content='Delete' button_type='link' href=org_delete_url button_class="btn-danger" icon="glyphicon glyphicon-remove"%}
+  </div>
 
-	<hr>
-	{% use_macro display_associated_table associated_contact_table "Associated Contacts" %}
-	<hr>
+  <hr>
+  {% use_macro display_associated_table associated_contact_table "Associated Contacts" %}
 
 {% endblock %}

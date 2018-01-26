@@ -73,6 +73,7 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
     def get_context_data(self, **kwargs):
         context = super(ContactDetailView, self).get_context_data(**kwargs)
 
+        context['contact_print_url'] = reverse_lazy('contact-print', args=(context['contact'].pk,))
         context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
         context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
 
@@ -234,3 +235,23 @@ def download_contact_corporation_dataset(request):
 
     response.write(contact_set.export('xlsx'))
     return response
+
+class ContactPrintView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
+    model = Contact
+    template_name = 'contacts/contact_printable.html'
+
+    def test_func(self):
+        if self.request.user.has_perm("contact.contact_view_all"):
+            return True
+        elif self.request.user.has_perm("contact.contact_view_related"):
+            this = Contact.objects.get(pk=self.kwargs['pk'])
+            return is_related_contact(self.request.user.contact, this)
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactPrintView, self).get_context_data(**kwargs)
+
+        context['associated_projects_table'] = table_assoc.ProjectAssocTable_Printable( self.object.proj_assocs.get_queryset() )
+        context['associated_tasks_table'] = table_assoc.TaskAssocTable_Printable( self.object.task_assocs.get_queryset() )
+
+        return context

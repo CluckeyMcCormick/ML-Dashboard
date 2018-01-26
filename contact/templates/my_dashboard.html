@@ -1,22 +1,22 @@
 {% extends "base_generic.html" %}
 
+{% load bootstrap3 %}
 {% load macros %}
 
 {% loadmacros "associated_macros.html" %}
 
 {% block content %}
 
-  <h1><strong>My Dashboard</strong></h1>
+  {% include "my_dashboard_basic.html" %}
 
-  <p><strong>E-Mail:</strong> {{ user_con.email }} </p>
-  <p><strong>Phone:</strong> {{ user_con.phone }} </p>
-  <p><strong>Organization:</strong> {{ user_con.org }} </p>
+  <h2>
+    {% bootstrap_button content='View Printable Version' button_type='link' href=print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
+  </h2>
 
   <hr>
   {% use_macro display_associated_table user_proj_table "Your Upcoming Projects" %}
   <hr>
   {% use_macro display_associated_table user_task_table "Your Upcoming Tasks" %}
-  <hr>
 
-  </div>
+
 {% endblock %}

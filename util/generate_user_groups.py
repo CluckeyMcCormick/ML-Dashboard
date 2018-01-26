@@ -25,6 +25,9 @@ vol_perms.append( p_get(codename='task_delete_admin') )
 vol_perms.append( p_get(codename='task_down_sum_related') )
 
 #Add data admin permissions
+da_perms.append( p_get(codename='add_organization') )
+da_perms.append( p_get(codename='change_organization') )
+da_perms.append( p_get(codename='delete_organization') )
 da_perms.append( p_get(codename='organization_view_all') )
 da_perms.append( p_get(codename='organization_down_sum_all') )
 

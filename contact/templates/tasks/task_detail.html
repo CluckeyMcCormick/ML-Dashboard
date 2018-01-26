@@ -8,11 +8,9 @@
 
   {% include "tasks/task_basic.html" %}
 
-  {% if can_download %}
-    <h2>
-      {% bootstrap_button content='Download Excel Summary' button_type='link' href=task_print_url button_class="btn-primary" icon="glyphicon glyphicon-download"%}
-    </h2>
-  {% endif %}
+  <h2>
+    {% bootstrap_button content='View Printable Version' button_type='link' href=task_print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
+  </h2>
 
 
   <form action="" method="post">

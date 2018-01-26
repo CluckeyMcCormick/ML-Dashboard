@@ -18,9 +18,9 @@ So these mixins specify some basic column groups that we'll re-use.
 We can then construct a table by inheriting from these mixins, allowing us
 to create consistent tables without repeated code.
 """
-class ContactBasicMixin(Table):
+class ContactViewMixin(Table):
     """
-    Very basic contact columns - a view, a name, and their organization.
+    A link to a contact
     """
     view =  LinkColumn(
         header='View', 
@@ -39,10 +39,24 @@ class ContactBasicMixin(Table):
         ],
         searchable=False,
         sortable=False,
-    )
+    )        
 
+class ContactNameMixin(Table):
+    """
+    A name column.
+    """
     name = CustomNoneColumn(field='name', header='Name')
+
+class ContactOrgMixin(Table):
+    """
+    An organization column.
+    """
     org = CustomNoneColumn(field='org.name', header='Organization')
+
+class ContactBasicMixin(ContactViewMixin, ContactNameMixin, ContactOrgMixin):
+    """
+    Concatenates the basic columns - view, name, and org
+    """
 
 class ContactInfoMixin(Table):
     """
@@ -93,6 +107,23 @@ class ContactTagMixin(Table):
 #|___ |__| | \|  |  |  | |___  |  
 #
 class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactTagMixin):
+
+    class Meta:
+        model = Contact
+        search = True
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class ContactOrglessTable_Printable(ContactNameMixin, ContactNotesMixin, ContactTagMixin):
+
+    class Meta:
+        model = Contact
+        search = False
+        pagination = False
+
+        attrs = {'class': 'table-striped table-hover'}
+
+class ContactOrglessTable(ContactViewMixin, ContactOrglessTable_Printable):
 
     class Meta:
         model = Contact

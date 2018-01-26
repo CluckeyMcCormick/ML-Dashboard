@@ -1,0 +1,7 @@
+
+{% load bleach_tags %}
+
+<h1><strong>Organization: </strong>{{ organization.name }}</h1>
+
+<p><strong>Notes: </strong></p>
+<p>{{ organization.notes|bleach }}</p>

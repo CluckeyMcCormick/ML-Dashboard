@@ -7,7 +7,7 @@
 <html lang="en">
 <head>
 
-  {% block title %}<title>{{project.title}}</title>{% endblock %}
+  {% block title %}<title>{{ organization.name }}</title>{% endblock %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {# Load CSS and JavaScript #}
@@ -23,16 +23,10 @@
 
 <body>
 
-  {% include "projects/project_basic.html" %}
+  {% include "organizations/org_basic.html" %}
 
   <hr>
   <h3>Contact-Task Assignments</h3>
-  {% render_table contact_task_intersect_table %}
-  <hr>
-  <h3>Associated Contacts</h3>
   {% render_table associated_contact_table %}
-  <hr>
-  <h3>Associated Tasks</h3>
-  {% render_table associated_task_table %}
-  
-</body>
+
+<body>

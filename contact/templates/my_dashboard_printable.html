@@ -6,8 +6,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  {% block title %}<title>{{project.title}}</title>{% endblock %}
+  <title>Print My Dashboard</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {# Load CSS and JavaScript #}
@@ -15,24 +14,18 @@
   {% bootstrap_javascript jquery=1 %}
 
   <!-- Add additional CSS in static file -->
-  {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  {% block addhead %}
-  {% endblock %}
 </head>
 
 <body>
 
-  {% include "projects/project_basic.html" %}
+  {% include "my_dashboard_basic.html" %}
 
   <hr>
-  <h3>Contact-Task Assignments</h3>
-  {% render_table contact_task_intersect_table %}
+  <h3>Your Upcoming Projects</h3>
+  {% render_table user_proj_table %}
   <hr>
-  <h3>Associated Contacts</h3>
-  {% render_table associated_contact_table %}
-  <hr>
-  <h3>Associated Tasks</h3>
-  {% render_table associated_task_table %}
-  
+  <h3>Your Upcoming Tasks</h3>
+  {% render_table user_task_table %}
+
 </body>

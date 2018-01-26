@@ -1,4 +1,4 @@
-{% load bleach_tags %}
+
 {% load table_tags %}
 {% load bootstrap3 %}
 {% load static %}
@@ -6,8 +6,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  {% block title %}<title>{{task.brief}}</title>{% endblock %}
+  <title>{{ contact.name }}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {# Load CSS and JavaScript #}
@@ -15,17 +14,24 @@
   {% bootstrap_javascript jquery=1 %}
 
   <!-- Add additional CSS in static file -->
-  {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  {% block addhead %}
-  {% endblock %}
 </head>
+
 <body>
 
-  {% include "tasks/task_basic.html" %}
+  {% include "contacts/contact_basic.html" %}
 
-  <hr>
-  <h3>Associated Contacts</h3>
-  {% render_table associated_contact_table %}
+  <div>
+    {% if perms.contact.contact_view_projects %}
+      <hr>
+      <h3>Associated Projects</h3>
+      {% render_table associated_projects_table %}
+    {% endif %}
 
+    {% if perms.contact.contact_view_tasks %}
+      <hr>
+      <h3>Associated Tasks</h3>
+      {% render_table associated_tasks_table %}
+    {% endif %}
+  </div>
 </body>

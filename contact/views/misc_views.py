@@ -31,6 +31,17 @@ from ..tables import (
 from .proj_con_assoc_views import get_tiered_proj_assoc_qs
 from .task_con_assoc_views import get_tiered_task_assoc_qs
 
+def get_tiered_upcoming(user_con):
+    qs_proj_assoc = get_tiered_proj_assoc_qs(user_con)
+    qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__lte=datetime.date.today())
+    qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__exact=None)
+
+    qs_task_assoc = get_tiered_task_assoc_qs(user_con)
+    qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__lte=datetime.date.today())
+    qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
+
+    return qs_proj_assoc, qs_task_assoc
+
 # Create your views here.
 @login_required
 def index(request):
@@ -63,14 +74,7 @@ def my_dashboard(request):
     """
     #Get the associated contact for our user
     user_con = request.user.contact
-
-    qs_proj_assoc = get_tiered_proj_assoc_qs(user_con)
-    qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__lte=datetime.date.today())
-    qs_proj_assoc = qs_proj_assoc.exclude(proj__complete__exact=True, proj__deadline__exact=None)
-
-    qs_task_assoc = get_tiered_task_assoc_qs(user_con)
-    qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__lte=datetime.date.today())
-    qs_task_assoc = qs_task_assoc.exclude(task__complete__exact=True, task__deadline__exact=None)
+    qs_proj_assoc, qs_task_assoc = get_tiered_upcoming(user_con)
 
     #Get the projects associated with the user
     user_proj_table = table_assoc.ProjectAssocTable(qs_proj_assoc)
@@ -81,6 +85,32 @@ def my_dashboard(request):
     return render(
         request,
         'my_dashboard.html',
+        context={
+            'user_con':user_con,
+            'user_proj_table':user_proj_table,
+            'user_task_table':user_task_table,
+            'print_url':reverse_lazy('my-dashboard-print')
+        },
+    )
+
+@login_required
+def my_dashboard_print(request):
+    """
+    View function for the current user's dashboard
+    """
+    #Get the associated contact for our user
+    user_con = request.user.contact
+    qs_proj_assoc, qs_task_assoc = get_tiered_upcoming(user_con)
+
+    #Get the projects associated with the user
+    user_proj_table = table_assoc.ProjectAssocTable_Printable(qs_proj_assoc)
+    #Get the tasks associated with the user
+    user_task_table = table_assoc.TaskAssocTable_Printable(qs_task_assoc)
+
+    # Render the HTML template index.html with the data in the context variable
+    return render(
+        request,
+        'my_dashboard_printable.html',
         context={
             'user_con':user_con,
             'user_proj_table':user_proj_table,
