@@ -10,7 +10,7 @@ import math
 
 class Organization(models.Model):
     """
-    Model representing a contact
+    Model representing an organization that a contact belongs to
     """
     name = models.CharField(max_length=50, help_text="The name of this organization.")
     notes = models.TextField(max_length=2500, help_text="Any extra notes for this organization.", blank=True)
@@ -489,3 +489,49 @@ class ProjectContactAssoc(models.Model):
                 message = "A non-creator relationship already exists between project '{0}' and '{1}'!"
                 raise Exception( message.format(self.proj.title, self.con.name) )
         super(ProjectContactAssoc, self).save(*args, **kwargs)
+
+class Event(models.Model):
+    """
+    Model representing an event / workshop.
+    Essentially, a piece of data describing what events / workshops a contact
+    has attended.
+    """
+    name = models.CharField(max_length=50, help_text="The name of this event / workshop.")
+    notes = models.TextField(max_length=2500, help_text="Any extra notes for this event / workshop.", blank=True)
+
+    contacts = models.ManyToManyField(Contact, related_name="events")
+
+    class Meta:
+        permissions = (
+            ("event_view_all", "View all events / workshops."),
+            ("event_down_sum_all", "Download events / workshops summaries."),
+        )
+
+    def __str__(self):
+        """
+        String for representing the Model object (in Admin site etc.)
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular project.
+        """
+        return reverse('event-detail', args=[str(self.id)])
+
+    @property
+    def notes_bleach_trim(self):
+        char_lim = 97
+        ret_val = None
+
+        if self.notes:
+            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
+            
+            if len(ret_val) > char_lim:
+                ret_val = ret_val[:char_lim] + '...'
+
+        return ret_val
+
+    @property
+    def contact_count(self):
+        return self.contacts.count()

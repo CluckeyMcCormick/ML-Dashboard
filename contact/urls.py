@@ -40,6 +40,18 @@ urlpatterns = [
     url(r'^org/(?P<pk>\d+)/delete/$', views.OrgDelete.as_view(), name='org-delete'),
 
     #
+    # EVENTS
+    #
+    url(r'^events/$', views.OrgListView.as_view(), name='events'),
+    url(r'^events/create/$', views.OrgCreate.as_view(), name='event-create'),
+
+    url(r'^event/(?P<pk>\d+)$', views.OrgDetailView.as_view(), name='event-detail'),
+    url(r'^event/(?P<pk>\d+)/print/$', views.OrgPrintView.as_view(), name='event-print'),
+    url(r'^event/(?P<pk>\d+)/update/$', views.OrgUpdate.as_view(), name='event-update'),
+    url(r'^event/(?P<pk>\d+)/delete/$', views.OrgDelete.as_view(), name='event-delete'),
+
+
+    #
     # PROJECTS
     #
     url(r'^projects/$', views.ProjectListView.as_view(), name='projects'),
