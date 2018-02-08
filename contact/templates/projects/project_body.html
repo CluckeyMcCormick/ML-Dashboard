@@ -1,0 +1,21 @@
+{% load bleach_tags %}
+
+<h4><strong>Deadline:</strong> {{ project.deadline }}</h4>
+
+<p>
+  <strong>Project Status: </strong>
+  <strong class="task-status {{project.status.lower}}">{{project.status}}</strong>
+</p>
+
+{% if creator.con %}
+  <p>
+    <strong class="con-assoc cr">Creator:</strong> {{creator.con.name}}
+  </p>
+{% endif %}
+
+<p><strong>Notes: </strong></p>
+{% if project.notes %}
+	<p>{{ project.notes | bleach }}</p>
+{% else %}
+	<p>No notes for this project.</p>
+{% endif %} 

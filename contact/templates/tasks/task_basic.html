@@ -4,30 +4,4 @@
   <strong>Task: </strong>{{task.brief}}
 </h1>
 
-{% if task.deadline %}
-  <p><strong>Complete By: </strong> {{ task.deadline }}</p>
-{% endif %}
-
-<p>
-  <strong>Task Status: </strong>
-  <strong class="task-status {{task.status.lower}}">{{task.status}}</strong>
-</p>
-
-{% if creator.con %}
-  <p>
-    <strong class="con-assoc cr">Creator:</strong> {{creator.con.name}}
-  </p>
-{% endif %}
-
-{% if task.proj %}
-  <p><strong>Project: </strong> <a href="{{ task.proj.get_absolute_url }}">{{ task.proj.title }}</a></p>
-{% endif %}
-
-<!-- Notes for this task -->
-
-<p><strong>Notes: </strong></p>
-{% if task.notes %}
-  <p>{{ task.notes | bleach }}</p>
-{% else %}
-  <p>No notes for this task.</p>
-{% endif %} 
+{% include "tasks/task_body.html"  %}

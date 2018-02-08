@@ -1,15 +1,11 @@
 {% extends "base_generic.html" %}
 
-{% load bootstrap3 %}
 
+{% load bootstrap3 %}
 {% block content %}
 
 <h1><strong>Delete Project: </strong>{{ project.name }}</h1>
-{% if project.notes %}
-	<span>
-		<p><strong>Notes:</strong> {{ project.notes }} </p>
-	</span>
-{% endif %}
+{% include "projects/project_body.html"  %}
 <hr>
 <h4>
 	This project has <strong>{{ project.tasks.count }} task(s) </strong>

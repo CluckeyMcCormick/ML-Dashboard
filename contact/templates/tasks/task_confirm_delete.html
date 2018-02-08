@@ -2,13 +2,14 @@
 
 {% load macros %}
 {% load bootstrap3 %}
-
-{% loadmacros "tasks/task_macro.html" %}
+{% load bleach_tags %}
 
 {% block content %}
 
 <h1><strong>Delete Task: </strong>{{ task.brief }}</h1>
-	{% use_macro display_task_body task %}
+	
+{% include "tasks/task_body.html"  %}
+
 <div class="left-pad col-sm-12">
 	<hr>
 	<h4>Are you sure you want to delete this task?</h4>

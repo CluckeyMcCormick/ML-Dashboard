@@ -1,15 +1,18 @@
 {% extends "base_generic.html" %}
 
+{% load bleach_tags %}
 {% load bootstrap3 %}
 {% load macros %}
-
-{% loadmacros "contacts/contact_macro.html" %}
 
 {% block content %}
 
 <h1><strong>Delete Contact: </strong>{{ contact.name }}</h1>
 
-{% use_macro display_contact_large_tags contact %}
+{% for contype in contact.type_tags.all %}
+	{{ contype.get_tag_type_display }}
+{% endfor %} 
+
+{% include "contacts/contact_body.html" %}
 
 {% if contact.notes %}
 	<span>
