@@ -1,0 +1,30 @@
+
+{% load table_tags %}
+{% load bootstrap3 %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>{{ organization.name }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {# Load CSS and JavaScript #}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery=1 %}
+
+  <!-- Add additional CSS in static file -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/print.css' %}">
+</head>
+
+<body>
+
+  {% include "events/event_basic.html" %}
+
+  <hr>
+  <h3>Contacts</h3>
+  {% render_table associated_contact_table %}
+
+<body>

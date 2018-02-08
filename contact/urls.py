@@ -42,13 +42,13 @@ urlpatterns = [
     #
     # EVENTS
     #
-    url(r'^events/$', views.OrgListView.as_view(), name='events'),
-    url(r'^events/create/$', views.OrgCreate.as_view(), name='event-create'),
+    url(r'^events/$', views.EventListView.as_view(), name='events'),
+    url(r'^events/create/$', views.EventCreate.as_view(), name='event-create'),
 
-    url(r'^event/(?P<pk>\d+)$', views.OrgDetailView.as_view(), name='event-detail'),
-    url(r'^event/(?P<pk>\d+)/print/$', views.OrgPrintView.as_view(), name='event-print'),
-    url(r'^event/(?P<pk>\d+)/update/$', views.OrgUpdate.as_view(), name='event-update'),
-    url(r'^event/(?P<pk>\d+)/delete/$', views.OrgDelete.as_view(), name='event-delete'),
+    url(r'^event/(?P<pk>\d+)$', views.EventDetailView.as_view(), name='event-detail'),
+    url(r'^event/(?P<pk>\d+)/print/$', views.EventPrintView.as_view(), name='event-print'),
+    url(r'^event/(?P<pk>\d+)/update/$', views.EventUpdate.as_view(), name='event-update'),
+    url(r'^event/(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='event-delete'),
 
 
     #

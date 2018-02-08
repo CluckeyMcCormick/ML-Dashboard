@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% load table_tags %}
+
+{% block content %}
+  <h1>Event / Workshop List</h1>
+
+  {% render_table event_table %}
+
+{% endblock %}

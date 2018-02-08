@@ -9,7 +9,7 @@ import tinymce
 
 from .models import (
     ContactTypeTag, Task, TaskContactAssoc,
-    Organization, Contact, Project,
+    Organization, Contact, Project, Event,
 )
 
 class ContactForm(forms.ModelForm):
@@ -59,6 +59,15 @@ class OrgForm(forms.ModelForm):
     class Meta:
         model = Organization
         fields = '__all__'
+        widgets = {
+            'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
+        }
+
+class EventForm(forms.ModelForm):
+
+    class Meta:
+        model = Event
+        fields = ['name', 'notes']
         widgets = {
             'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
         }

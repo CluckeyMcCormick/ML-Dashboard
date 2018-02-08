@@ -37,13 +37,16 @@
               <li><a href="{% url 'my-proj-assocs' %}">My Projects</a></li>
               <li><a href="{% url 'my-task-assocs' %}">My Tasks</a></li>
               
-              {% if perms.contact.contact_view_all or perms.contact.organization_view_all or perms.contact.project_view_all or perms.contact.task_view_all %}
+              {% if perms.contact.contact_view_all or perms.contact.organization_view_all or perms.contact.project_view_all or perms.contact.task_view_all or perms.contact.event_view_all %}
                 <hr>
                 {% if perms.contact.contact_view_all %}
                   <li><a href="{% url 'contacts' %}">View all Contacts</a></li>
                 {% endif %}
                 {% if perms.contact.organization_view_all %}
                   <li><a href="{% url 'orgs' %}">View all Organizations</a></li>
+                {% endif %}
+                {% if perms.contact.event_view_all %}
+                  <li><a href="{% url 'events' %}">View all Events / Workshops</a></li>
                 {% endif %}
                 {% if perms.contact.project_view_all %}
                   <li><a href="{% url 'projects' %}">View all Projects</a></li>
@@ -52,13 +55,16 @@
                   <li><a href="{% url 'tasks' %}">View all Tasks</a></li>
                 {% endif %}
               {% endif %}
-              {% if perms.contact.add_contact or perms.contact.add_organization or perms.contact.add_project or perms.contact.add_task %}
+              {% if perms.contact.add_contact or perms.contact.add_organization or perms.contact.add_project or perms.contact.add_task or perms.contact.add_event %}
                 <hr>
                 {% if perms.contact.add_contact %}
                   <li><a href="{% url 'contact-create' %}">Create new Contact</a></li>
                 {% endif %}
                 {% if perms.contact.add_organization %}
                   <li><a href="{% url 'org-create' %}">Create new Organization</a></li>
+                {% endif %}
+                {% if perms.contact.add_event %}
+                  <li><a href="{% url 'event-create' %}">Create new Event / Workshop</a></li>
                 {% endif %}
                 {% if perms.contact.add_project %}
                   <li><a href="{% url 'project-create' %}">Create new Project</a></li>

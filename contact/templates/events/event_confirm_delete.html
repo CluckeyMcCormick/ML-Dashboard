@@ -6,13 +6,13 @@
 
 {% block content %}
 
-<h1><strong>Delete Organization: </strong>{{ organization.name }}</h1>
-<p><strong>Notes: </strong>{{ organization.notes|bleach }}</p>
+<h1><strong>Delete Event / Workshop: </strong>{{ event.name }}</h1>
+<p><strong>Notes: </strong>{{ event.notes|bleach }}</p>
 
 <div class="left-pad col-sm-12">
 	<hr>
 	<h4>
-		Are you sure you want to delete this organization? The <strong>{{ organization.contacts.count }}</strong> associated contact(s) will not be associated with any organization. 
+		Are you sure you want to delete this event / workshop? The <strong>{{ event.contacts.count }}</strong> associated contact(s) will no longer be associated with this event / workshop. 
 	</h4>
 	<h4><strong><em>
 		This cannot be undone!
