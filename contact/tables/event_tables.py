@@ -39,3 +39,14 @@ class EventTable(Table):
         search = True
 
         attrs = {'class': 'table-striped table-hover'}           
+
+class EventTable_Printable(Table):
+    name = CustomNoneColumn(field='name', header='Name')
+    cons = Column(field='contact_count', header='Contacts')
+    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')
+
+    class Meta:
+        model = Event
+        search = False
+        pagination = False
+        attrs = {'class': 'table-striped table-hover'}           

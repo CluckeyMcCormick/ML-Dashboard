@@ -46,5 +46,11 @@
       <h3>Associated Tasks</h3>
       {% render_table associated_tasks_table %}
     {% endif %}
+
+    {% if perms.contact.contact_view_events %}
+      <hr>
+      <h3>Associated Events</h3>
+      {% render_table associated_events_table %}
+    {% endif %}
   </div>
 </body>

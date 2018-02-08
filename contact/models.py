@@ -50,6 +50,49 @@ class Organization(models.Model):
     def contact_count(self):
         return self.contacts.count()
 
+class Event(models.Model):
+    """
+    Model representing an event / workshop.
+    Essentially, a piece of data describing what events / workshops a contact
+    has attended.
+    """
+    name = models.CharField(max_length=50, help_text="The name of this event / workshop.")
+    notes = models.TextField(max_length=2500, help_text="Any extra notes for this event / workshop.", blank=True)
+
+    class Meta:
+        permissions = (
+            ("event_view_all", "View all events / workshops."),
+            ("event_down_sum_all", "Download events / workshops summaries."),
+        )
+
+    def __str__(self):
+        """
+        String for representing the Model object (in Admin site etc.)
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular project.
+        """
+        return reverse('event-detail', args=[str(self.id)])
+
+    @property
+    def notes_bleach_trim(self):
+        char_lim = 97
+        ret_val = None
+
+        if self.notes:
+            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
+            
+            if len(ret_val) > char_lim:
+                ret_val = ret_val[:char_lim] + '...'
+
+        return ret_val
+
+    @property
+    def contact_count(self):
+        return self.contacts.count()
 
 # Create your models here.
 class Contact(models.Model):
@@ -61,6 +104,8 @@ class Contact(models.Model):
     phone = models.CharField(max_length=20, help_text="The phone number of your contact.", null=True, blank=True)
 
     org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name="contacts")
+    events = models.ManyToManyField(Event, related_name="contacts")
+
     notes = models.TextField(max_length=2500, help_text="Any extra notes for this contact.", blank=True)
     user_link = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -71,6 +116,7 @@ class Contact(models.Model):
 
             ("contact_view_projects", "View contact's projects."),
             ("contact_view_tasks", "View contact's tasks."),
+            ("contact_view_events", "View contact's events."),
 
             ("contact_down_sum_all", "Download overall contact summary."),
             ("contact_down_sum_each", "Download individual contact summaries."),
@@ -489,49 +535,3 @@ class ProjectContactAssoc(models.Model):
                 message = "A non-creator relationship already exists between project '{0}' and '{1}'!"
                 raise Exception( message.format(self.proj.title, self.con.name) )
         super(ProjectContactAssoc, self).save(*args, **kwargs)
-
-class Event(models.Model):
-    """
-    Model representing an event / workshop.
-    Essentially, a piece of data describing what events / workshops a contact
-    has attended.
-    """
-    name = models.CharField(max_length=50, help_text="The name of this event / workshop.")
-    notes = models.TextField(max_length=2500, help_text="Any extra notes for this event / workshop.", blank=True)
-
-    contacts = models.ManyToManyField(Contact, related_name="events")
-
-    class Meta:
-        permissions = (
-            ("event_view_all", "View all events / workshops."),
-            ("event_down_sum_all", "Download events / workshops summaries."),
-        )
-
-    def __str__(self):
-        """
-        String for representing the Model object (in Admin site etc.)
-        """
-        return self.name
-
-    def get_absolute_url(self):
-        """
-        Returns the url to access a particular project.
-        """
-        return reverse('event-detail', args=[str(self.id)])
-
-    @property
-    def notes_bleach_trim(self):
-        char_lim = 97
-        ret_val = None
-
-        if self.notes:
-            ret_val = bleach.clean( self.notes, strip=True, tags=[''])
-            
-            if len(ret_val) > char_lim:
-                ret_val = ret_val[:char_lim] + '...'
-
-        return ret_val
-
-    @property
-    def contact_count(self):
-        return self.contacts.count()

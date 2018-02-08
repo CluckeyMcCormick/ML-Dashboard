@@ -22,7 +22,6 @@ from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.conf import settings
 
-
 from django.urls import path
 
 urlpatterns = [
@@ -42,6 +41,6 @@ urlpatterns = [
     ),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^tinymce/', include('tinymce.urls')),
-
+    url(r'^select2/', include('django_select2.urls')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

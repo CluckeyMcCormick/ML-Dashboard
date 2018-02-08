@@ -8,17 +8,18 @@
 
 <h1><strong>Delete Contact: </strong>{{ contact.name }}</h1>
 
-{% for contype in contact.type_tags.all %}
-	{{ contype.get_tag_type_display }}
-{% endfor %} 
+<div class="col-sm-12" style="padding-left: 0px;">
+  {% for contype in contact.type_tags.all %}
+    <div class="col-sm-2">
+      <div class="contag tag {{ contype.tag_type }}" style="min-width: 165px">
+        <strong>{{ contype.get_tag_type_display }}</strong>
+      </div>
+    </div>
+  {% endfor %}
+</div>
 
 {% include "contacts/contact_body.html" %}
 
-{% if contact.notes %}
-	<span>
-		<p><strong>Notes:</strong> {{ contact.notes }} </p>
-	</span>
-{% endif %}
 <hr>
 <h4>
 	This contact is associated with <strong> {{ contact.tasks.count }} task(s) </strong>

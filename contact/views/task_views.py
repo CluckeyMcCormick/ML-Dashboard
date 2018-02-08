@@ -249,6 +249,19 @@ class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return is_admined_contact_task(self.request.user.contact, task)
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super(TaskDelete, self).get_context_data(**kwargs)
+
+        #Get the tasks associated with the user
+        context['is_create'] = False
+
+        context['creator'] = None
+        ob_con_que = self.object.con_assocs.filter(tag_type='cr')
+        if ob_con_que.exists():
+            context['creator'] = ob_con_que[0]
+
+        return context
+
 #___  ____ _ _ _ _  _ _    ____ ____ ___  ____ 
 #|  \ |  | | | | |\ | |    |  | |__| |  \ [__  
 #|__/ |__| |_|_| | \| |___ |__| |  | |__/ ___] 

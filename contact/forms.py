@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy
 
 from django import forms
 
+import django_select2.forms as select2
 import tinymce
 
 from .models import (
@@ -24,9 +25,10 @@ class ContactForm(forms.ModelForm):
 
     class Meta:
         model = Contact
-        fields = ['name', 'email', 'phone', 'org', 'notes']
+        fields = ['name', 'email', 'phone', 'org', 'events', 'notes']
         widgets = {
-            'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
+            'notes' : tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
+            'events': select2.ModelSelect2MultipleWidget(model=Event, search_fields=['name__icontains']),
         }
         labels = {
             'org': ugettext_lazy('Organization'),

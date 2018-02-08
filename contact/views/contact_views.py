@@ -15,8 +15,9 @@ from ..models import ContactTypeTag, Contact, Task, Project
 from ..forms import ContactForm
 
 from ..tables import (
-    assoc_tables        as table_assoc,
-    contact_tables      as table_con,
+    assoc_tables   as table_assoc,
+    contact_tables as table_con,
+    event_tables   as table_event,
 ) 
 
 from .proj_con_assoc_views import get_tiered_proj_assoc_qs
@@ -82,6 +83,7 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
 
         context['associated_projects_table'] = table_assoc.ProjectAssocTable( get_tiered_proj_assoc_qs(self.object) )
         context['associated_tasks_table'] = table_assoc.TaskAssocTable( get_tiered_task_assoc_qs(self.object) )
+        context['associated_events_table'] = table_event.EventTable( self.object.events.get_queryset() )
 
         return context
 
@@ -256,5 +258,6 @@ class ContactPrintView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailVi
 
         context['associated_projects_table'] = table_assoc.ProjectAssocTable_Printable( self.object.proj_assocs.get_queryset() )
         context['associated_tasks_table'] = table_assoc.TaskAssocTable_Printable( self.object.task_assocs.get_queryset() )
+        context['associated_events_table'] = table_event.EventTable_Printable( self.object.events.get_queryset() )
 
         return context
