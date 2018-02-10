@@ -37,5 +37,6 @@ class OrgTable(Table):
     class Meta:
         model = Organization
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}           

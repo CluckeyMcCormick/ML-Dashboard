@@ -39,8 +39,11 @@ urlpatterns = [
     path('accounts/password_change/',
         auth_views.PasswordChangeView.as_view(template_name='registration/change_password.html'),
     ),
+
+    #Add-on app urls
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^select2/', include('django_select2.urls')),
+    url(r'^table/', include('table.urls')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

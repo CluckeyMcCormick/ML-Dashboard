@@ -83,7 +83,7 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
 
         context['associated_projects_table'] = table_assoc.ProjectAssocTable( get_tiered_proj_assoc_qs(self.object) )
         context['associated_tasks_table'] = table_assoc.TaskAssocTable( get_tiered_task_assoc_qs(self.object) )
-        context['associated_events_table'] = table_event.EventTable( self.object.events.get_queryset() )
+        context['associated_events_table'] = table_event.EventTable_Basic( self.object.events.get_queryset() )
 
         return context
 

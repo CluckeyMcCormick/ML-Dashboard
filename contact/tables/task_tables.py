@@ -20,6 +20,7 @@ class TaskBasicTable(Table):
     class Meta:
         model = Task
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -47,6 +48,7 @@ class TaskLinkTable(Table):
     class Meta:
         model = Task
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -57,6 +59,7 @@ class TaskNoProjectTable(TaskLinkTable, TaskBasicTable):
     class Meta:
         model = Task
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -68,12 +71,15 @@ class TaskTable(TaskNoProjectTable):
     class Meta:
         model = Task
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
 class TaskNoProjectTable_Printable(TaskBasicTable):
 
     class Meta:
+        model = Task
         search = False
         pagination = False
+        ajax = False
         attrs = {'class': 'table-striped table-hover'}

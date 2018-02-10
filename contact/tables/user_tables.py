@@ -21,5 +21,6 @@ class UserTable(Table):
     class Meta:
         model = User
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}           

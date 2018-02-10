@@ -69,7 +69,7 @@ class ContactNotesMixin(Table):
     """
     A single column - a clipping of the contact's notes
     """
-    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')      
+    #notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')      
 
 class ContactTagMixin(Table):
     """
@@ -111,6 +111,7 @@ class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -120,6 +121,7 @@ class ContactOrglessTable_Printable(ContactNameMixin, ContactNotesMixin, Contact
         model = Contact
         search = False
         pagination = False
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -128,6 +130,7 @@ class ContactOrglessTable(ContactViewMixin, ContactOrglessTable_Printable):
     class Meta:
         model = Contact
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -142,6 +145,7 @@ class SelectVolunteerTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -152,6 +156,7 @@ class SelectTargetTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -162,6 +167,7 @@ class SelectResourceTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -172,6 +178,7 @@ class SelectLeadTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 

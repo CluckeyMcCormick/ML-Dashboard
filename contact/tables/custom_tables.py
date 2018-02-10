@@ -58,6 +58,7 @@ class ProjectContactIntersection(Table):
 
     class Meta:
         search = True
+        #ajax = True
         attrs = {'class': 'table-striped table-hover'} 
 
     def __init__(self, in_query=None, project=None, **kwargs):
@@ -84,4 +85,5 @@ class PCI_Table_Printable(ProjectContactIntersection):
     class Meta:
         search = False
         pagination = False
+        ajax = False
         attrs = {'class': 'table-striped table-hover'} 

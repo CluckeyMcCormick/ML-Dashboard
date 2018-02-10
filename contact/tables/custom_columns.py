@@ -1,9 +1,11 @@
 from django.utils.safestring import mark_safe
+from django.utils.html import escape, strip_tags
 
 from table.utils import Accessor, A
 from table.columns import Column, LinkColumn, DatetimeColumn, Link
 
 import string
+import bleach
 
 class BooleanIconColumn(Column):
     def __init__(self, true_icon=None, false_icon=None, true_class='', false_class='', **kwargs):
@@ -43,6 +45,25 @@ class CustomNoneColumn(Column):
             ret = super(CustomNoneColumn, self).render(obj)
         else:
             ret = mark_safe(self.none_str)
+
+        return ret
+
+class BleachTrimColumn(CustomNoneColumn):
+    def __init__(self, trim_count=100, **kwargs):
+        super(BleachTrimColumn, self).__init__(**kwargs)
+        self.trim_count = trim_count
+
+    def render(self, obj):
+        ret = super(BleachTrimColumn, self).render(obj)
+        #Very manual code - unescape the damn html so we can strip it
+        ret = ret.replace('&amp;', '&').replace('&lt;', '<')
+        ret = ret.replace('&gt;', '>').replace('&quot;', '"')
+        ret = ret.replace('&#39;', "'")
+
+        char_lim = self.trim_count - 3
+        ret = bleach.clean( ret, strip=True, tags=[''])
+        if len(ret) > char_lim:
+            ret = ret[:char_lim] + '...'
 
         return ret
 

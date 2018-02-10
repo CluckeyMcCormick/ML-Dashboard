@@ -7,6 +7,7 @@ from ..models import TaskContactAssoc, ProjectContactAssoc
 
 from .custom_columns import *
 from . import center_attrs, date_time_format
+
 """
 The Assoc models serve as rich relationship join tables.
 
@@ -36,6 +37,7 @@ class TaskAssocTable_Printable(Table):
         model = TaskContactAssoc
         search = False
         pagination = False
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -65,6 +67,7 @@ class TaskAssocTable(TaskAssocViewMixin, TaskAssocTable_Printable):
     class Meta:
         model = TaskContactAssoc
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -121,6 +124,7 @@ class ContactTaskTable(ContactTaskTable_Link, ContactTaskTable_Basic):
     class Meta:
         model = TaskContactAssoc
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -134,6 +138,7 @@ class ContactTaskTable_Printable(ContactTaskTable_Basic):
         model = TaskContactAssoc
         search = False
         pagination = False
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -151,6 +156,7 @@ class ContactTaskTable_Remove(ContactTaskTable):
     class Meta:
         model = TaskContactAssoc
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -176,6 +182,7 @@ class ProjectAssocTable_Printable(Table):
         model = ProjectContactAssoc
         search = False
         pagination = False
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -207,6 +214,7 @@ class ProjectAssocTable(ProjectAssocViewMixin, ProjectAssocTable_Printable):
     class Meta:
         model = ProjectContactAssoc
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -222,6 +230,7 @@ class ContactProjectTable_Basic(Table):
     class Meta:
         model = ProjectContactAssoc
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -260,6 +269,12 @@ class ContactProjectTable(ContactProjectTable_Link, ContactProjectTable_Basic):
     Meant to be used from the "perspective" of a single Project.
     Displays the associated contacts, and the role of each.
     """
+    class Meta:
+        model = ProjectContactAssoc
+        search = True
+        ajax = True
+
+        attrs = {'class': 'table-striped table-hover'}
 
 class ContactProjectTable_Printable(ContactProjectTable_Basic):
     """
@@ -271,6 +286,7 @@ class ContactProjectTable_Printable(ContactProjectTable_Basic):
         model = ProjectContactAssoc
         search = False
         pagination = False
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -288,5 +304,6 @@ class ContactProjectTable_Remove(ContactProjectTable):
     class Meta:
         model = ProjectContactAssoc
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}

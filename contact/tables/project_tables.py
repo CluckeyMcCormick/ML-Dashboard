@@ -42,6 +42,7 @@ class ProjectTable(Table):
     class Meta:
         model = Project
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}
 

@@ -6,11 +6,11 @@ from ..models import Event
 
 from .custom_columns import *
 
-#____ ____ ____ ____ _  _ _ ___  ____ ___ _ ____ _  _ 
-#|  | |__/ | __ |__| |\ | |   /  |__|  |  | |  | |\ | 
-#|__| |  \ |__] |  | | \| |  /__ |  |  |  | |__| | \| 
-#
-class EventTable(Table):
+#____ _  _ ____ _  _ ___ ____ 
+#|___ |  | |___ |\ |  |  [__  
+#|___  \/  |___ | \|  |  ___] 
+#                             
+class EventLinkMixin(Table):
     view =  LinkColumn(
         header='View', 
         links=[
@@ -30,23 +30,42 @@ class EventTable(Table):
         sortable=False,
     )
 
+def get_contact_count(obj, **kwargs):
+    return obj.contact_count
+
+class EventGeneralMixin(Table):
     name = CustomNoneColumn(field='name', header='Name')
-    cons = Column(field='contact_count', header='Contacts')
-    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')
+    cons = FunctionColumn(field='name', header='Contacts', function=get_contact_count)
+    notes = BleachTrimColumn(field='notes', header='Notes')
+
+class EventBasicMixin(Table):
+    name = CustomNoneColumn(field='name', header='Name')
+    notes = BleachTrimColumn(field='notes', header='Notes')
+
+class EventTable(EventLinkMixin, EventGeneralMixin):
 
     class Meta:
         model = Event
         search = True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}           
 
-class EventTable_Printable(Table):
-    name = CustomNoneColumn(field='name', header='Name')
-    cons = Column(field='contact_count', header='Contacts')
-    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')
+class EventTable_Basic(EventLinkMixin, EventBasicMixin):
+
+    class Meta:
+        model = Event
+        search = True
+        ajax = True
+
+        attrs = {'class': 'table-striped table-hover'}     
+        
+
+class EventTable_Printable(EventBasicMixin):
 
     class Meta:
         model = Event
         search = False
         pagination = False
+        ajax = False
         attrs = {'class': 'table-striped table-hover'}           
