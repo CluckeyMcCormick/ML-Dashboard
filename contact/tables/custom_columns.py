@@ -18,14 +18,16 @@ class BooleanIconColumn(Column):
 
     def render(self, obj):
         checked = bool(Accessor(self.field).resolve(obj)) if self.field else False
+        return self.boolean_render(checked)
 
+    def boolean_render(self, result):
         safe_str = mark_safe('')
 
         general_string = '<span class="glyphicon {0} {1}" aria-hidden="true"></span>'
 
-        if checked and (self.true_icon is not None):
+        if result and (self.true_icon is not None):
             safe_str = mark_safe( general_string.format(self.true_icon, self.true_class) )
-        elif (not checked) and (self.false_icon is not None):
+        elif (not result) and (self.false_icon is not None):
             safe_str = mark_safe( general_string.format(self.false_icon, self.false_class) )
 
         return safe_str
@@ -33,6 +35,15 @@ class BooleanIconColumn(Column):
 class CheckOnlyColumn(BooleanIconColumn):
     def __init__(self, **kwargs):
         super(CheckOnlyColumn, self).__init__(true_icon='glyphicon-ok', **kwargs)
+
+class CheckOnlyFunctionColumn(CheckOnlyColumn):
+    def __init__(self, function, **kwargs):
+        super(CheckOnlyFunctionColumn, self).__init__(**kwargs)
+        self.function = function
+
+    def render(self, obj):
+        checked = self.function(obj)
+        return self.boolean_render(checked)
 
 class CustomNoneColumn(Column):
     def __init__(self, none_str='', **kwargs):

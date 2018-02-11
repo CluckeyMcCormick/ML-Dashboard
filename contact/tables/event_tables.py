@@ -30,12 +30,12 @@ class EventLinkMixin(Table):
         sortable=False,
     )
 
-def get_contact_count(obj, **kwargs):
-    return obj.contact_count
+def get_contact_counts(obj, **kwargs):
+    return obj.contacts.count()
 
 class EventGeneralMixin(Table):
     name = CustomNoneColumn(field='name', header='Name')
-    cons = FunctionColumn(field='name', header='Contacts', function=get_contact_count)
+    cons = CustomNoneColumn(field='contact_count', header='Contacts')
     notes = BleachTrimColumn(field='notes', header='Notes')
 
 class EventBasicMixin(Table):
@@ -47,7 +47,7 @@ class EventTable(EventLinkMixin, EventGeneralMixin):
     class Meta:
         model = Event
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}           
 
@@ -56,7 +56,7 @@ class EventTable_Basic(EventLinkMixin, EventBasicMixin):
     class Meta:
         model = Event
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}     
         

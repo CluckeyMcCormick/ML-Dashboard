@@ -37,12 +37,12 @@ class ProjectTable(Table):
     status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
     percent = Column(field='percentage_formatted', header='Completion')
     deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)
-    notes = Column(field='notes_bleach_trim', header='Notes')
+    notes = BleachTrimColumn(field='notes', trim_count=250, header='Notes')
 
     class Meta:
         model = Project
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 

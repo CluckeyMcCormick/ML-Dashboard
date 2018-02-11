@@ -20,11 +20,11 @@ class TaskBasicTable(Table):
     class Meta:
         model = Task
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskLinkTable(Table):
+class TaskLinkMixin(Table):
 
     view =  LinkColumn(
         header='View', 
@@ -45,33 +45,26 @@ class TaskLinkTable(Table):
         sortable=False,
     )
 
-    class Meta:
-        model = Task
-        search = True
-        ajax = True
-
-        attrs = {'class': 'table-striped table-hover'}
-
-class TaskNoProjectTable(TaskLinkTable, TaskBasicTable):
+class TaskNoProjectTable(TaskLinkMixin, TaskBasicTable):
     """
     Nothing to see here
     """
     class Meta:
         model = Task
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
 class TaskTable(TaskNoProjectTable):
 
     project = CustomNoneColumn(field='proj', header='Project')
-    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes') 
+    notes = BleachTrimColumn(field='notes', header='Notes') 
 
     class Meta:
         model = Task
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 

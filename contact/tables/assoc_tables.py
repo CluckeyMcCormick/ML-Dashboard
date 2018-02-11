@@ -67,7 +67,7 @@ class TaskAssocTable(TaskAssocViewMixin, TaskAssocTable_Printable):
     class Meta:
         model = TaskContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -83,6 +83,7 @@ class ContactTaskTable_Basic(Table):
     class Meta:
         model = TaskContactAssoc
         search = True
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -113,6 +114,7 @@ class ContactTaskTable_Link(Table):
     class Meta:
         model = TaskContactAssoc
         search = True
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -124,7 +126,7 @@ class ContactTaskTable(ContactTaskTable_Link, ContactTaskTable_Basic):
     class Meta:
         model = TaskContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -156,7 +158,7 @@ class ContactTaskTable_Remove(ContactTaskTable):
     class Meta:
         model = TaskContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -214,7 +216,7 @@ class ProjectAssocTable(ProjectAssocViewMixin, ProjectAssocTable_Printable):
     class Meta:
         model = ProjectContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -230,7 +232,7 @@ class ContactProjectTable_Basic(Table):
     class Meta:
         model = ProjectContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -261,6 +263,7 @@ class ContactProjectTable_Link(Table):
     class Meta:
         model = ProjectContactAssoc
         search = True
+        ajax = False
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -272,7 +275,7 @@ class ContactProjectTable(ContactProjectTable_Link, ContactProjectTable_Basic):
     class Meta:
         model = ProjectContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -304,6 +307,6 @@ class ContactProjectTable_Remove(ContactProjectTable):
     class Meta:
         model = ProjectContactAssoc
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}

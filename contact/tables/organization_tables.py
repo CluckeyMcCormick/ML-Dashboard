@@ -32,11 +32,11 @@ class OrgTable(Table):
 
     name = CustomNoneColumn(field='name', header='Name')
     cons = Column(field='contact_count', header='Contacts')
-    notes = CustomNoneColumn(field='notes_bleach_trim', header='Notes')
+    notes = BleachTrimColumn(field='notes', header='Notes')
 
     class Meta:
         model = Organization
         search = True
-        ajax = True
+        ajax = False #True
 
         attrs = {'class': 'table-striped table-hover'}           

@@ -7,6 +7,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views import generic
 
+from table.views import FeedDataView
+
 from ..models import Event, Contact
 
 from ..forms import EventForm

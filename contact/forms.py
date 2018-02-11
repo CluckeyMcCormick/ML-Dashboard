@@ -29,6 +29,10 @@ class ContactForm(forms.ModelForm):
         widgets = {
             'notes' : tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
             'events': select2.ModelSelect2MultipleWidget(model=Event, search_fields=['name__icontains']),
+            'org' : select2.ModelSelect2Widget(
+                model=Organization,
+                search_fields=['name__icontains'],
+            ),
         }
         labels = {
             'org': ugettext_lazy('Organization'),
@@ -100,50 +104,53 @@ class TaskForm(forms.ModelForm):
 
         widgets = {
             'deadline': forms.SelectDateWidget(years=[str(v) for v in range(2017, 2035)]),
-            #'proj': forms.Select(attrs={'disabled': True}),
             'notes': tinymce.TinyMCE(attrs={'cols': 60, 'rows': 15}),
+            'proj' : select2.ModelSelect2Widget(
+                model=Project,
+                search_fields=['title__icontains'],
+            ),
         }                          
 
 class UserForm(forms.ModelForm):
 
     contact = forms.ModelChoiceField(
-        queryset=Contact.objects.filter(tags__tag_type__in=['vo'], user_link=None),
-        label= ugettext_lazy('Contact'),
-        help_text= ugettext_lazy('''
+        queryset=Contact.objects.get_queryset(),
+        label=ugettext_lazy('Contact'),
+        help_text=ugettext_lazy('''
             Select the contact that will be bound to this user. 
             You can only choose from volunteers marked as contacts.
         '''),
-        required=True
-    )
-
-    group = forms.ModelChoiceField(
-        queryset=Group.objects.all(),
-        label=ugettext_lazy('Permission Group'),
-        help_text= ugettext_lazy('''
-            Select the permissions group for this user. 
-            'Volunteers' can only see projects and tasks they are assigned to. They can edit items where they are a 'lead' or a 'creator'.
-            'Data Admins' can see and edit every item. They can also freely create any item.
-            Neither can see this page or access the admin website.
-        '''),
-        required=True
+        required=True,
+        widget=select2.ModelSelect2Widget(
+            model=Contact,
+            search_fields=['name__icontains'],
+            queryset=Contact.objects.filter(
+                tags__tag_type__in=['vo'], user_link=None
+            ),
+        ),
     )
 
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['username', 'password', 'groups']
         labels = {
             'username' : ugettext_lazy('Username'),
             'password' : ugettext_lazy('Password'),
+            'groups'   : ugettext_lazy('Permission Groups'),
         }
         widgets = {
             'password': forms.PasswordInput(),
+            'groups' : select2.ModelSelect2MultipleWidget(
+                model=Group,
+                search_fields=['name__icontains']
+            ),
         }
 
     def update_user_contact(self):        
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
         contact = self.cleaned_data['contact']
-        group = self.cleaned_data['group']
+        groups = self.cleaned_data['groups']
 
         new_user = User.objects.create_user(
             username=username, password=password,
@@ -154,5 +161,7 @@ class UserForm(forms.ModelForm):
         contact.user_link = new_user
         contact.save()
 
-        group.user_set.add(new_user)
-        group.save()
+        for grp in groups:
+            print(grp.name)
+            grp.user_set.add(new_user)
+            grp.save()
