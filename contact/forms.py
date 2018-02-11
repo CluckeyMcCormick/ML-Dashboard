@@ -162,6 +162,5 @@ class UserForm(forms.ModelForm):
         contact.save()
 
         for grp in groups:
-            print(grp.name)
             grp.user_set.add(new_user)
             grp.save()
