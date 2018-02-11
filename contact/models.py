@@ -102,7 +102,7 @@ class Contact(models.Model):
     phone = models.CharField(max_length=20, help_text="The phone number of your contact.", null=True, blank=True)
 
     org = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name="contacts")
-    events = models.ManyToManyField(Event, related_name="contacts")
+    events = models.ManyToManyField(Event, related_name="contacts", null=True, blank=True,)
 
     notes = models.TextField(max_length=2500, help_text="Any extra notes for this contact.", blank=True)
     user_link = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
