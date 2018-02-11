@@ -37,6 +37,7 @@ vol_perms.append( p_get(codename='task_down_sum_related') )
 con_perms.append( p_get(codename='add_contact') )
 con_perms.append( p_get(codename='change_contact') )
 con_perms.append( p_get(codename='contact_view_all') )
+con_perms.append( p_get(codename='contact_view_events') )
 
 #Add organization input permissions
 org_perms.append( p_get(codename='add_organization') )
@@ -47,18 +48,21 @@ org_perms.append( p_get(codename='organization_view_all') )
 eve_perms.append( p_get(codename='add_event') )
 eve_perms.append( p_get(codename='change_event') )
 eve_perms.append( p_get(codename='event_view_all') )
+eve_perms.append( p_get(codename='contact_view_events') )
 
 #Add project input permissions
 prj_perms.append( p_get(codename='add_project') )
 prj_perms.append( p_get(codename='change_project') )
 prj_perms.append( p_get(codename='project_view_all') )
 prj_perms.append( p_get(codename='project_assign') )
+prj_perms.append( p_get(codename='contact_view_projects') )
 
 #Add task input permissions
 tsk_perms.append( p_get(codename='add_task') )
 tsk_perms.append( p_get(codename='change_task') )
 tsk_perms.append( p_get(codename='task_view_all') )
 tsk_perms.append( p_get(codename='task_assign') )
+tsk_perms.append( p_get(codename='contact_view_tasks') )
 
 for perm in vol_perms:
 	volunteer_group.permissions.add(perm)
@@ -77,3 +81,4 @@ for perm in prj_perms:
 
 for perm in tsk_perms:
 	task_input_group.permissions.add(perm)
+
