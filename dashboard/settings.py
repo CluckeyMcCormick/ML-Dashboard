@@ -15,6 +15,8 @@ import dj_database_url
 
 from .secret_settings import *
 
+PRODUCTION = False
+
 LOGIN_REDIRECT_URL = '/'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,9 +40,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = KEY_OF_SECRETS
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = SECRET_HOSTS
 
@@ -170,3 +169,72 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+if PRODUCTION:
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = False
+
+    servers = os.environ['MEMCACHIER_SERVERS']
+    username = os.environ['MEMCACHIER_USERNAME']
+    password = os.environ['MEMCACHIER_PASSWORD']
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': 'unix:/tmp/memcached.sock',
+        },
+        'select2': {
+            # Use pylibmc
+            'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+
+            # TIMEOUT is not the connection timeout! It's the default expiration
+            # timeout that should be applied to keys! Setting it to `None`
+            # disables expiration.
+            'TIMEOUT': None,
+
+            'LOCATION': servers,
+
+            'OPTIONS': {
+                # Use binary memcache protocol (needed for authentication)
+                'binary': True,
+                'username': username,
+                'password': password,
+                'behaviors': {
+                    # Enable faster IO
+                    'no_block': True,
+                    'tcp_nodelay': True,
+
+                    # Keep connection alive
+                    'tcp_keepalive': True,
+
+                    # Timeout settings
+                    'connect_timeout': 2000, # ms
+                    'send_timeout': 750 * 1000, # us
+                    'receive_timeout': 750 * 1000, # us
+                    '_poll_timeout': 2000, # ms
+
+                    # Better failover
+                    'ketama': True,
+                    'remove_failed': 1,
+                    'retry_timeout': 2,
+                    'dead_timeout': 30,
+                }
+            }
+        }
+    }
+
+    SELECT2_CACHE_BACKEND = 'select2'
+
+    ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
+    GENERATE_RANDOM_SELECT2_ID = True
+
+else:
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+
