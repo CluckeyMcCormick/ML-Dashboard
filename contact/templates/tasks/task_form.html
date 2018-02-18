@@ -4,6 +4,12 @@
 
 {% block addhead %}  
   {{ form.media }}
+  <!-->
+    Manually have to add the theme and the tinymce link.
+    For some reason, the form.media script tag is generated... poorly.
+  </-->
+  <script type="text/javascript" src="/static/tinymce/js/tinymce/tinymce.min.js"></script>
+  <script type="text/javascript" src="/static/tinymce/js/tinymce/themes/modern/theme.min.js"></script>
 {% endblock %}
 
 {% block content %}
