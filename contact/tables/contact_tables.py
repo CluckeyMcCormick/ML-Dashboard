@@ -1,3 +1,5 @@
+from django.urls import reverse_lazy
+
 from table import Table
 from table.utils import A
 from table.columns import LinkColumn, Link, CheckboxColumn
@@ -75,30 +77,28 @@ class ContactTagMixin(Table):
     """
     Columns to display a Contact's Type Tag info.
     """
-    tags = CustomNoneColumn(field='type_list_string', visible=False)
-
     is_volunteer = CheckOnlyColumn(
-        field='is_volunteer', header='Volunteer', 
+        field='ajax_volunteer', header='Volunteer', 
         true_class='contag icon vo', 
         attrs=center_attrs,)
 
     is_prospect = CheckOnlyColumn(
-        field='is_prospect', header='Prospect', 
+        field='ajax_prospect', header='Prospect', 
         true_class='contag icon pr', 
         attrs=center_attrs,)
 
     is_donor = CheckOnlyColumn(
-        field='is_donor', header='Donor', 
+        field='ajax_donor', header='Donor', 
         true_class='contag icon do', 
         attrs=center_attrs,)
 
     is_resource = CheckOnlyColumn(
-        field='is_resource', header='Grant', 
+        field='ajax_resource', header='Grant', 
         true_class='contag icon _g', 
         attrs=center_attrs,)
 
     is_foundation = CheckOnlyColumn(
-        field='is_foundation', header='Corp / Foundation', 
+        field='ajax_foundation', header='Corp / Foundation', 
         true_class='contag icon _f', 
         attrs=center_attrs,)
 
@@ -111,7 +111,8 @@ class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 

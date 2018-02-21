@@ -1,3 +1,6 @@
+
+from django.urls import reverse_lazy
+
 from table import Table
 from table.utils import A
 from table.columns import Column, LinkColumn, Link, CheckboxColumn
@@ -31,12 +34,13 @@ class OrgTable(Table):
     )
 
     name = CustomNoneColumn(field='name', header='Name')
-    cons = Column(field='contact_count', header='Contacts')
+    cons = Column(field='num_contacts', header='Contacts')
     notes = BleachTrimColumn(field='notes', header='Notes')
 
     class Meta:
         model = Organization
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-organization')
 
         attrs = {'class': 'table-striped table-hover'}           

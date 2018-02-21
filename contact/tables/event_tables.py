@@ -1,3 +1,6 @@
+
+from django.urls import reverse_lazy
+
 from table import Table
 from table.utils import A
 from table.columns import Column, LinkColumn, Link, CheckboxColumn
@@ -35,7 +38,7 @@ def get_contact_counts(obj, **kwargs):
 
 class EventGeneralMixin(Table):
     name = CustomNoneColumn(field='name', header='Name')
-    cons = CustomNoneColumn(field='contact_count', header='Contacts')
+    cons = CustomNoneColumn(field='num_contacts', header='Contacts')
     notes = BleachTrimColumn(field='notes', header='Notes')
 
 class EventBasicMixin(Table):
@@ -47,7 +50,8 @@ class EventTable(EventLinkMixin, EventGeneralMixin):
     class Meta:
         model = Event
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-event')
 
         attrs = {'class': 'table-striped table-hover'}           
 
@@ -56,7 +60,7 @@ class EventTable_Basic(EventLinkMixin, EventBasicMixin):
     class Meta:
         model = Event
         search = True
-        ajax = False #True
+        ajax = True
 
         attrs = {'class': 'table-striped table-hover'}     
         

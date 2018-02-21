@@ -96,7 +96,20 @@ urlpatterns = [
     #View your associations with tasks - ergo, a derivative of tasks
     url(r'^tasks/mine/$', views.MyTaskView.as_view(), name='my-task-assocs'),
 
-    #View your associations with tasks - ergo, a derivative of tasks
+    #
+    # USERS
+    #
     url(r'^users/$', views.UserListView.as_view(), name='view-users'),
     url(r'^user/create/$', views.UserCreateView.as_view(), name='create-user'),
+
+    #
+    # DATA
+    #
+    url(r'^table/data/contact/$', views.ContactDataView.as_view(), name='table-data-contact'),
+    url(r'^table/data/organization/$', views.OrganizationDataView.as_view(), name='table-data-organization'),
+    url(r'^table/data/event/$', views.EventDataView.as_view(), name='table-data-event'),
+    url(r'^table/data/project/$', views.ProjectDataView.as_view(), name='table-data-project'),
+    url(r'^table/data/task/$', views.TaskDataView.as_view(), name='table-data-task'),
 ]
+
+
