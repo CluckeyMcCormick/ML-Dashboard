@@ -78,6 +78,10 @@ class ProjAssoc_AddView(LoginRequiredMixin, UserPassesTestMixin, generic.Templat
         context['assign_table'] = ' '
         context['page_title'] = 'Assign <t style="text-decoration: underline;">{0}</t> -'
         context['item_title'] = Project.objects.get(pk=kwargs['pk']).title
+        
+        context['project_id'] = kwargs['pk']
+        context['task_id'] = "null"
+        context['contact_id'] = "null"
 
         return context        
 
@@ -118,6 +122,9 @@ class ProjectAssoc_LeadView(ProjAssoc_AddView):
 
         context['assign_table'] = table_con.SelectLeadTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Lead') )
+
+        context['source_name'] = 'table-data-assign-lead'
+        context['input_id'] = kwargs['pk']
 
         return context
 

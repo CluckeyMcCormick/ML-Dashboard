@@ -1,0 +1,21 @@
+{% extends "table/table.html" %}
+
+{% block table_extra_options %}
+    {% if table.opts.ajax %}
+        "ajax": {
+            "processing": true,
+            "serverSide": true,
+            "type" : "GET",
+            "dataSrc" : " ",
+            "url" : "{{ table.opts.ajax_source }}",
+            "data" : function ( d ) {
+                d.project_id = {{ project_id }}; 
+                d.task_id = {{ task_id }}; 
+                d.contact_id = {{ contact_id }}; 
+            }
+        },
+
+        "ajaxSource": " "
+    {% endif %}
+
+{% endblock %}

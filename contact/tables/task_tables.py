@@ -81,3 +81,6 @@ class TaskNoProjectTable_Printable(TaskBasicTable):
         pagination = False
         ajax = False
         attrs = {'class': 'table-striped table-hover'}
+
+
+

@@ -78,6 +78,35 @@ class ContactTagMixin(Table):
     Columns to display a Contact's Type Tag info.
     """
     is_volunteer = CheckOnlyColumn(
+        field='is_volunteer', header='Volunteer', 
+        true_class='contag icon vo', 
+        attrs=center_attrs,)
+
+    is_prospect = CheckOnlyColumn(
+        field='is_prospect', header='Prospect', 
+        true_class='contag icon pr', 
+        attrs=center_attrs,)
+
+    is_donor = CheckOnlyColumn(
+        field='is_donor', header='Donor', 
+        true_class='contag icon do', 
+        attrs=center_attrs,)
+
+    is_resource = CheckOnlyColumn(
+        field='is_resource', header='Grant', 
+        true_class='contag icon _g', 
+        attrs=center_attrs,)
+
+    is_foundation = CheckOnlyColumn(
+        field='is_foundation', header='Corp / Foundation', 
+        true_class='contag icon _f', 
+        attrs=center_attrs,)
+
+class ContactAjaxTagMixin(Table):
+    """
+    Columns to display a Contact's Type Tag info.
+    """
+    is_volunteer = CheckOnlyColumn(
         field='ajax_volunteer', header='Volunteer', 
         true_class='contag icon vo', 
         attrs=center_attrs,)
@@ -106,7 +135,7 @@ class ContactTagMixin(Table):
 #|    |  | |\ |  |  |__| |     |  
 #|___ |__| | \|  |  |  | |___  |  
 #
-class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactTagMixin):
+class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactAjaxTagMixin):
 
     class Meta:
         model = Contact
@@ -146,7 +175,8 @@ class SelectVolunteerTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -157,7 +187,8 @@ class SelectTargetTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -168,18 +199,20 @@ class SelectResourceTable(ContactBasicMixin, ContactTagMixin):
     class Meta:
         model = Contact
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
-class SelectLeadTable(ContactBasicMixin, ContactTagMixin):
+class SelectLeadTable(ContactBasicMixin, ContactAjaxTagMixin):
     
     check = AddButtonColumn(b_class='le hoverable', b_name='lead_id')
 
     class Meta:
         model = Contact
         search = True
-        ajax = False #True
+        ajax = True
+        ajax_source = reverse_lazy('table-data-assign-lead')
 
         attrs = {'class': 'table-striped table-hover'}
 

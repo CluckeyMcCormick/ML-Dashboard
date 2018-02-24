@@ -7,7 +7,7 @@ from django.db.models.functions import Concat
 
 from table import views
 
-from ..models import ContactTypeTag, Task
+from ..models import ContactTypeTag, Task, ProjectContactAssoc
 
 from ..tables import (
 	contact_tables      as tab_con,
@@ -34,9 +34,9 @@ class ContactDataView(views.FeedDataView):
             is_volunteer, is_prospect, is_donor
             is_resource, is_foundation
         """
-        volu_tag_set = type_tag_qset.filter(tag_type='do')
+        volu_tag_set = type_tag_qset.filter(tag_type='vo')
         pros_tag_set = type_tag_qset.filter(tag_type='pr')
-        dono_tag_set = type_tag_qset.filter(tag_type='vo')
+        dono_tag_set = type_tag_qset.filter(tag_type='do')
         reso_tag_set = type_tag_qset.filter(tag_type='_f')
         foun_tag_set = type_tag_qset.filter(tag_type='_g')
 
@@ -46,7 +46,7 @@ class ContactDataView(views.FeedDataView):
         q_set = q_set.annotate( reso_mark = Exists(reso_tag_set) )
         q_set = q_set.annotate( foun_mark = Exists(foun_tag_set) )
 
-        print("VOLU")
+        #print("VOLU")
         q_set = q_set.annotate( 
             ajax_volunteer = Case(
                 When( volu_mark=True, then=Value('Volunteer')),
@@ -55,7 +55,7 @@ class ContactDataView(views.FeedDataView):
             )
         )
 
-        print("PROS")
+        #print("PROS")
         q_set = q_set.annotate( 
             ajax_prospect = Case(
                 When( pros_mark=True, then=Value('Prospect')),
@@ -64,7 +64,7 @@ class ContactDataView(views.FeedDataView):
             ) 
         )
 
-        print("DONO")
+        #print("DONO")
         q_set = q_set.annotate( 
             ajax_donor = Case(
                 When( dono_mark=True, then=Value('Donor')),
@@ -73,7 +73,7 @@ class ContactDataView(views.FeedDataView):
             ) 
         )
 
-        print("RESO")
+        #print("RESO")
         q_set = q_set.annotate( 
             ajax_resource = Case(
                 When( reso_mark=True, then=Value('Resource')),
@@ -82,7 +82,7 @@ class ContactDataView(views.FeedDataView):
             ) 
         )
 
-        print("FOUN")
+        #print("FOUN")
         q_set = q_set.annotate( 
             ajax_foundation = Case(
                 When( foun_mark=True, then=Value('Foundation Corporation')),
@@ -116,11 +116,9 @@ class ProjectDataView(views.FeedDataView):
     def get_queryset(self):
         q_set = super(ProjectDataView, self).get_queryset()
 
-        print("Annotate with task counts")
         q_set = q_set.annotate( num_tasks=Count('tasks') )
         q_set = q_set.annotate( num_tasks_complete=Count('tasks', filter=Q(tasks__complete=True)) )
 
-        print("turn thing into percentage")
         q_set = q_set.annotate(
             ajax_completion= Concat(
                 'num_tasks_complete', Value(" / "), 'num_tasks',
@@ -128,7 +126,6 @@ class ProjectDataView(views.FeedDataView):
             )
         )
 
-        print("annotate with status")
         q_set = q_set.annotate( 
             ajax_status = Case(
                 When( complete=True, then=Value('Completed') ),
@@ -163,4 +160,40 @@ class TaskDataView(views.FeedDataView):
 
         return q_set
 
+class PKFeedDataView(views.FeedDataView):
+    """
+    Some of our data feeds require a pk argument.
+    But the get_queryset method won't give it to them!
+    That's just fine - we'll use this to save the primary 
+    key so we can use it later.
+    """
+    def get(self, request, *args, **kwargs):
+        self.pk_arg = kwargs['pk']
+        return super(PKFeedDataView, self).get(request, *args, **kwargs)
+
+class AddLeadDataView(PKFeedDataView, ContactDataView):
+
+    token = tab_con.SelectLeadTable.token
+
+    def get_queryset(self):
+        qs = super(AddLeadDataView, self).get_queryset()
+
+        project_id = self.pk_arg
+        print("PROJECT ID {0}")
+        print(project_id)
+        print()
+
+        print(self.token)
+        for key, value in self.request.GET.items():
+            print("{0} : {1}".format(key, value))
+
+        if project_id:
+            assoc_set = ProjectContactAssoc.objects.filter(
+                proj=project_id, tag_type__in=['as', 'le', 're', 'na']
+            )
+            qs = qs.exclude(proj_assocs__in=assoc_set) 
+
+        qs = qs.filter(tags__tag_type__in=['vo'])
+
+        return qs
 

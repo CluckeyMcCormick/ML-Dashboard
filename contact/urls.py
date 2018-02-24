@@ -50,7 +50,6 @@ urlpatterns = [
     url(r'^event/(?P<pk>\d+)/update/$', views.EventUpdate.as_view(), name='event-update'),
     url(r'^event/(?P<pk>\d+)/delete/$', views.EventDelete.as_view(), name='event-delete'),
 
-
     #
     # PROJECTS
     #
@@ -110,6 +109,8 @@ urlpatterns = [
     url(r'^table/data/event/$', views.EventDataView.as_view(), name='table-data-event'),
     url(r'^table/data/project/$', views.ProjectDataView.as_view(), name='table-data-project'),
     url(r'^table/data/task/$', views.TaskDataView.as_view(), name='table-data-task'),
+
+    url(r'^table/data/assign/lead/(?P<pk>\d+)$', views.AddLeadDataView.as_view(), name='table-data-assign-lead'),   
 ]
 
 
