@@ -18,6 +18,8 @@ from ..tables import (
     assoc_tables   as table_assoc,
     contact_tables as table_con,
     event_tables   as table_event,
+    project_tables as table_project,
+    task_tables as table_task
 ) 
 
 from .proj_con_assoc_views import get_tiered_proj_assoc_qs
@@ -81,9 +83,15 @@ class ContactDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailV
         context['contact_edit_url'] = reverse_lazy('contact-update', args=(context['contact'].pk,))
         context['contact_delete_url'] = reverse_lazy('contact-delete', args=(context['contact'].pk,))
 
-        context['associated_projects_table'] = table_assoc.ProjectAssocTable( get_tiered_proj_assoc_qs(self.object) )
-        context['associated_tasks_table'] = table_assoc.TaskAssocTable( get_tiered_task_assoc_qs(self.object) )
+        context['associated_projects_table'] = table_project.ProjectAssocAjaxTable( get_tiered_proj_assoc_qs(self.object) )
+        context['associated_tasks_table'] = table_task.TaskAssocAjaxTable( get_tiered_task_assoc_qs(self.object) )
         context['associated_events_table'] = table_event.EventTable_Basic( self.object.events.get_queryset() )
+
+        context['project_source'] = 'data-contact-project'
+        context['event_source'] = 'data-contact-event'
+        context['task_source'] = 'data-contact-task'
+
+        context['given_pk'] = context['contact'].pk
 
         return context
 

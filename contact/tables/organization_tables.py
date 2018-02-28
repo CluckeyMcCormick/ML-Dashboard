@@ -41,6 +41,6 @@ class OrgTable(Table):
         model = Organization
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-organization')
+        ajax_source = reverse_lazy('data-organization')
 
         attrs = {'class': 'table-striped table-hover'}           

@@ -51,7 +51,7 @@ class EventTable(EventLinkMixin, EventGeneralMixin):
         model = Event
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-event')
+        ajax_source = reverse_lazy('data-event')
 
         attrs = {'class': 'table-striped table-hover'}           
 

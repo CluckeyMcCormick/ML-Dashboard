@@ -178,7 +178,6 @@ class ProjectAssocTable_Printable(Table):
     role = TagColumn(field='tag_type', header='Role', wrap_class='con-task-assoc')
     deadline = NoneableDatetimeColumn(field='proj.deadline', header='Deadline', format=date_time_format)   
     status = TagColumn(field='proj.status', header='Status', wrap_class='task-status', attrs=center_attrs)
-    percent = Column(field='proj.percentage_formatted', header='Completion')
 
     class Meta:
         model = ProjectContactAssoc
@@ -207,18 +206,6 @@ class ProjectAssocViewMixin(Table):
         searchable=False,
         sortable=False,
     )
-
-class ProjectAssocTable(ProjectAssocViewMixin, ProjectAssocTable_Printable):
-    """
-    Meant to be used from the "perspective" of a single Contact.
-    Displays the associated projects, and the Contact's role in each.
-    """
-    class Meta:
-        model = ProjectContactAssoc
-        search = True
-        ajax = False #True
-
-        attrs = {'class': 'table-striped table-hover'}
 
 class ContactProjectTable_Basic(Table):
     """

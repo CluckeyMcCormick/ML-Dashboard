@@ -1,4 +1,5 @@
 {% load table_tags %}
+{% load ajax_table_tags %}
 {% load macros %}
 
 {% macro display_associated_table table title %}
@@ -15,3 +16,17 @@
 
 {% endmacro %}
 
+
+{% macro display_associated_ajax_table table title source_name given_pk%}
+	<h3>
+		{{ title }}
+		<a href='{% filter lower|cut:" "  %} #{{ title }} {% endfilter %}' class="btn btn-info" data-toggle="collapse" aria-expanded="true">
+			<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+		</a>
+	</h3>
+
+	<div id='{% filter lower|cut:" "  %} {{ title }} {% endfilter %}' class="collapse in" aria-expanded="true">
+		{% render_table_ajax table source_name given_pk%}
+	</div>
+
+{% endmacro %}

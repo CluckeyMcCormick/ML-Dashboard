@@ -1,15 +1,20 @@
+#Django Imports
 from django.db.models import (
-    Case, CharField, Count, ExpressionWrapper,
-    Exists, F, FloatField, IntegerField, 
-    OuterRef, Q, Subquery, When, Value
+    Case, CharField, Count, Exists, 
+    OuterRef, Q, When, Value
 )
 from django.db.models.functions import Concat
 
+#Django Library Imports
 from table import views
 
-from ..models import ContactTypeTag, Task, ProjectContactAssoc
+#Library Imports
+import datetime
 
-from ..tables import (
+#Other file imports
+from ...models import ContactTypeTag
+
+from ...tables import (
 	contact_tables      as tab_con,
     organization_tables as tab_org,
     event_tables        as tab_eve,
@@ -17,8 +22,6 @@ from ..tables import (
     task_tables         as tab_task
 )
 
-import datetime
-import math
 
 class ContactDataView(views.FeedDataView):
 
@@ -29,11 +32,7 @@ class ContactDataView(views.FeedDataView):
 
         type_tag_qset = ContactTypeTag.objects.get_queryset()
         type_tag_qset = type_tag_qset.filter(contact=OuterRef('pk'))
-        """
-        TO APPEND:
-            is_volunteer, is_prospect, is_donor
-            is_resource, is_foundation
-        """
+
         volu_tag_set = type_tag_qset.filter(tag_type='vo')
         pros_tag_set = type_tag_qset.filter(tag_type='pr')
         dono_tag_set = type_tag_qset.filter(tag_type='do')
@@ -159,41 +158,3 @@ class TaskDataView(views.FeedDataView):
         )
 
         return q_set
-
-class PKFeedDataView(views.FeedDataView):
-    """
-    Some of our data feeds require a pk argument.
-    But the get_queryset method won't give it to them!
-    That's just fine - we'll use this to save the primary 
-    key so we can use it later.
-    """
-    def get(self, request, *args, **kwargs):
-        self.pk_arg = kwargs['pk']
-        return super(PKFeedDataView, self).get(request, *args, **kwargs)
-
-class AddLeadDataView(PKFeedDataView, ContactDataView):
-
-    token = tab_con.SelectLeadTable.token
-
-    def get_queryset(self):
-        qs = super(AddLeadDataView, self).get_queryset()
-
-        project_id = self.pk_arg
-        print("PROJECT ID {0}")
-        print(project_id)
-        print()
-
-        print(self.token)
-        for key, value in self.request.GET.items():
-            print("{0} : {1}".format(key, value))
-
-        if project_id:
-            assoc_set = ProjectContactAssoc.objects.filter(
-                proj=project_id, tag_type__in=['as', 'le', 're', 'na']
-            )
-            qs = qs.exclude(proj_assocs__in=assoc_set) 
-
-        qs = qs.filter(tags__tag_type__in=['vo'])
-
-        return qs
-

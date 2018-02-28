@@ -12,6 +12,7 @@ from ..models import Contact, Project, ProjectContactAssoc
 from ..tables import (
     assoc_tables   as table_assoc,
     contact_tables as table_con,
+    project_tables as table_proj
 ) 
 
 from .project_views import is_admined_contact_proj
@@ -54,8 +55,11 @@ class MyProjectView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyProjectView, self).get_context_data(**kwargs)
 
         assoc_que = get_tiered_proj_assoc_qs( self.request.user.contact )
-        context['my_project_table'] = table_assoc.ProjectAssocTable( assoc_que )
+        context['my_project_table'] = table_proj.ProjectAssocAjaxTable( assoc_que )
 
+        context['source_name'] = 'data-dashboard-project'
+        context['input_id'] = self.request.user.contact.pk
+        
         return context
 
 class ProjAssoc_AddView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
@@ -79,9 +83,7 @@ class ProjAssoc_AddView(LoginRequiredMixin, UserPassesTestMixin, generic.Templat
         context['page_title'] = 'Assign <t style="text-decoration: underline;">{0}</t> -'
         context['item_title'] = Project.objects.get(pk=kwargs['pk']).title
         
-        context['project_id'] = kwargs['pk']
-        context['task_id'] = "null"
-        context['contact_id'] = "null"
+        context['input_id'] = kwargs['pk']
 
         return context        
 
@@ -105,6 +107,8 @@ class ProjectAssoc_AssignView(ProjAssoc_AddView):
         context['assign_table'] = table_con.SelectVolunteerTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Volunteer') )
 
+        context['source_name'] = 'data-project-assign'
+
         return context
 
     def post(self, *args, **kwargs):
@@ -123,8 +127,7 @@ class ProjectAssoc_LeadView(ProjAssoc_AddView):
         context['assign_table'] = table_con.SelectLeadTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Lead') )
 
-        context['source_name'] = 'table-data-assign-lead'
-        context['input_id'] = kwargs['pk']
+        context['source_name'] = 'data-project-lead'
 
         return context
 
@@ -141,6 +144,8 @@ class ProjectAssoc_ResourceView(ProjAssoc_AddView):
 
         context['assign_table'] = table_con.SelectResourceTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Resource') )
+
+        context['source_name'] = 'data-project-resource'
 
         return context
 

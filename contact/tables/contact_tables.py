@@ -141,7 +141,7 @@ class ContactTable(ContactBasicMixin, ContactNotesMixin, ContactAjaxTagMixin):
         model = Contact
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-contact')
+        ajax_source = reverse_lazy('data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -168,7 +168,7 @@ class ContactOrglessTable(ContactViewMixin, ContactOrglessTable_Printable):
 #[__  |___ |    |___ |     |     |    |  | |\ |  |  |__| |     |  [__  
 #___] |___ |___ |___ |___  |     |___ |__| | \|  |  |  | |___  |  ___] 
 # 
-class SelectVolunteerTable(ContactBasicMixin, ContactTagMixin):
+class SelectVolunteerTable(ContactBasicMixin, ContactAjaxTagMixin):
     
     check = AddButtonColumn(b_class='as hoverable', b_name='vol_id')
 
@@ -176,11 +176,11 @@ class SelectVolunteerTable(ContactBasicMixin, ContactTagMixin):
         model = Contact
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-contact')
+        ajax_source = reverse_lazy('data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
-class SelectTargetTable(ContactBasicMixin, ContactTagMixin):
+class SelectTargetTable(ContactBasicMixin, ContactAjaxTagMixin):
     
     check = AddButtonColumn(b_class='ta hoverable', b_name='targ_id')
 
@@ -188,11 +188,11 @@ class SelectTargetTable(ContactBasicMixin, ContactTagMixin):
         model = Contact
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-contact')
+        ajax_source = reverse_lazy('data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
-class SelectResourceTable(ContactBasicMixin, ContactTagMixin):
+class SelectResourceTable(ContactBasicMixin, ContactAjaxTagMixin):
     
     check = AddButtonColumn(b_class='re hoverable', b_name='res_id')
 
@@ -200,7 +200,7 @@ class SelectResourceTable(ContactBasicMixin, ContactTagMixin):
         model = Contact
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-contact')
+        ajax_source = reverse_lazy('data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 
@@ -212,7 +212,7 @@ class SelectLeadTable(ContactBasicMixin, ContactAjaxTagMixin):
         model = Contact
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-assign-lead')
+        ajax_source = reverse_lazy('data-contact')
 
         attrs = {'class': 'table-striped table-hover'}
 

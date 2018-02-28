@@ -1,9 +1,10 @@
 {% extends "base_generic.html" %}
 {% load table_tags %}
+{% load ajax_table_tags %}
 
 {% block content %}
 	<h1>My Projects</h1>
 
-	{% render_table my_project_table %}
+	{% render_table_ajax my_project_table source_name input_id%}
 
 {% endblock %}

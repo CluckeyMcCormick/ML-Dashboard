@@ -46,7 +46,42 @@ class ProjectTable(Table):
         model = Project
         search = True
         ajax = True
-        ajax_source = reverse_lazy('table-data-project')
+        ajax_source = reverse_lazy('data-project')
 
         attrs = {'class': 'table-striped table-hover'}
 
+class ProjectAssocAjaxTable(Table):
+    """
+    Meant to be used from the "perspective" of a single Contact.
+    Displays the associated projects, and the Contact's role in each.
+    """
+    view =  LinkColumn(
+        header='View', 
+        links=[
+            Link(
+                text='',
+                viewname='project-detail', 
+                args=(
+                    A('id'),
+                ),
+                attrs={
+                    'class':
+                        'glyphicon glyphicon-eye-open'
+                },
+            ),
+        ],
+        searchable=False,
+        sortable=False,
+    )
+
+    title = CustomNoneColumn(field='title', header='Title')
+    role = TagColumn(field='ajax_tag_type', header='Role', wrap_class='con-task-assoc')
+    deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)   
+    status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
+
+    class Meta:
+        model = Project
+        search = True
+        ajax = True
+
+        attrs = {'class': 'table-striped table-hover'}

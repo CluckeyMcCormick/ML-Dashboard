@@ -104,13 +104,29 @@ urlpatterns = [
     #
     # DATA
     #
-    url(r'^table/data/contact/$', views.ContactDataView.as_view(), name='table-data-contact'),
-    url(r'^table/data/organization/$', views.OrganizationDataView.as_view(), name='table-data-organization'),
-    url(r'^table/data/event/$', views.EventDataView.as_view(), name='table-data-event'),
-    url(r'^table/data/project/$', views.ProjectDataView.as_view(), name='table-data-project'),
-    url(r'^table/data/task/$', views.TaskDataView.as_view(), name='table-data-task'),
+    url(r'^table/data/contact/$', views.ContactDataView.as_view(), name='data-contact'),
+    url(r'^table/data/organization/$', views.OrganizationDataView.as_view(), name='data-organization'),
+    url(r'^table/data/event/$', views.EventDataView.as_view(), name='data-event'),
+    url(r'^table/data/project/$', views.ProjectDataView.as_view(), name='data-project'),
+    url(r'^table/data/task/$', views.TaskDataView.as_view(), name='data-task'),
 
-    url(r'^table/data/assign/lead/(?P<pk>\d+)$', views.AddLeadDataView.as_view(), name='table-data-assign-lead'),   
+    url(r'^table/data/assign/project/lead/(?P<pk>\d+)$', views.Project_AddLeadDataView.as_view(), name='data-project-lead'),
+    url(r'^table/data/assign/project/assign/(?P<pk>\d+)$', views.Project_AddAssignDataView.as_view(), name='data-project-assign'),
+    url(r'^table/data/assign/project/resource/(?P<pk>\d+)$', views.Project_AddResourceDataView.as_view(), name='data-project-resource'),
+
+    url(r'^table/data/assign/task/assign/(?P<pk>\d+)$', views.Task_AddAssignDataView.as_view(), name='data-task-assign'),
+    url(r'^table/data/assign/task/target/(?P<pk>\d+)$', views.Task_AddTargetDataView.as_view(), name='data-task-target'),
+    url(r'^table/data/assign/task/resource/(?P<pk>\d+)$', views.Task_AddResourceDataView.as_view(), name='data-task-resource'),
+
+    url(r'^table/data/contact/task/(?P<pk>\d+)$', views.Contact_TaskDataView.as_view(), name='data-contact-task'),
+    url(r'^table/data/contact/project/(?P<pk>\d+)$', views.Contact_ProjectDataView.as_view(), name='data-contact-project'),
+    url(r'^table/data/contact/event/(?P<pk>\d+)$', views.Contact_EventDataView.as_view(), name='data-contact-event'),
+
+    url(r'^table/data/dashboard/task/(?P<pk>\d+)$', views.Dashboard_TaskDataView.as_view(), name='data-dashboard-task'),
+    url(r'^table/data/dashboard/project/(?P<pk>\d+)$', views.Dashboard_ProjectDataView.as_view(), name='data-dashboard-project'),
+
+    url(r'^table/data/dashboard/upcoming/task/(?P<pk>\d+)$', views.Dashboard_UpcomingTaskDataView.as_view(), name='data-dashboard-task-upcoming'),
+    url(r'^table/data/dashboard/upcoming/project/(?P<pk>\d+)$', views.Dashboard_UpcomingProjectDataView.as_view(), name='data-dashboard-project-upcoming'),
 ]
 
 
