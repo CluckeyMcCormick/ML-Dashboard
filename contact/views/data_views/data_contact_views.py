@@ -1,4 +1,6 @@
 
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 from django.db.models import (
     Case, CharField, Count, Exists, 
     F, OuterRef, Q, When, Value
@@ -26,7 +28,8 @@ from ..task_con_assoc_views import get_tiered_task_assoc_qs
 
 from . import PKFeedDataView
 
-class Contact_TaskDataView(PKFeedDataView):
+class Contact_TaskDataView(PKFeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.contact_view_tasks'
 
     token = tab_task.TaskAssocAjaxTable.token
 
@@ -78,7 +81,8 @@ class Contact_TaskDataView(PKFeedDataView):
 
         return qs
 
-class Contact_ProjectDataView(PKFeedDataView):
+class Contact_ProjectDataView(PKFeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.contact_view_projects'
 
     token = tab_proj.ProjectAssocAjaxTable.token
 
@@ -130,7 +134,8 @@ class Contact_ProjectDataView(PKFeedDataView):
 
         return qs
 
-class Contact_EventDataView(PKFeedDataView):
+class Contact_EventDataView(PKFeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.contact_view_events'
 
     token = tab_event.EventTable_Basic.token
 

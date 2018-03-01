@@ -1,9 +1,13 @@
+
 #Django Imports
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 from django.db.models import (
     Case, CharField, Count, Exists, 
     OuterRef, Q, When, Value
 )
 from django.db.models.functions import Concat
+
 
 #Django Library Imports
 from table import views
@@ -22,13 +26,12 @@ from ...tables import (
     task_tables         as tab_task
 )
 
-
-class ContactDataView(views.FeedDataView):
+class ContactDataBaseView(views.FeedDataView):
 
     token = tab_con.ContactTable.token
 
     def get_queryset(self):
-        q_set = super(ContactDataView, self).get_queryset()
+        q_set = super(ContactDataBaseView, self).get_queryset()
 
         type_tag_qset = ContactTypeTag.objects.get_queryset()
         type_tag_qset = type_tag_qset.filter(contact=OuterRef('pk'))
@@ -92,7 +95,13 @@ class ContactDataView(views.FeedDataView):
 
         return q_set
 
-class OrganizationDataView(views.FeedDataView):
+class ContactDataView(ContactDataBaseView, PermissionRequiredMixin):
+    permission_required = 'contact.contact_view_all'
+
+    token = tab_con.ContactTable.token
+
+class OrganizationDataView(views.FeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.organization_view_all'
 
     token = tab_org.OrgTable.token
 
@@ -100,7 +109,8 @@ class OrganizationDataView(views.FeedDataView):
         q_set = super(OrganizationDataView, self).get_queryset()
         return q_set.annotate( num_contacts=Count('contacts') )
 
-class EventDataView(views.FeedDataView):
+class EventDataView(views.FeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.event_view_all'
 
     token = tab_eve.EventTable.token
 
@@ -108,7 +118,8 @@ class EventDataView(views.FeedDataView):
         q_set = super(EventDataView, self).get_queryset()
         return q_set.annotate( num_contacts=Count('contacts') )
 
-class ProjectDataView(views.FeedDataView):
+class ProjectDataView(views.FeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.project_view_all'
 
     token = tab_proj.ProjectTable.token
 
@@ -139,7 +150,8 @@ class ProjectDataView(views.FeedDataView):
 
         return q_set
 
-class TaskDataView(views.FeedDataView):
+class TaskDataView(views.FeedDataView, PermissionRequiredMixin):
+    permission_required = 'contact.task_view_all'
 
     token = tab_task.TaskTable.token
 

@@ -1,4 +1,6 @@
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.db.models import (
     Case, CharField, Count, Exists, 
     F, OuterRef, Q, When, Value
@@ -26,7 +28,7 @@ from ..task_con_assoc_views import get_tiered_task_assoc_qs
 
 from . import PKFeedDataView
 
-class Dashboard_TaskDataView(PKFeedDataView):
+class Dashboard_TaskDataView(PKFeedDataView, LoginRequiredMixin):
 
     token = tab_task.TaskAssocAjaxTable.token
 
@@ -76,7 +78,7 @@ class Dashboard_TaskDataView(PKFeedDataView):
 
         return qs
 
-class Dashboard_ProjectDataView(PKFeedDataView):
+class Dashboard_ProjectDataView(PKFeedDataView, LoginRequiredMixin ):
 
     token = tab_proj.ProjectAssocAjaxTable.token
 
@@ -128,7 +130,7 @@ class Dashboard_ProjectDataView(PKFeedDataView):
 
         return qs
 
-class Dashboard_UpcomingTaskDataView(Dashboard_TaskDataView):
+class Dashboard_UpcomingTaskDataView(Dashboard_TaskDataView, LoginRequiredMixin):
 
     token = tab_task.TaskAssocAjaxTable.token
 
@@ -140,7 +142,7 @@ class Dashboard_UpcomingTaskDataView(Dashboard_TaskDataView):
 
         return qs
 
-class Dashboard_UpcomingProjectDataView(Dashboard_ProjectDataView):
+class Dashboard_UpcomingProjectDataView(Dashboard_ProjectDataView, LoginRequiredMixin):
 
     token = tab_proj.ProjectAssocAjaxTable.token
 

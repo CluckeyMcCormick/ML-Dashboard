@@ -1,5 +1,7 @@
 
 #Django Library Imports
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from table import views
 
 #Other file imports
@@ -9,10 +11,10 @@ from ...tables import (
 	contact_tables      as tab_con,
 )
 
-from .data_list_views import ContactDataView
+from .data_list_views import ContactDataBaseView
 from . import PKFeedDataView
 
-class Project_AddDataView(PKFeedDataView, ContactDataView):
+class Project_AddDataView(PKFeedDataView, ContactDataBaseView, LoginRequiredMixin):
     """
     When it comes to 
     """

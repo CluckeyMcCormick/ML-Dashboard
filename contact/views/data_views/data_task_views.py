@@ -1,4 +1,6 @@
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.shortcuts import get_object_or_404
 
 #Django Library Imports
@@ -11,10 +13,10 @@ from ...tables import (
 	contact_tables as tab_con,
 )
 
-from .data_list_views import ContactDataView
+from .data_list_views import ContactDataBaseView
 from . import PKFeedDataView
 
-class Task_AddDataView(PKFeedDataView, ContactDataView):
+class Task_AddDataView(PKFeedDataView, ContactDataBaseView, LoginRequiredMixin):
     """
     When it comes to 
     """
