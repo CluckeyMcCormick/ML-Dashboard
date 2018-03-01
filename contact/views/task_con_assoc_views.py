@@ -12,7 +12,8 @@ from ..models import Contact, Task, TaskContactAssoc
 
 from ..tables import (
     assoc_tables   as table_assoc,
-    contact_tables as table_con
+    contact_tables as table_con,
+    task_tables    as table_task
 ) 
 
 from .task_views import is_admined_contact_task
@@ -55,7 +56,10 @@ class MyTaskView(LoginRequiredMixin, generic.TemplateView):
         context = super(MyTaskView, self).get_context_data(**kwargs)
 
         assoc_que = get_tiered_task_assoc_qs( self.request.user.contact )
-        context['my_task_table'] = table_assoc.TaskAssocTable( assoc_que )
+        context['my_task_table'] = table_task.TaskAssocAjaxTable( assoc_que )
+        
+        context['source_name'] = 'data-dashboard-task'
+        context['input_id'] = self.request.user.contact.pk
 
         return context
 
@@ -84,6 +88,8 @@ class TaskAssocAddView(LoginRequiredMixin, UserPassesTestMixin, generic.Template
         context['assign_table'] = ' '
         context['page_title'] = 'Assign <t style="text-decoration: underline;">{0}</t> -'
         context['item_title'] = Task.objects.get(pk=kwargs['pk']).brief
+
+        context['input_id'] = kwargs['pk']
 
         return context        
 
@@ -117,6 +123,8 @@ class TaskAssocAssignView(TaskAssocAddView):
         context['assign_table'] = table_con.SelectVolunteerTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Volunteer') )
 
+        context['source_name'] = 'data-task-assign'
+
         return context
 
     def post(self, *args, **kwargs):
@@ -137,6 +145,8 @@ class TaskAssocTargetView(TaskAssocAddView):
         context['assign_table'] = table_con.SelectTargetTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Target') )
 
+        context['source_name'] = 'data-task-target'
+
         return context
 
     def post(self, *args, **kwargs):
@@ -156,6 +166,8 @@ class TaskAssocResourceView(TaskAssocAddView):
 
         context['assign_table'] = table_con.SelectResourceTable( context['con_que'] )
         context['page_title'] = mark_safe( context['page_title'].format('Resource') )
+
+        context['source_name'] = 'data-task-resource'
 
         return context
 

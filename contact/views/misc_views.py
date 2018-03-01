@@ -24,8 +24,10 @@ from ..models import (
 )
 
 from ..tables import (
-    assoc_tables as table_assoc,
-    user_tables  as table_user
+    assoc_tables   as table_assoc,
+    project_tables as table_proj,
+    task_tables    as table_task,
+    user_tables    as table_user
 ) 
 
 from .proj_con_assoc_views import get_tiered_proj_assoc_qs
@@ -77,9 +79,9 @@ def my_dashboard(request):
     qs_proj_assoc, qs_task_assoc = get_tiered_upcoming(user_con)
 
     #Get the projects associated with the user
-    user_proj_table = table_assoc.ProjectAssocTable(qs_proj_assoc)
+    user_proj_table = table_proj.ProjectAssocAjaxTable(qs_proj_assoc)
     #Get the tasks associated with the user
-    user_task_table = table_assoc.TaskAssocTable(qs_task_assoc)
+    user_task_table = table_task.TaskAssocAjaxTable(qs_task_assoc)
 
     # Render the HTML template index.html with the data in the context variable
     return render(
@@ -89,7 +91,10 @@ def my_dashboard(request):
             'user_con':user_con,
             'user_proj_table':user_proj_table,
             'user_task_table':user_task_table,
-            'print_url':reverse_lazy('my-dashboard-print')
+            'project_source' : 'data-dashboard-project-upcoming',
+            'task_source' : 'data-dashboard-task-upcoming',
+            'input_id' : user_con.pk,
+            'print_url':reverse_lazy('my-dashboard-print'),
         },
     )
 

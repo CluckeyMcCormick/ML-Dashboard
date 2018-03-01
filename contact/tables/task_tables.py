@@ -1,3 +1,6 @@
+
+from django.urls import reverse_lazy
+
 from table import Table
 from table.utils import A
 from table.columns import LinkColumn, Link
@@ -15,7 +18,6 @@ class TaskBasicTable(Table):
 
     brief = CustomNoneColumn(field='brief', header='Brief')
     deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)
-    status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
     
     class Meta:
         model = Task
@@ -49,6 +51,8 @@ class TaskNoProjectTable(TaskLinkMixin, TaskBasicTable):
     """
     Nothing to see here
     """
+    status = TagColumn(field='status', header='Status', wrap_class='task-status', attrs=center_attrs)
+    
     class Meta:
         model = Task
         search = True
@@ -56,16 +60,17 @@ class TaskNoProjectTable(TaskLinkMixin, TaskBasicTable):
 
         attrs = {'class': 'table-striped table-hover'}
 
-class TaskTable(TaskNoProjectTable):
+class TaskTable(TaskLinkMixin, TaskBasicTable):
 
-    project = CustomNoneColumn(field='proj', header='Project')
+    status = TagColumn(field='ajax_status', header='Status', wrap_class='task-status', attrs=center_attrs)
+    project = CustomNoneColumn(field='proj.title', header='Project')
     notes = BleachTrimColumn(field='notes', header='Notes') 
 
     class Meta:
         model = Task
         search = True
-        ajax = False #True
-
+        ajax = True 
+        ajax_source = reverse_lazy('data-task')
         attrs = {'class': 'table-striped table-hover'}
 
 class TaskNoProjectTable_Printable(TaskBasicTable):
@@ -76,3 +81,19 @@ class TaskNoProjectTable_Printable(TaskBasicTable):
         pagination = False
         ajax = False
         attrs = {'class': 'table-striped table-hover'}
+
+class TaskAssocAjaxTable(TaskLinkMixin):
+    
+    brief = CustomNoneColumn(field='brief', header='Brief')
+    role = TagColumn(field='ajax_tag_type', header='Role', wrap_class='con-task-assoc')
+    deadline = NoneableDatetimeColumn(field='deadline', header='Deadline', format=date_time_format)
+    status = TagColumn(field='ajax_status', header='Status', wrap_class='task-status', attrs=center_attrs)
+    project = CustomNoneColumn(field='proj', header='Project')
+
+    class Meta:
+        model = Task
+        search = True
+        ajax = True 
+
+        attrs = {'class': 'table-striped table-hover'}
+

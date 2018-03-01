@@ -25,17 +25,17 @@
   <div>
     {% if perms.contact.contact_view_projects %}
       <hr>
-      {% use_macro display_associated_table associated_projects_table "Associated Projects" %}
+      {% use_macro display_associated_ajax_table associated_projects_table "Associated Projects" project_source given_pk%}
     {% endif %}
 
     {% if perms.contact.contact_view_tasks %}
       <hr>
-      {% use_macro display_associated_table associated_tasks_table "Associated Tasks" %}
+      {% use_macro display_associated_ajax_table associated_tasks_table "Associated Tasks" task_source given_pk%}
     {% endif %}
 
     {% if perms.contact.contact_view_events %}
       <hr>
-      {% use_macro display_associated_table associated_events_table "Associated Events" %}
+      {% use_macro display_associated_ajax_table associated_events_table "Associated Events" event_source given_pk%}
     {% endif %}
   </div>
 {% endblock %}

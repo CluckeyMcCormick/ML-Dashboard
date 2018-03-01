@@ -1,11 +1,13 @@
 {% extends "base_generic.html" %}
-{% load table_tags %}
+
+{% load ajax_table_tags %}
 
 {% block content %}
 	<h1>{{page_title}} <strong>{{item_title}}</strong></h1>
 
 	<form action="" method="post">
 		{% csrf_token %}
-		{% render_table assign_table %}
+		{% render_table_ajax assign_table source_name input_id %}
+
 	</form>
 {% endblock %}
