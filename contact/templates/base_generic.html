@@ -34,8 +34,12 @@
               <li><a href="{% url 'password_change' %}">Change Password</a></li>
               <hr>
               <li><a href="{% url 'my-dashboard' %}">My Dashboard</a></li>
-              <li><a href="{% url 'my-proj-assocs' %}">My Projects</a></li>
-              <li><a href="{% url 'my-task-assocs' %}">My Tasks</a></li>
+              {% if perms.contact.project_view_related %}
+                <li><a href="{% url 'my-proj-assocs' %}">My Projects</a></li>
+              {% endif %}
+              {% if perms.contact.task_view_related %}
+                <li><a href="{% url 'my-task-assocs' %}">My Tasks</a></li>
+              {% endif %}
               
               {% if perms.contact.contact_view_all or perms.contact.organization_view_all or perms.contact.project_view_all or perms.contact.task_view_all or perms.contact.event_view_all %}
                 <hr>

@@ -13,9 +13,14 @@
     {% bootstrap_button content='View Printable Version' button_type='link' href=print_url button_class="btn-primary" icon="glyphicon glyphicon-print"%}
   </h2>
 
-  <hr>
-  {% use_macro display_associated_ajax_table user_proj_table "Your Upcoming Projects" project_source input_id%}
-  <hr>
-  {% use_macro display_associated_ajax_table user_task_table "Your Upcoming Tasks" task_source input_id%}
+  {% if perms.contact.project_view_related %}
+    <hr>
+    {% use_macro display_associated_ajax_table user_proj_table "Your Upcoming Projects" project_source input_id%}
+  {% endif %}
 
+  {% if perms.contact.task_view_related %}
+    <hr>
+    {% use_macro display_associated_ajax_table user_task_table "Your Upcoming Tasks" task_source input_id%}
+  {% endif %}
+  
 {% endblock %}

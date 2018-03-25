@@ -39,8 +39,8 @@ class ContactDataBaseView(views.FeedDataView):
         volu_tag_set = type_tag_qset.filter(tag_type='vo')
         pros_tag_set = type_tag_qset.filter(tag_type='pr')
         dono_tag_set = type_tag_qset.filter(tag_type='do')
-        reso_tag_set = type_tag_qset.filter(tag_type='_f')
-        foun_tag_set = type_tag_qset.filter(tag_type='_g')
+        reso_tag_set = type_tag_qset.filter(tag_type='_g')
+        foun_tag_set = type_tag_qset.filter(tag_type='_f')
 
         q_set = q_set.annotate( volu_mark = Exists(volu_tag_set) )
         q_set = q_set.annotate( pros_mark = Exists(pros_tag_set) )
@@ -78,7 +78,7 @@ class ContactDataBaseView(views.FeedDataView):
         #print("RESO")
         q_set = q_set.annotate( 
             ajax_resource = Case(
-                When( reso_mark=True, then=Value('Resource')),
+                When( reso_mark=True, then=Value('Grant Resource')),
                 default=Value(''),
                 output_field=CharField() 
             ) 
