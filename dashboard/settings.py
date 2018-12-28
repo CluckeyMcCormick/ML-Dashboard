@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import dj_database_url
 
-from .secret_settings import *
+import random
 
 PRODUCTION = False
 
@@ -38,10 +38,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = KEY_OF_SECRETS
+ALT_KEY = ''.join([random.SystemRandom().choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(96)])
 
-ALLOWED_HOSTS = SECRET_HOSTS
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY', ALT_KEY)
+
+ALLOWED_HOSTS = [
+    os.getenv('HOST_NAME', '127.0.0.1')
+]
 
 # Application definition
 
