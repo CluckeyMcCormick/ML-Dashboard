@@ -55,11 +55,11 @@ Whenever a user logs in, the web app retrieves the information about their assoc
 
 The webapp provides a native (i.e. not through the admin interface) way to create users, BUT you can only access it with the appropriate permissions. What we get is a chicken and the egg situation. The solution is this:
 
-0. Create superuser
+1. Create superuser
 
-0. Create contact for superuser
+1. Create contact for superuser
 
-0. Verify
+1. Verify
 
 ### 1. Create superuser
 
