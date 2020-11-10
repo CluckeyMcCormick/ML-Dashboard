@@ -20,25 +20,25 @@ from .project_views import is_admined_contact_proj
 def get_tiered_proj_assoc_qs(user_con):
     user_projects = user_con.projects.get_queryset()
 
+    # Get all of the project associations
     ua_all = user_con.proj_assocs.get_queryset()
-    ua_assign = ua_all.filter(tag_type__in=['as', 'le'])
-    ua_create = ua_all.filter(tag_type__in=['cr'])
+    # We only want projects where we're assigned, a leader, or a creator
+    ua_filtered = ua_all.filter(tag_type__in=['as', 'le', 'cr'])
+    # Get all the ones where we're assigned or a leader
+    ua_assign = ua_filtered.filter(tag_type__in=['as', 'le'])
+    # Get ones where we're the creator
+    ua_create = ua_filtered.filter(tag_type__in=['cr'])    
 
     #Now, get those tasks that have an assigned relation
     #and those that have a creator relation
     assigned_projects = user_projects.filter(con_assocs__in=ua_assign)
     created_projects = user_projects.filter(con_assocs__in=ua_create)
 
-    #Now, get the projects that AREN'T assigned 
-    #Which means, only getting the projects we've created
-    #And some others we don't really care about
-    projects_no_assigned = user_projects.exclude(id__in=assigned_projects)
+    # Now, get the projects that ARE assigned to us AND we've created.
+    projects_created_assigned = created_projects.filter(id__in=assigned_projects)
 
-    #Now, we take all our creator associations, and limit it to
-    #ONLY the ones that have no ASSIGN relation
-    ua_create = ua_create.filter(proj__in=projects_no_assigned)
-
-    return ua_assign.union(ua_create)
+    # Exclude any creator tags that have projects for assigned or leader roles
+    return ua.exclude(tag_type__in=['cr'], proj__in=projects_created_assigned)
 
 #___  ____ ____  _ ____ ____ ___    ____ ____ ____ ____ ____ 
 #|__] |__/ |  |  | |___ |     |     |__| [__  [__  |  | |    

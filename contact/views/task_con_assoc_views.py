@@ -21,8 +21,13 @@ from .task_views import is_admined_contact_task
 def get_tiered_task_assoc_qs(user_con):
     user_tasks = user_con.tasks.get_queryset()
 
+    # Get all of the tasl associations
     ua_all = user_con.task_assocs.get_queryset()
+    # We only want tasks where we're assigned or a creator
+    ua_filtered = ua_all.filter(tag_type__in=['as', 'cr'])
+    # Get all the ones where we're assigned
     ua_assign = ua_all.filter(tag_type__in=['as'])
+    # Get ones where we're the creator
     ua_create = ua_all.filter(tag_type__in=['cr'])
 
     #Now, get those tasks that have an assigned relation
@@ -30,16 +35,11 @@ def get_tiered_task_assoc_qs(user_con):
     assigned_tasks = user_tasks.filter(con_assocs__in=ua_assign)
     created_tasks = user_tasks.filter(con_assocs__in=ua_create)
 
-    #Now, get the tasks that AREN'T assigned 
-    #Which means, only getting the tasks we've created
-    #And some others we don't really care about
-    tasks_no_assigned = user_tasks.exclude(id__in=assigned_tasks)
+    # Now, get the tasks that ARE assigned to us AND we've created.
+    tasks_created_assigned = created_tasks.filter(id__in=assigned_tasks)
 
-    #Now, we take all our creator associations, and limit it to
-    #ONLY the ones that have no ASSIGN relation
-    ua_create = ua_create.filter(task__in=tasks_no_assigned)
-
-    return ua_assign.union(ua_create)
+    # Exclude any creator tags that have tasks for assigned roles
+    return ua.exclude(tag_type__in=['cr'], task__in=tasks_created_assigned)
 
 #___ ____ ____ _  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
 # |  |__| [__  |_/  __ |    |  | |\ | __ |__| [__  [__  |  | |    
