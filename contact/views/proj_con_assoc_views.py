@@ -19,7 +19,6 @@ from .project_views import is_admined_contact_proj
 
 def get_tiered_proj_assoc_qs(user_con):
     user_projects = user_con.projects.get_queryset()
-
     # Get all of the project associations
     ua_all = user_con.proj_assocs.get_queryset()
     # We only want projects where we're assigned, a leader, or a creator
@@ -38,7 +37,7 @@ def get_tiered_proj_assoc_qs(user_con):
     projects_created_assigned = created_projects.filter(id__in=assigned_projects)
 
     # Exclude any creator tags that have projects for assigned or leader roles
-    return ua.exclude(tag_type__in=['cr'], proj__in=projects_created_assigned)
+    return ua_filtered.exclude(tag_type__in=['cr'], proj__in=projects_created_assigned)
 
 #___  ____ ____  _ ____ ____ ___    ____ ____ ____ ____ ____ 
 #|__] |__/ |  |  | |___ |     |     |__| [__  [__  |  | |    

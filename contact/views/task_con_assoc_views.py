@@ -39,7 +39,7 @@ def get_tiered_task_assoc_qs(user_con):
     tasks_created_assigned = created_tasks.filter(id__in=assigned_tasks)
 
     # Exclude any creator tags that have tasks for assigned roles
-    return ua.exclude(tag_type__in=['cr'], task__in=tasks_created_assigned)
+    return ua_filtered.exclude(tag_type__in=['cr'], task__in=tasks_created_assigned)
 
 #___ ____ ____ _  _    ____ ____ _  _    ____ ____ ____ ____ ____ 
 # |  |__| [__  |_/  __ |    |  | |\ | __ |__| [__  [__  |  | |    
